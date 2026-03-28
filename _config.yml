@@ -12,8 +12,10 @@ language: en
 timezone: ''
 
 # URL
-## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://example.com
+## Current deployment is under a subpath on Tencent Cloud (`/blog/`).
+## Keep `root` aligned with the public access path to avoid broken CSS/JS links.
+url: https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com
+root: /blog/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
