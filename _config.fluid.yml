@@ -1,0 +1,48 @@
+# Fluid theme overrides for this site.
+# Keep customizations here instead of editing node_modules.
+
+navbar:
+  blog_title: "ORI2333's Blog"
+  menu:
+    - { key: "home", link: "/", icon: "iconfont icon-home-fill" }
+    - { key: "archive", link: "/archives/", icon: "iconfont icon-archive-fill" }
+    - { key: "category", link: "/categories/", icon: "iconfont icon-category-fill" }
+    - { key: "tag", link: "/tags/", icon: "iconfont icon-tags-fill" }
+    - { key: "about", link: "/about/", icon: "iconfont icon-user-fill" }
+
+search:
+  enable: false
+
+index:
+  banner_img: /img/default.png
+  banner_img_height: 90
+  banner_mask_alpha: 0.35
+  slogan:
+    enable: true
+    text: "记录编程、算法与工程实践"
+
+post:
+  banner_img: /img/default.png
+
+archive:
+  banner_img: /img/default.png
+
+category:
+  banner_img: /img/default.png
+
+tag:
+  banner_img: /img/default.png
+
+about:
+  banner_img: /img/default.png
+
+links:
+  banner_img: /img/default.png
+
+footer:
+  content: '
+    <span>Powered by </span>
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener">Hexo</a>
+    <span> · Theme </span>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">Fluid</a>
+  '
