@@ -1,0 +1,248 @@
+name: Deploy Hexo to CloudBase Hosting
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  # 让 actions/checkout、actions/setup-node 这类 JS Action 运行在 Node 24，消除 Node 20 弃用警告
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      # 兼容两套密钥命名：优先使用 TCB_*，否则回退到 QCLOUD*
+      TCB_SECRET_ID: ${{ secrets.TCB_SECRET_ID || secrets.QCLOUDAPIKEYID }}
+      TCB_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY || secrets.QCLOUDAPIKEY }}
+      TCB_ENV_ID: ${{ secrets.TCB_ENV_ID || secrets.QCLOUDENVID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Hexo site
+        run: npm run build
+
+      - name: Install CloudBase CLI
+        run: npm install -g @cloudbase/cli
+
+      - name: Validate CloudBase secrets
+        shell: bash
+        run: |
+          if [ -z "$TCB_SECRET_ID" ] || [ -z "$TCB_SECRET_KEY" ] || [ -z "$TCB_ENV_ID" ]; then
+            echo "Missing required secrets. Please set TCB_* or QCLOUD* secrets in repository settings."
+            exit 1
+          fi
+
+      - name: Check CloudBase CLI version
+        run: tcb --version
+
+      - name: Login to CloudBase
+        run: tcb login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY"
+
+      - name: Deploy to CloudBase Static Hosting
+        run: tcb hosting deploy ./public /blog -e "$TCB_ENV_ID"
+    additional: # 托管信息等
+      - - 由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 强力驱动
+        - 在 <a href="https://github.io" target="_blank">Github Pages</a> 暖心托管
+
+# 代码高亮
+# syntax_highlighter:
+#   theme: atom-dark # 代码高亮主题（请参照具体的高亮插件对应的主题样式）
+
+# Widgets 侧边栏小挂件
+sidebar:
+  widgets:
+    - about
+    - splitter
+    - toc
+    - category
+    - tagcloud
+    - posts
+
+# Post 文章配置
+posts:
+  default_cover: "/images/theme/default-cover.webp"
+
+# 分享组件设置
+share:
+  enable: true
+  title: "分享这一刻"
+  message: "让朋友们也来瞅瞅！"
+  platforms:
+    - name: "喵窝"
+      icon: <svg fill="currentColor" width="18" height="18" viewBox="0 0 329 388"><path d="M0,36.226c0,-19.993 16.233,-36.226 36.226,-36.226c13.788,0 25.787,7.719 31.908,19.068l188.366,229.845l0,-111.259c-6.356,5.508 -14.645,8.843 -23.707,8.843c-19.994,0 -36.226,-16.232 -36.226,-36.226c-0,-8.551 2.968,-16.413 7.93,-22.613l-0.015,-0.013l56.614,-69.08c6.2,-11.073 18.047,-18.565 31.63,-18.565c19.994,0 36.227,16.233 36.227,36.226l-0,314.644c-0,19.994 -16.233,36.226 -36.227,36.226c-13.166,0 -24.701,-7.039 -31.044,-17.555l-189.229,-230.899l-0,212.228c-0,19.994 -16.233,36.226 -36.227,36.226c-19.993,0 -36.226,-16.232 -36.226,-36.226l0,-314.644Z" /></svg>
+      color: "#62b6e7"
+      link: "https://nya.one/share?text=%3E%20$TITLE%0A%3E%0A%3E%20$SUMMARY%0A----%20$SITE%0A%0A$URL"
+
+# 打赏组件设置
+donate:
+  enable: true
+  title: "赞助喵"
+  message: 非常感谢您的喜欢！ <i class="fa fa-heart" style="color:#d43f57"></i>
+  qrcode_placeholder: "https://dev.krt.moe/demo-assets/donate.webp"
+  platforms:
+    - name: "模拟支付"
+      icon: "credit-card"
+      color: "skyblue"
+      qrcode: "example_payment"
+
+# 版权说明
+copyright_notice:
+  in_page:
+    enable_at:
+      - post
+      - page
+
+# 评论系统
+comments:
+  core:
+    enable_at:
+      - post
+      - page
+    template:
+      _shared: |
+        <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css">
+      index: ""
+      post: |
+        <div id="waline"></div>
+        <script type="module">
+          const __COMMENTS_ENABLED = window.__COMMENTS_ENABLED !== false;
+          if (!__COMMENTS_ENABLED) {
+            const walineEl = document.getElementById('waline');
+            if (walineEl) {
+              walineEl.outerHTML = '<div class="kr-comments-disabled">评论已关闭（审查中）</div>';
+            }
+          } else {
+          import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+          init({
+            el: '#waline',
+            serverURL: window.__WALINE_SERVER,
+            path: '$PATH',
+            dark: "html[data-theme='dark']",
+            pageview: false,
+            comment: false,
+            reaction: [
+              '/blog/icons/waline-reaction/weibo_heart_eyes.png',
+              '/blog/icons/waline-reaction/weibo_dog_joy.png',
+              '/blog/icons/waline-reaction/weibo_dog_consider.png',
+              '/blog/icons/waline-reaction/weibo_sob.png',
+              '/blog/icons/waline-reaction/weibo_sad.png',
+              '/blog/icons/waline-reaction/weibo_look_down.png',
+            ],
+            lang: 'zh-CN',
+            locale: {
+              reactionTitle: '感觉如何?',
+              reaction0: '大爱',
+              reaction1: '期待',
+              reaction2: '不明觉厉',
+              reaction3: '拳头硬了',
+              reaction4: '离谱',
+              reaction5: '困了',
+            },
+          });
+          }
+        </script>
+      page: |
+        <div id="waline"></div>
+        <script type="module">
+          const __COMMENTS_ENABLED = window.__COMMENTS_ENABLED !== false;
+          if (!__COMMENTS_ENABLED) {
+            const walineEl = document.getElementById('waline');
+            if (walineEl) {
+              walineEl.outerHTML = '<div class="kr-comments-disabled">评论已关闭（审查中）</div>';
+            }
+          } else {
+          import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+          init({
+            el: '#waline',
+            serverURL: window.__WALINE_SERVER,
+            path: '$PATH',
+            dark: "html[data-theme='dark']",
+            pageview: false,
+            comment: false,
+            reaction: [
+              '/blog/icons/waline-reaction/weibo_heart_eyes.png',
+              '/blog/icons/waline-reaction/weibo_dog_joy.png',
+              '/blog/icons/waline-reaction/weibo_dog_consider.png',
+              '/blog/icons/waline-reaction/weibo_sob.png',
+              '/blog/icons/waline-reaction/weibo_sad.png',
+              '/blog/icons/waline-reaction/weibo_look_down.png',
+            ],
+            lang: 'zh-CN',
+            locale: {
+              reactionTitle: '感觉如何?',
+              reaction0: '大爱',
+              reaction1: '期待',
+              reaction2: '不明觉厉',
+              reaction3: '拳头硬了',
+              reaction4: '离谱',
+              reaction5: '困了',
+            },
+          });
+          }
+        </script>
+  count:
+    enable_at:
+      - index
+      - post
+    template:
+      _shared: |
+        <script type="module">
+          const __COMMENTS_ENABLED = window.__COMMENTS_ENABLED !== false;
+          const commentEls = document.querySelectorAll('.waline-comment-count');
+          if (!__COMMENTS_ENABLED) {
+            commentEls.forEach((el) => {
+              const wrapper = el.closest('span') || el;
+              wrapper.style.display = 'none';
+            });
+          } else {
+          import { commentCount } from 'https://unpkg.com/@waline/client@v3/dist/comment.js';
+          commentCount({
+            serverURL: window.__WALINE_SERVER,
+            path: window.location.pathname,
+          });
+          }
+        </script>
+      index: |
+        <span class="waline-comment-count" data-path="$PATH">0</span>
+      post: |
+        <span class="waline-comment-count" data-path="$PATH">0</span>
+  path_hasher: "md5"
+
+# 访问数量统计
+visit_count:
+  enable_at:
+    - index
+    - post
+  template:
+    _shared: |
+      <script type="module">
+        import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/pageview.js';
+        pageviewCount({
+          serverURL: window.__WALINE_SERVER,
+          path: window.location.pathname,
+        });
+      </script>
+    index: ""
+    post: |
+      <span class="waline-pageview-count" data-path="$PATH">0</span>
+  path_hasher: "md5"
+
+################## 额外的注入代码 ##################
+additional_injections:
+  head: "<style>.widget-kratos-about .about-contact-icons{display:flex;justify-content:space-evenly;align-items:center;max-width:240px;margin:14px auto 0;}.widget-kratos-about .about-contact-icons a{line-height:1;color:inherit;display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;}.widget-kratos-about .about-contact-icons a i{font-size:24px;}.widget-kratos-about .about-contact-icons a img{width:24px;height:24px;object-fit:contain;display:block;}.widget-kratos-about .about-contact-icons a img[alt='Email']{width:27px;height:27px;opacity:.98;}html[data-theme='dark'] .widget-kratos-about .about-contact-icons a img[alt='GitHub']{filter:brightness(0) invert(1);opacity:.98;}.widget-kratos-about .about-contact-icons a:hover{transform:translateY(-1px);}#footer .kratos-social-icons li a{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;}#footer .kratos-social-icons li a .footer-social-icon{width:34px;height:34px;object-fit:contain;display:block;}#footer .kratos-social-icons li a .footer-icon-email{filter:brightness(0) invert(1);opacity:.94;}#footer .kratos-social-icons li a .footer-icon-github{filter:brightness(0) invert(1);opacity:.95;}.kr-comments-disabled{margin:16px 0;padding:12px 14px;border:1px dashed rgba(160,160,160,.45);border-radius:10px;color:#9aa3b7;background:rgba(90,98,120,.08);text-align:center;}</style>" # 搜索引擎验证，或是追加的样式表
+  footer: "" # 注入到页面主体的内容，例如额外的可见组件
+  after_footer: "<script>window.__WALINE_SERVER='https://your-waline-server.example.com';window.__COMMENTS_ENABLED=true;</script>" # 站点分析，或是追加的脚本
+  tools: "" # 注入到页面右下角浮动工具栏里的功能按钮
