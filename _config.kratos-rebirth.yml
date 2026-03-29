@@ -6,7 +6,7 @@
   background:
     light: /blog/images/theme/bg-light.webp
     dark: /blog/images/theme/bg-dark.webp
-  favicon: /blog/images/theme/favicon.svg
+  favicon: /blog/images/theme/头像.jpg?v=20260329
 
 nav:
   auto_hide: true
