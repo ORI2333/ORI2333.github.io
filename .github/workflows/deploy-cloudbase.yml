@@ -1,0 +1,55 @@
+name: Deploy Hexo to CloudBase Hosting
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  # 让 actions/checkout、actions/setup-node 这类 JS Action 运行在 Node 24，消除 Node 20 弃用警告
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      # 兼容两套密钥命名：优先使用 TCB_*，否则回退到 QCLOUD*
+      TCB_SECRET_ID: ${{ secrets.TCB_SECRET_ID || secrets.QCLOUDAPIKEYID }}
+      TCB_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY || secrets.QCLOUDAPIKEY }}
+      TCB_ENV_ID: ${{ secrets.TCB_ENV_ID || secrets.QCLOUDENVID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Hexo site
+        run: npm run build
+
+      - name: Install CloudBase CLI
+        run: npm install -g @cloudbase/cli
+
+      - name: Validate CloudBase secrets
+        shell: bash
+        run: |
+          if [ -z "$TCB_SECRET_ID" ] || [ -z "$TCB_SECRET_KEY" ] || [ -z "$TCB_ENV_ID" ]; then
+            echo "Missing required secrets. Please set TCB_* or QCLOUD* secrets in repository settings."
+            exit 1
+          fi
+
+      - name: Check CloudBase CLI version
+        run: tcb --version
+
+      - name: Login to CloudBase
+        run: tcb login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY"
+
+      - name: Deploy to CloudBase Static Hosting
+        run: tcb hosting deploy ./public /blog -e "$TCB_ENV_ID"
