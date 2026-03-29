@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  
+    <link rel="icon" href="/blog/images/theme/头像.jpg">
+  
+  
+  <title>ISP之常用图像缩放算法 | ORI2333&#39;s Blog</title>
+  <link rel="canonical" href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/">
+  <meta name="author" content="ORI2333" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="FPGA, ISP, 图像处理" />
+  
+  <meta name="description" content="FPGA图像处理中常用的图像缩放算法，包括最近邻插值算法、双线性邻插值算法、双三次邻插值算法，以及双线性的MATLAB与FPGA实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ISP之常用图像缩放算法">
+<meta property="og:url" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="ORI2333&#39;s Blog">
+<meta property="og:description" content="FPGA图像处理中常用的图像缩放算法，包括最近邻插值算法、双线性邻插值算法、双三次邻插值算法，以及双线性的MATLAB与FPGA实现。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/theme/default-cover.webp">
+<meta property="article:published_time" content="2025-08-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-29T05:11:27.451Z">
+<meta property="article:author" content="ORI2333">
+<meta property="article:tag" content="ISP">
+<meta property="article:tag" content="FPGA">
+<meta property="article:tag" content="图像处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/theme/default-cover.webp">
+  
+  <!-- JSON-LD 结构化数据 -->
+  
+  
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"ISP之常用图像缩放算法","description":"FPGA图像处理中常用的图像缩放算法，包括最近邻插值算法、双线性邻插值算法、双三次邻插值算法，以及双线性的MATLAB与FPGA实现。\n\n\n","image":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/images/theme/default-cover.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2025-08-01T16:00:00.000Z","dateModified":"2026-03-29T05:11:27.451Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/"}}
+    </script>
+  
+  <!-- 关键 CSS 预加载 -->
+  <link rel="preload" href="/blog/css/kr-core.min.css" as="style" crossorigin>
+  <link rel="preload" href="/blog/css/kr-theme/light.min.css" as="style" crossorigin>
+  <link rel="preload" href="/blog/css/kr-theme/dark.min.css" as="style" crossorigin>
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/blog/css/kr-core.min.css" media="all">
+  <link rel="stylesheet" id="theme-light-css" href="/blog/css/kr-theme/light.min.css" media="all">
+  <link rel="stylesheet" id="theme-dark-css" href="/blog/css/kr-theme/dark.min.css" media="(prefers-color-scheme: dark)">
+  
+    <link rel="stylesheet"  id="highlight-css" href="/blog/css/highlight/highlight.js/night-eighties.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/css/highlight/highlight.js/night-eighties.min.css"></noscript>
+  
+  <script src="/blog/js/kr-theme.min.js"></script>
+  <link rel="stylesheet"  id="fontawe-css" href="/blog/vendors/font-awesome@4.7.0/css/font-awesome.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/vendors/font-awesome@4.7.0/css/font-awesome.min.css"></noscript>
+  
+    <link rel="stylesheet"  id="nprogress-css" href="/blog/vendors/nprogress@0.2.0/nprogress.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/vendors/nprogress@0.2.0/nprogress.css"></noscript>
+  
+  
+    <link rel="stylesheet"  href="/blog/vendors/viewerjs@1.11.6/dist/viewer.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/vendors/viewerjs@1.11.6/dist/viewer.min.css"></noscript>
+  
+  <!-- 预先加载的JS文件 -->
+  
+    <script src="/blog/vendors/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  
+  <!-- 自定义站点横幅和背景 -->
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/blog/images/theme/banner-light.webp');
+      }
+      html[data-theme="dark"] .kratos-cover.kratos-cover-2 {
+        background-image: url('/blog/images/theme/banner-dark.webp');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/blog/images/theme/bg-light.webp');
+        }
+        html[data-theme="dark"] body.custom-background {
+          background-image: url('/blog/images/theme/bg-dark.webp');
+        }
+      }
+    
+    
+      .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+      html[data-theme="dark"] .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+    
+  </style>
+
+  <!-- 额外的追加注入项 -->
+  
+    <style>.widget-kratos-about .about-contact-icons{display:flex;justify-content:space-evenly;align-items:center;max-width:240px;margin:14px auto 0;}.widget-kratos-about .about-contact-icons a{line-height:1;color:inherit;display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;}.widget-kratos-about .about-contact-icons a i{font-size:24px;}.widget-kratos-about .about-contact-icons a img{width:24px;height:24px;object-fit:contain;display:block;}.widget-kratos-about .about-contact-icons a img[alt='Email']{width:27px;height:27px;opacity:.98;}html[data-theme='dark'] .widget-kratos-about .about-contact-icons a img[alt='GitHub']{filter:brightness(0) invert(1);opacity:.98;}.widget-kratos-about .about-contact-icons a:hover{transform:translateY(-1px);}#footer .kratos-social-icons li a{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;}#footer .kratos-social-icons li a .footer-social-icon{width:34px;height:34px;object-fit:contain;display:block;}#footer .kratos-social-icons li a .footer-icon-email{filter:brightness(0) invert(1);opacity:.94;}#footer .kratos-social-icons li a .footer-icon-github{filter:brightness(0) invert(1);opacity:.95;}.kr-comments-disabled{margin:16px 0;padding:12px 14px;border:1px dashed rgba(160,160,160,.45);border-radius:10px;color:#9aa3b7;background:rgba(90,98,120,.08);text-align:center;}</style>
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/">
+                                        
+                                            
+                                                <i class="fa fa-home"></i>
+                                            
+                                            首页
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/archives/">
+                                        
+                                            
+                                                <i class="fa fa-file"></i>
+                                            
+                                            归档
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/categories/">
+                                        
+                                            
+                                                <i class="fa fa-folder-open"></i>
+                                            
+                                            分类
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/tags/">
+                                        
+                                            
+                                                <i class="fa fa-tags"></i>
+                                            
+                                            标签
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/about/">
+                                        
+                                            
+                                                <i class="fa fa-user"></i>
+                                            
+                                            关于
+                                        </a>
+                                        
+                                    </li>
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/blog/">ORI2333&#39;s Blog</a></div>
+                    <div id="kratos-nav-toggle-wrapper" class="nav-toggle">
+                        <a id="kratos-nav-toggle" class="kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/blog/">
+                        <h2>ORI2333&#39;s Blog</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+
+
+        
+
+            
+
+            <section class="kr-main-col col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/">
+    <div class="kratos-hentry kratos-page-inner clearfix">
+        <header class="kratos-page-header">
+            
+                <h1 class="kratos-page-title text-center" itemprop="name headline">ISP之常用图像缩放算法</h1>
+            
+            <ul class="kratos-page-meta text-center">
+                <li><time datetime="2025-08-01T16:00:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2025-08-02</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
+                </li>
+                
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~13.25K
+                        
+                        字
+                    </li>
+                
+                
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        <script type="module">
+  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/pageview.js';
+  pageviewCount({
+    serverURL: window.__WALINE_SERVER,
+    path: window.location.pathname,
+  });
+</script>
+<span class="waline-pageview-count" data-path="/blog/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/">0</span>
+ 次阅读
+                    </li>
+                
+                
+                    <li>
+                        <i class="fa fa-commenting-o"></i>
+                        <script type="module">
+  const __COMMENTS_ENABLED = window.__COMMENTS_ENABLED !== false;
+  const commentEls = document.querySelectorAll('.waline-comment-count');
+  if (!__COMMENTS_ENABLED) {
+    commentEls.forEach((el) => {
+      const wrapper = el.closest('span') || el;
+      wrapper.style.display = 'none';
+    });
+  } else {
+  import { commentCount } from 'https://unpkg.com/@waline/client@v3/dist/comment.js';
+  commentCount({
+    serverURL: window.__WALINE_SERVER,
+    path: window.location.pathname,
+  });
+  }
+</script>
+<span class="waline-comment-count" data-path="/blog/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/">0</span>
+ 条评论
+                    </li>
+                
+            </ul>
+        </header>
+        <div class="kratos-page-content kr-post">
+            
+            
+            
+            <hr />
+            <div itemprop="articleBody"><p>FPGA图像处理中常用的图像缩放算法，包括最近邻插值算法、双线性邻插值算法、双三次邻插值算法，以及双线性的MATLAB与FPGA实现。</p>
+<span id="more"></span>
+
+<h1 id="双线性邻域插值算法"><a href="#双线性邻域插值算法" class="headerlink" title="双线性邻域插值算法"></a>双线性邻域插值算法</h1><h2 id="基础理论"><a href="#基础理论" class="headerlink" title="基础理论"></a>基础理论</h2><p><strong>核心思想：</strong> 标准的线性插值是在一维直线上，根据已知两点的坐标和值，来计算中间某个未知点的值。而双线性插值指的是做了两次线性插值，是在一个二维平面上的。而 <strong>双线性插值 (Bilinear Interpolation)</strong>，顾名思义，就是做了两次线性插值，但它是在一个二维平面上。当我们要计算目标图像中某个点 <code>(x, y)</code> 的像素值时，我们先找到它对应在源图像中的位置 <code>(src_x, src_y)</code>。这个位置通常是浮点数，落在四个真实像素点之间。<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20250725153727827.png?imageSlim" alt="image.png"><br><strong>算法步骤：</strong></p>
+<ol>
+<li><strong>坐标映射</strong>：将目标图像的坐标 <code>(dst_x, dst_y)</code> 映射回源图像的坐标 <code>(src_x, src_y)</code>。</li>
+<li><strong>找到四个邻近点</strong>：根据 <code>(src_x, src_y)</code> 找到它周围的四个像素点，即上图的 <code>Q11, Q12, Q21, Q22</code>。（如上图）</li>
+<li><strong>第一次线性插值</strong>：在 x 方向上，分别对上下两行进行线性插值，计算出两个临时点 <code>R1</code> 和 <code>R2</code> 的值。</li>
+<li><strong>第二次线性插值</strong>：在 y 方向上，对 <code>R1</code> 和 <code>R2</code> 进行线性插值，最终得到 <code>P</code> 点的像素值。</li>
+</ol>
+<p><strong>公式：</strong> </p>
+<p>$$<br>f(P) &#x3D; (1 - d_x)(1 - d_y) f(Q_{11}) + d_x(1 - d_y) f(Q_{21}) + (1 - d_x)d_y f(Q_{12}) + d_x d_y f(Q_{22})<br>$$</p>
+<p><strong>原理实例化：</strong><br>![[ISP之常用图像缩放算法 2025-07-25 20.53.47.excalidraw]]</p>
+<h2 id="笔者理论改进"><a href="#笔者理论改进" class="headerlink" title="笔者理论改进"></a>笔者理论改进</h2><p>笔者最终目标是实现再FPGA可以高效运行的双线性插值，为此需要在一开始从算法层面去改进。出于习惯，个人觉得以下公式更清晰：<br>$$<br>I(i, j) &#x3D; [1 - y(i)] \times \left{ [(1 - x(j)) \times T_A(r) + x(j) \times T_B(r)] \right} + y(i) \times \left{ [(1 - x(j)) \times T_C(r) + x(j) \times T_D(r)] \right}<br>$$<br>为了清晰地表达，约定以下符号：</p>
+<ul>
+<li><strong>Ws​,Hs​</strong>：源图像的宽度和高度。</li>
+<li><strong>Wd​,Hd​</strong>：目标图像的宽度和高度。</li>
+<li><strong>(dstx​,dsty​)</strong>：目标图像中的像素坐标。</li>
+<li><strong>(srcx​,srcy​)</strong>：通过映射在源图像中得到的浮点坐标。</li>
+<li><strong>(x1​,y1​)</strong>：包围 (srcx​,srcy​) 的四点矩阵的左上角整数坐标，即 x1​&#x3D;⌊srcx​⌋,y1​&#x3D;⌊srcy​⌋。</li>
+<li><strong>dx,dy</strong>：浮点坐标的小数部分，即 dx&#x3D;srcx​−x1​,dy&#x3D;srcy​−y1​。</li>
+<li><strong>N</strong>：定点运算的小数位数，这里 N&#x3D;10。</li>
+<li><strong>S</strong>：缩放因子 (Scale)，S&#x3D;2N&#x3D;1024。</li>
+<li><strong>Xfixed​</strong>：表示变量 X 的定点整数形式。</li>
+<li><strong>TA,TB,TC,TD</strong>：分别代表源图像中四个邻近像素 f(x1​,y1​), f(x1​+1,y1​), f(x1​,y1​+1), f(x1​+1,y1​+1) 的值。</li>
+<li><strong>≪N</strong>：代表逻辑左移N位（乘以 S&#x3D;2N）。</li>
+<li><strong>≫N</strong>：代表算术右移N位（除以 S&#x3D;2N 并向下取整）。</li>
+</ul>
+<p><strong>改进1：</strong><br>小数在FPGA中是难以接受的，所以将1扩大1024倍，为此得到<br>$$<br>I(i, j) &#x3D; [1024 - y(i)] \times \left{ [(1024 - x(j)) \times T_A(r) + x(j) \times T_B(r)] \right} + y(i) \times \left{ [(1024 - x(j)) \times T_C(r) + x(j) \times T_D(r)] \right}<br>$$</p>
+<p><strong>改进2：</strong><br>上述公式存在6次乘法，而且在实际中位宽较大，比较消耗资源，为此采取差分方式来代替上述表达式，差分情况下只需要做三次乘法，对于1024的除法采用移位即可。<br>$$<br>I(i,j);&#x3D;;<br>\bigl(1024-y(i)\bigr)\Bigl[T_A(r)+\bigl(T_B(r)-T_A(r)\bigr)\tfrac{x(j)}{1024}\Bigr]<br>;+;<br>y(i)\Bigl[T_C(r)+\bigl(T_D(r)-T_C(r)\bigr)\tfrac{x(j)}{1024}\Bigr]<br>$$</p>
+<h2 id="分步数学推导"><a href="#分步数学推导" class="headerlink" title="分步数学推导"></a>分步数学推导</h2><h3 id="前处理-地址生成单元"><a href="#前处理-地址生成单元" class="headerlink" title="前处理 &#x2F; 地址生成单元"></a>前处理 &#x2F; 地址生成单元</h3><p>这部分的目标是根据目标像素坐标 <code>(dst_x, dst_y)</code>，计算出插值所需的四个源像素位置和两个权重。<br><strong>1. 坐标映射：</strong><br>将目标坐标范围 <code>[0, Wd-1]</code> 映射到源坐标范围 <code>[0, Ws-1]</code>。<br>标准浮点公式：<br>$$<br>\begin{align*}<br>src_x &amp;&#x3D; dst_x \cdot \frac{W_s - 1}{W_d - 1} \<br>src_y &amp;&#x3D; dst_y \cdot \frac{H_s - 1}{H_d - 1}<br>\end{align*}<br>$$<br>定点实现公式:<br>$$<br>\begin{align*}<br>src_x_{fixed} &amp;&#x3D; \left\lfloor \frac{dst_x \cdot (W_s - 1) \cdot S}{W_d - 1} \right\rfloor \<br>src_y_{fixed} &amp;&#x3D; \left\lfloor \frac{dst_y \cdot (H_s - 1) \cdot S}{H_d - 1} \right\rfloor<br>\end{align*}<br>$$<br><strong>2. 分解整数坐标与小数权重</strong><br>从定点坐标 <code>src_x_fixed</code> 中分离出整数部分 <code>x1</code> 和归一化的小数权重 <code>x_norm</code>。<br>整数坐标 <code>x1,y1</code> 公式：<br>$$<br>\begin{align*}<br>x_1 &amp;&#x3D; \left\lfloor \frac{src_x_{fixed}}{S} \right\rfloor \quad \Leftrightarrow \quad x_1 &#x3D; src_x_{fixed} \gg N \<br>y_1 &amp;&#x3D; \left\lfloor \frac{src_y_{fixed}}{S} \right\rfloor \quad \Leftrightarrow \quad y_1 &#x3D; src_y_{fixed} \gg N<br>\end{align*}<br>$$<br>小数坐标<code>x_norm</code> ,<code>y_norm</code>公式：<br>$$<br>\begin{align*}<br>dx &amp;&#x3D; src_x - x_1 \implies dx_{fixed} &#x3D; (src_x - x_1) \cdot S &#x3D; src_x_{fixed} - x_1 \cdot S \<br>x_{norm} &amp;&#x3D; src_x_{fixed} \pmod{S} \quad \Leftrightarrow \quad x_{norm} &#x3D; src_x_{fixed} ,&amp;, (S - 1)<br>\end{align*}<br>$$</p>
+<p><code>y_norm</code> 同理</p>
+<h3 id="插值计算核心"><a href="#插值计算核心" class="headerlink" title="插值计算核心"></a>插值计算核心</h3><p>省流：为什么这么做？因为这个版本逻辑对于fpga来说既能保持精度（与浮点存在±1误差），又符合计算逻辑</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// R1 = TA &lt;&lt; 10 + x * (TB - TA)</span><br><span class="line">// R2 = TC &lt;&lt; 10 + x * (TD - TC)</span><br><span class="line">// I  = R1 &gt;&gt; 10 + [y * (R2 - R1)] &gt;&gt; 20</span><br></pre></td></tr></table></figure>
+<p><strong>1. X方向的线性插值</strong><br>计算中间点 R1​ (在 y1​ 行) 和 R2​ (在 y1​+1 行) 的值。<br>标准浮点公式：<br>$$<br>\begin{align*}<br>R_1 &amp;&#x3D; (1 - dx) \cdot TA + dx \cdot TB \<br>R_2 &amp;&#x3D; (1 - dx) \cdot TC + dx \cdot TD<br>\end{align*}<br>$$<br>定点公式：<br>$$<br>R_{1_{fixed}} &#x3D; (S - x_{norm}) \cdot TA + x_{norm} \cdot TB<br>$$<br>展开<br>$$<br>R_1_{fixed} &#x3D; S \cdot TA - x_{norm} \cdot TA + x_{norm} \cdot TB &#x3D; (TA \ll N) + x_{norm} \cdot (TB - TA)<br>$$<br>R_2fix同理<br><strong>2. Y方向的线性插值</strong><br>利用 R1​ 和 R2​ 计算最终像素值 I。<br>标准浮点公式：<br>$$<br>I &#x3D; (1 - dy) \cdot R_1 + dy \cdot R_2<br>$$<br>定点实现公式:<br>$$<br>I_{final} &#x3D; \left\lfloor \frac{(S - y_{norm}) \cdot R_{1_{fixed}} + y_{norm} \cdot R_{2_{fixed}}}{S^2} \right\rfloor<br>$$<br>拆分展开：<br>$$<br>\begin{align*}<br>I_{final} &amp;&#x3D; \left\lfloor \frac{S \cdot R_{1_{fixed}} + y_{norm} \cdot (R_{2_{fixed}} - R_{1_{fixed}})}{S^2} \right\rfloor \<br>I_{final} &amp;&#x3D; \left\lfloor \frac{R_{1_{fixed}}}{S} + \frac{y_{norm} \cdot (R_{2_{fixed}} - R_{1_{fixed}})}{S^2} \right\rfloor<br>\end{align*}<br>$$<br><strong>3. 最终步骤</strong><br>$$<br>I_{final} &#x3D; (R_{1_{fixed}} \gg N) + \left( (y_{norm} \cdot (R_{2_{fixed}} - R_{1_{fixed}})) \gg 2N \right)<br>$$</p>
+<h2 id="python定点实现"><a href="#python定点实现" class="headerlink" title="python定点实现"></a>python定点实现</h2><h3 id="code"><a href="#code" class="headerlink" title="code"></a>code</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2  </span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np  </span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> ny  </span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt  </span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> yeojohnson_normmax  </span><br><span class="line">  </span><br><span class="line"><span class="comment"># --- Matplotlib 中文显示设置 ---import matplotlib  </span></span><br><span class="line">  </span><br><span class="line">matplotlib.rcParams[<span class="string">&#x27;font.sans-serif&#x27;</span>] = [<span class="string">&#x27;SimHei&#x27;</span>]  <span class="comment"># 使用黑体  </span></span><br><span class="line">matplotlib.rcParams[<span class="string">&#x27;axes.unicode_minus&#x27;</span>] = <span class="literal">False</span>  <span class="comment"># 正常显示负号  </span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bilinear_verilog</span>(<span class="params">src_img,dst_shape</span>):  </span><br><span class="line">    FRAC_BITS = <span class="number">10</span>  </span><br><span class="line">    SCALE = <span class="number">1</span> &lt;&lt; FRAC_BITS <span class="comment"># 1024  </span></span><br><span class="line">  </span><br><span class="line">    src_h,src_w = src_img.shape[:<span class="number">2</span>]  </span><br><span class="line">    dst_h,dst_w = dst_shape  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(src_img.shape) == <span class="number">3</span>:  </span><br><span class="line">        channels = src_img.shape[<span class="number">2</span>]  </span><br><span class="line">    <span class="keyword">else</span>:  </span><br><span class="line">        channels =<span class="number">1</span>  </span><br><span class="line">  </span><br><span class="line">    dst_img = np.zeros((dst_h,dst_w,channels),np.uint8)  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">for</span> dst_y <span class="keyword">in</span> <span class="built_in">range</span>(dst_h):  </span><br><span class="line">        <span class="keyword">for</span> dst_x <span class="keyword">in</span> <span class="built_in">range</span>(dst_w):  </span><br><span class="line">            <span class="comment"># 坐标映射  </span></span><br><span class="line">            src_x_fixed = (dst_x * (src_w-<span class="number">1</span>) * SCALE)//(dst_w-<span class="number">1</span>)  </span><br><span class="line">            src_h_fixed = (dst_y * (src_h-<span class="number">1</span>) * SCALE)//(dst_h-<span class="number">1</span>)  </span><br><span class="line">  </span><br><span class="line">            <span class="comment"># 分解坐标和权重  </span></span><br><span class="line">            x1 = src_x_fixed &gt;&gt; FRAC_BITS  </span><br><span class="line">            y1 = src_h_fixed &gt;&gt; FRAC_BITS  </span><br><span class="line">            x_norm = src_x_fixed &amp; (SCALE-<span class="number">1</span>)  </span><br><span class="line">            y_norm = src_h_fixed &amp; (SCALE-<span class="number">1</span>)  </span><br><span class="line">  </span><br><span class="line">            <span class="comment"># 边界处理  </span></span><br><span class="line">            x2 = x1 + <span class="number">1</span>  </span><br><span class="line">            y2 = y1 + <span class="number">1</span>  </span><br><span class="line">            x1 = <span class="built_in">max</span>(<span class="number">0</span>, x1);x2 = <span class="built_in">min</span>(src_w - <span class="number">1</span>, x2)  </span><br><span class="line">            y1 = <span class="built_in">max</span>(<span class="number">0</span>, y1);y2 = <span class="built_in">min</span>(src_h - <span class="number">1</span>, y2)  </span><br><span class="line">  </span><br><span class="line">            <span class="comment"># 核心公式  </span></span><br><span class="line">            <span class="comment"># R1 = TA &lt;&lt; 10 + x * (TB - TA)  </span></span><br><span class="line">            <span class="comment"># R2 = TC &lt;&lt; 10 + x * (TD - TC)            # I = R1 &gt;&gt; 10 + [y * (R2 - R1)] &gt;&gt; 20  </span></span><br><span class="line">            <span class="keyword">for</span> c <span class="keyword">in</span> <span class="built_in">range</span>(channels):  </span><br><span class="line">                <span class="comment"># 获取4个临近点  </span></span><br><span class="line">                TA = <span class="built_in">int</span>(src_img[y1,x1,c])  </span><br><span class="line">                TB = <span class="built_in">int</span>(src_img[y1,x2,c])  </span><br><span class="line">                TC = <span class="built_in">int</span>(src_img[y2, x1, c])  </span><br><span class="line">                TD = <span class="built_in">int</span>(src_img[y2, x2, c])  </span><br><span class="line">  </span><br><span class="line">                <span class="comment"># x方向插值  </span></span><br><span class="line">                diff1 = TB - TA  </span><br><span class="line">                diff2 = TD - TC  </span><br><span class="line">                R1 = (TA &lt;&lt; FRAC_BITS) + x_norm * diff1  </span><br><span class="line">                R2 = (TB &lt;&lt; FRAC_BITS) + x_norm * diff2  </span><br><span class="line">  </span><br><span class="line">                <span class="comment"># y方向插值  </span></span><br><span class="line">                term1 = R1 &gt;&gt; FRAC_BITS  </span><br><span class="line">  </span><br><span class="line">                diff_R = R2 - R1  </span><br><span class="line">                mult_v = y_norm * diff_R  </span><br><span class="line">  </span><br><span class="line">                rounding_offset = <span class="number">1</span> &lt;&lt; (<span class="number">2</span> * FRAC_BITS - <span class="number">1</span>)  </span><br><span class="line">                term2 = (mult_v + rounding_offset) &gt;&gt; (<span class="number">2</span> * FRAC_BITS)  </span><br><span class="line">  </span><br><span class="line">                final_pixel_val = term1 + term2  </span><br><span class="line">  </span><br><span class="line">                dst_img[dst_y, dst_x, c] = np.clip(final_pixel_val,<span class="number">0</span>,<span class="number">255</span>)  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">if</span> channels == <span class="number">1</span>:  </span><br><span class="line">            dst_img = np.squeeze(dst_img, axis=<span class="number">2</span>)  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> dst_img  </span><br><span class="line">  </span><br><span class="line"><span class="comment"># mian  </span></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">&#x27;__main__&#x27;</span>:  </span><br><span class="line">    img = cv2.imread(<span class="string">&#x27;tenshu.jpg&#x27;</span>)  </span><br><span class="line">    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    target_shape = (<span class="number">480</span>,<span class="number">640</span>) <span class="comment"># 高度、宽度  </span></span><br><span class="line">  </span><br><span class="line">    zoomed_verilog = bilinear_verilog(img,target_shape)  </span><br><span class="line">  </span><br><span class="line">    target_size_cv2 = (target_shape[<span class="number">1</span>], target_shape[<span class="number">0</span>])  </span><br><span class="line">    zoomed_cv2 = cv2.resize(img,target_size_cv2,interpolation=cv2.INTER_LINEAR)  </span><br><span class="line">  </span><br><span class="line">    <span class="comment"># 显示结果  </span></span><br><span class="line">    plt.figure(figsize=(<span class="number">15</span>, <span class="number">7</span>))  </span><br><span class="line">    plt.suptitle(<span class="string">&quot;Verilog风格定点实现 vs OpenCV实现&quot;</span>, fontsize=<span class="number">16</span>)  </span><br><span class="line">  </span><br><span class="line">    plt.subplot(<span class="number">1</span>, <span class="number">3</span>, <span class="number">1</span>)  </span><br><span class="line">    plt.imshow(img)  </span><br><span class="line">    plt.title(<span class="string">f&quot;原始图像 (<span class="subst">&#123;img.shape[<span class="number">1</span>]&#125;</span>x<span class="subst">&#123;img.shape[<span class="number">0</span>]&#125;</span>)&quot;</span>)  </span><br><span class="line">  </span><br><span class="line">    plt.subplot(<span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>)  </span><br><span class="line">    plt.imshow(zoomed_verilog)  </span><br><span class="line">    plt.title(<span class="string">f&quot;Verilog风格定点实现 (<span class="subst">&#123;target_shape[<span class="number">1</span>]&#125;</span>x<span class="subst">&#123;target_shape[<span class="number">0</span>]&#125;</span>)&quot;</span>)  </span><br><span class="line">  </span><br><span class="line">    plt.subplot(<span class="number">1</span>, <span class="number">3</span>, <span class="number">3</span>)  </span><br><span class="line">    plt.imshow(zoomed_cv2)  </span><br><span class="line">    plt.title(<span class="string">f&quot;OpenCV cv2.resize&quot;</span>)  </span><br><span class="line">  </span><br><span class="line">    plt.tight_layout(rect=[<span class="number">0</span>, <span class="number">0.03</span>, <span class="number">1</span>, <span class="number">0.95</span>])  </span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="result"><a href="#result" class="headerlink" title="result"></a>result</h3><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20250726191459555.png?imageSlim" alt="image.png"></p>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><p>除法计算过于多，每个像素都进行一次除法，这是极其反优化的。为此优化只做一次，预先计算一个高精度的“组合缩放因子”，这个因子包含了原始的缩放比例和用于最终结果的SCALE。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-  </span></span><br><span class="line"><span class="keyword">import</span> cv2  </span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np  </span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt  </span><br><span class="line">  </span><br><span class="line"><span class="comment"># --- Matplotlib 中文显示设置 ---import matplotlib  </span></span><br><span class="line">matplotlib.rcParams[<span class="string">&#x27;font.sans-serif&#x27;</span>] = [<span class="string">&#x27;SimHei&#x27;</span>]  <span class="comment"># 使用黑体  </span></span><br><span class="line">matplotlib.rcParams[<span class="string">&#x27;axes.unicode_minus&#x27;</span>] = <span class="literal">False</span>  <span class="comment"># 正常显示负号  </span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bilinear_verilog_optimized</span>(<span class="params">src_img, dst_shape</span>):  </span><br><span class="line">    <span class="comment"># --- 定点数和精度定义 ---    FRAC_BITS = 10  </span></span><br><span class="line">    SCALE = <span class="number">1</span> &lt;&lt; FRAC_BITS  <span class="comment"># 1024  </span></span><br><span class="line">  </span><br><span class="line">    <span class="comment"># --- 图像基本信息 ---    src_h, src_w = src_img.shape[:2]  </span></span><br><span class="line">    dst_h, dst_w = dst_shape  </span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(src_img.shape) == <span class="number">3</span>:  </span><br><span class="line">        channels = src_img.shape[<span class="number">2</span>]  </span><br><span class="line">    <span class="keyword">else</span>:  </span><br><span class="line">        channels = <span class="number">1</span>  </span><br><span class="line">        <span class="comment"># 统一将灰度图也处理为3维，方便计算  </span></span><br><span class="line">        src_img = np.expand_dims(src_img, axis=-<span class="number">1</span>)  </span><br><span class="line">  </span><br><span class="line">    dst_img = np.zeros((dst_h, dst_w, channels), np.uint8)  </span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">    RATIO_PRECISION_BITS = <span class="number">16</span>  </span><br><span class="line">    RATIO_SCALE = <span class="number">1</span> &lt;&lt; RATIO_PRECISION_BITS  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> dst_w &gt; <span class="number">1</span>:  </span><br><span class="line">        combined_scale_x = ((src_w - <span class="number">1</span>) * SCALE * RATIO_SCALE) // (dst_w - <span class="number">1</span>)  </span><br><span class="line">    <span class="keyword">else</span>:  </span><br><span class="line">        combined_scale_x = <span class="number">0</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> dst_h &gt; <span class="number">1</span>:  </span><br><span class="line">        combined_scale_y = ((src_h - <span class="number">1</span>) * SCALE * RATIO_SCALE) // (dst_h - <span class="number">1</span>)  </span><br><span class="line">    <span class="keyword">else</span>:  </span><br><span class="line">        combined_scale_y = <span class="number">0</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="comment"># --- 遍历目标图像 ---    for dst_y in range(dst_h):  </span></span><br><span class="line">        <span class="keyword">for</span> dst_x <span class="keyword">in</span> <span class="built_in">range</span>(dst_w):  </span><br><span class="line">            <span class="comment"># --- 坐标映射 (优化后) ---  </span></span><br><span class="line">            src_x_fixed = (dst_x * combined_scale_x) &gt;&gt; RATIO_PRECISION_BITS  </span><br><span class="line">            src_y_fixed = (dst_y * combined_scale_y) &gt;&gt; RATIO_PRECISION_BITS  </span><br><span class="line">  </span><br><span class="line">            <span class="comment"># --- 分解坐标和权重 ---            x1 = src_x_fixed &gt;&gt; FRAC_BITS  </span></span><br><span class="line">            y1 = src_y_fixed &gt;&gt; FRAC_BITS  </span><br><span class="line">            x_norm = src_x_fixed &amp; (SCALE - <span class="number">1</span>)  </span><br><span class="line">            y_norm = src_y_fixed &amp; (SCALE - <span class="number">1</span>)  </span><br><span class="line">  </span><br><span class="line">            <span class="comment"># --- 边界处理 ---            x2 = x1 + 1  </span></span><br><span class="line">            y2 = y1 + <span class="number">1</span>  </span><br><span class="line">            x1 = <span class="built_in">max</span>(<span class="number">0</span>, x1); x2 = <span class="built_in">min</span>(src_w - <span class="number">1</span>, x2)  </span><br><span class="line">            y1 = <span class="built_in">max</span>(<span class="number">0</span>, y1); y2 = <span class="built_in">min</span>(src_h - <span class="number">1</span>, y2)  </span><br><span class="line">  </span><br><span class="line">            <span class="comment"># --- 核心插值公式 ---            # R1 = (TA &lt;&lt; 10) + x_norm * (TB - TA)            # R2 = (TC &lt;&lt; 10) + x_norm * (TD - TC)            # I  = (R1 &gt;&gt; 10) + [y_norm * (R2 - R1)] &gt;&gt; 20            for c in range(channels):  </span></span><br><span class="line">                <span class="comment"># 获取4个临近点  </span></span><br><span class="line">                TA = <span class="built_in">int</span>(src_img[y1, x1, c])  </span><br><span class="line">                TB = <span class="built_in">int</span>(src_img[y1, x2, c])  </span><br><span class="line">                TC = <span class="built_in">int</span>(src_img[y2, x1, c])  </span><br><span class="line">                TD = <span class="built_in">int</span>(src_img[y2, x2, c])  </span><br><span class="line">  </span><br><span class="line">                <span class="comment"># X方向插值  </span></span><br><span class="line">                diff1 = TB - TA  </span><br><span class="line">                diff2 = TD - TC  </span><br><span class="line">                R1 = (TA &lt;&lt; FRAC_BITS) + x_norm * diff1  </span><br><span class="line">                <span class="comment"># *** 修正点: R2的计算应基于TC和TD ***  </span></span><br><span class="line">                R2 = (TC &lt;&lt; FRAC_BITS) + x_norm * diff2  </span><br><span class="line">  </span><br><span class="line">                <span class="comment"># Y方向插值  </span></span><br><span class="line">                term1 = R1 &gt;&gt; FRAC_BITS  </span><br><span class="line">                diff_R = R2 - R1  </span><br><span class="line">                mult_v = y_norm * diff_R  </span><br><span class="line">  </span><br><span class="line">                <span class="comment"># 添加舍入值以提高精度  </span></span><br><span class="line">                rounding_offset = <span class="number">1</span> &lt;&lt; (<span class="number">2</span> * FRAC_BITS - <span class="number">1</span>)  </span><br><span class="line">                term2 = (mult_v + rounding_offset) &gt;&gt; (<span class="number">2</span> * FRAC_BITS)  </span><br><span class="line">  </span><br><span class="line">                final_pixel_val = term1 + term2  </span><br><span class="line">  </span><br><span class="line">                dst_img[dst_y, dst_x, c] = np.clip(final_pixel_val, <span class="number">0</span>, <span class="number">255</span>)  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> channels == <span class="number">1</span>:  </span><br><span class="line">        dst_img = np.squeeze(dst_img, axis=-<span class="number">1</span>)  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> dst_img  </span><br><span class="line">  </span><br><span class="line"><span class="comment"># --- 主程序 ---if __name__ == &#x27;__main__&#x27;:  </span></span><br><span class="line">    <span class="keyword">try</span>:  </span><br><span class="line">        img = cv2.imread(<span class="string">&#x27;tenshu.jpg&#x27;</span>)  </span><br><span class="line">        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  </span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:  </span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;无法加载图像 &#x27;tenshu.jpg&#x27;，请确保文件存在。错误: <span class="subst">&#123;e&#125;</span>&quot;</span>)  </span><br><span class="line">        <span class="comment"># 创建一个备用测试图像  </span></span><br><span class="line">        img = np.zeros((<span class="number">100</span>, <span class="number">100</span>, <span class="number">3</span>), dtype=np.uint8)  </span><br><span class="line">        img[<span class="number">0</span>:<span class="number">50</span>, <span class="number">0</span>:<span class="number">50</span>] = [<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>]  </span><br><span class="line">        img[<span class="number">50</span>:<span class="number">100</span>, <span class="number">0</span>:<span class="number">50</span>] = [<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>]  </span><br><span class="line">        img[<span class="number">0</span>:<span class="number">50</span>, <span class="number">50</span>:<span class="number">100</span>] = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>]  </span><br><span class="line">        img[<span class="number">50</span>:<span class="number">100</span>, <span class="number">50</span>:<span class="number">100</span>] = [<span class="number">255</span>, <span class="number">255</span>, <span class="number">0</span>]  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    target_shape = (<span class="number">480</span>, <span class="number">640</span>)  <span class="comment"># 高度、宽度  </span></span><br><span class="line">  </span><br><span class="line">    zoomed_verilog = bilinear_verilog_optimized(img, target_shape)  </span><br><span class="line">  </span><br><span class="line">    target_size_cv2 = (target_shape[<span class="number">1</span>], target_shape[<span class="number">0</span>])  </span><br><span class="line">    zoomed_cv2 = cv2.resize(img, target_size_cv2, interpolation=cv2.INTER_LINEAR)  </span><br><span class="line">  </span><br><span class="line">    <span class="comment"># 显示结果  </span></span><br><span class="line">    plt.figure(figsize=(<span class="number">15</span>, <span class="number">7</span>))  </span><br><span class="line">    plt.suptitle(<span class="string">&quot;优化后的定点实现 vs OpenCV实现&quot;</span>, fontsize=<span class="number">16</span>)  </span><br><span class="line">  </span><br><span class="line">    plt.subplot(<span class="number">1</span>, <span class="number">3</span>, <span class="number">1</span>)  </span><br><span class="line">    plt.imshow(img)  </span><br><span class="line">    plt.title(<span class="string">f&quot;原始图像 (<span class="subst">&#123;img.shape[<span class="number">1</span>]&#125;</span>x<span class="subst">&#123;img.shape[<span class="number">0</span>]&#125;</span>)&quot;</span>)  </span><br><span class="line">  </span><br><span class="line">    plt.subplot(<span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>)  </span><br><span class="line">    plt.imshow(zoomed_verilog)  </span><br><span class="line">    plt.title(<span class="string">f&quot;优化后的定点实现 (<span class="subst">&#123;target_shape[<span class="number">1</span>]&#125;</span>x<span class="subst">&#123;target_shape[<span class="number">0</span>]&#125;</span>)&quot;</span>)  </span><br><span class="line">  </span><br><span class="line">    plt.subplot(<span class="number">1</span>, <span class="number">3</span>, <span class="number">3</span>)  </span><br><span class="line">    plt.imshow(zoomed_cv2)  </span><br><span class="line">    plt.title(<span class="string">f&quot;OpenCV cv2.resize&quot;</span>)  </span><br><span class="line">  </span><br><span class="line">    plt.tight_layout(rect=[<span class="number">0</span>, <span class="number">0.03</span>, <span class="number">1</span>, <span class="number">0.95</span>])  </span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="FPGA实现"><a href="#FPGA实现" class="headerlink" title="FPGA实现"></a>FPGA实现</h2><h3 id="模块设计"><a href="#模块设计" class="headerlink" title="模块设计"></a>模块设计</h3><p>![[ISP之常用图像缩放算法 2025-07-26 19.32.04.excalidraw|2000]]</p>
+<h1 id="BUG日志"><a href="#BUG日志" class="headerlink" title="BUG日志"></a>BUG日志</h1><p><em>“今天又在很努力的写bug了！”</em></p>
+<h4 id="在Verilog实现地址生成的过程中，难以避免对于除法精度的处理"><a href="#在Verilog实现地址生成的过程中，难以避免对于除法精度的处理" class="headerlink" title="在Verilog实现地址生成的过程中，难以避免对于除法精度的处理"></a>在Verilog实现地址生成的过程中，难以避免对于除法精度的处理</h4><p>如下公式，往往会出现小数，就算对其扩大，由于dst也是较大的数字，一旦误差被放大1000也是巨大的偏移，会越来越偏，花了大半天时间，很难在资源和效率之间平衡，每次都用除法资源量是巨大的，不可接受！！又想着去修正数值，但是这样又会写死，难以适配更多的变化。</p>
+<p>最后，取消了<code>-1</code> 🤤，不可否认的是这样也存在难以适配的问题，但是这也许是当先最简单最省事最可靠的办法，对于其它分辨率变化，我认为更应该是在 <code>localparam</code> 部分就让他为整数。</p>
+<p>$$<br>\begin{align*}<br>src_x &amp;&#x3D; dst_x \cdot \frac{W_s - 1}{W_d - 1} \<br>src_y &amp;&#x3D; dst_y \cdot \frac{H_s - 1}{H_d - 1}<br>\end{align*}<br>$$</p>
+</div>
+        </div>
+        
+            <div class="kratos-copyright text-center clearfix">
+                <span itemprop="copyrightNotice">本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</span>
+            </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+            
+            
+                <div class="post-actions text-center clearfix" id="post-actions">
+                
+                    <a class="donate" href="javascript:;" onclick="krOpenDonateModal()"><i class="fa fa-bitcoin"></i> 打赏</a>
+                
+                
+                    <a class="share" href="javascript:;" onclick="krOpenShareModal()"><i class="fa fa-share-alt"></i> 分享</a>
+                
+                </div>
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    <a class="tag-none-link" href="/blog/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/blog/tags/ISP/" rel="tag">ISP</a>, <a class="tag-none-link" href="/blog/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag">图像处理</a>
+                </div>
+                <div class="pull-date">
+                    <time datetime="2026-03-29T05:11:27.451Z" itemprop="dateModified">最后编辑：2026-03-29</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            
+            <div class="nav-next clearfix">
+                <a title=" Hello World" href="/blog/2025/08/02/hello-world/">下一篇 <i class="fa fa-angle-right"></i></a>
+            </div>
+            
+        </nav>
+    
+    
+        <div class="comment-post">
+            <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css">
+<div id="waline"></div>
+<script type="module">
+  const __COMMENTS_ENABLED = window.__COMMENTS_ENABLED !== false;
+  if (!__COMMENTS_ENABLED) {
+    const walineEl = document.getElementById('waline');
+    if (walineEl) {
+      walineEl.outerHTML = '<div class="kr-comments-disabled">评论已关闭（审查中）</div>';
+    }
+  } else {
+  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  init({
+    el: '#waline',
+    serverURL: window.__WALINE_SERVER,
+    path: '/blog/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/',
+    dark: "html[data-theme='dark']",
+    pageview: false,
+    comment: false,
+    reaction: [
+      '/blog/icons/waline-reaction/weibo_heart_eyes.png',
+      '/blog/icons/waline-reaction/weibo_dog_joy.png',
+      '/blog/icons/waline-reaction/weibo_dog_consider.png',
+      '/blog/icons/waline-reaction/weibo_sob.png',
+      '/blog/icons/waline-reaction/weibo_sad.png',
+      '/blog/icons/waline-reaction/weibo_look_down.png',
+    ],
+    lang: 'zh-CN',
+    locale: {
+      reactionTitle: '感觉如何?',
+      reaction0: '大爱',
+      reaction1: '期待',
+      reaction2: '不明觉厉',
+      reaction3: '拳头硬了',
+      reaction4: '离谱',
+      reaction5: '困了',
+    },
+  });
+  }
+</script>
+
+        </div>
+    
+</article>
+
+        
+
+            </section>
+
+            
+                
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/blog/images/theme/头像.jpg" alt="ORI2333" loading="lazy" decoding="auto" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">A blog about programming, technology, and more.<br><span class="about-contact-icons"><a href="mailto:ori2333.zh@gmail.com" title="Email"><img src="/blog/icons/default-sites/email.svg" alt="Email"></a><a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub"><img src="/blog/icons/default-sites/github.svg" alt="GitHub"></a><a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili"><img src="/blog/icons/default-sites/bilibili.ico" alt="Bilibili"></a><a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu"><img src="/blog/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu"></a></span></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/blog/archives/">
+            <span class="title">
+                文章
+            </span>
+            <span class="count">
+                4
+            </span>
+        </a>
+        <a class="meta-item" href="/blog/categories/">
+            <span class="title">
+                分类
+            </span>
+            <span class="count">
+                1
+            </span>
+        </a>
+        <a class="meta-item" href="/blog/tags/">
+            <span class="title">
+                标签
+            </span>
+            <span class="count">
+                6
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类列表</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/docs/">docs</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/blog/tags/FPGA/" style="font-size: 0.6em;">FPGA</a> <a href="/blog/tags/Hexo/" style="font-size: 0.6em;">Hexo</a> <a href="/blog/tags/ISP/" style="font-size: 0.6em;">ISP</a> <a href="/blog/tags/Kratos-Rebirth/" style="font-size: 0.6em;">Kratos-Rebirth</a> <a href="/blog/tags/blog-ops/" style="font-size: 0.6em;">blog-ops</a> <a href="/blog/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" style="font-size: 0.6em;">图像处理</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"><i class="fa fa-book"></i> 博客与主题使用指南</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/03/29/test/"><i class="fa fa-book"></i> test</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2025/08/02/hello-world/"><i class="fa fa-book"></i> Hello World</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/"><i class="fa fa-book"></i> ISP之常用图像缩放算法</a>
+            
+          
+        
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+            
+
+        
+
+                </div>
+    </div>
+</div>
+
+<footer>
+    <div id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                            <li>
+                                <a href="mailto:ori2333.zh@gmail.com" target="_blank" rel="nofollow">
+                                    <img class='footer-social-icon footer-icon-email' src='/blog/icons/default-sites/email.svg' alt='Email'>
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://github.com/ORI2333/" target="_blank" rel="nofollow">
+                                    <img class='footer-social-icon footer-icon-github' src='/blog/icons/default-sites/github.svg' alt='GitHub'>
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow">
+                                    <img class='footer-social-icon footer-icon-bilibili' src='/blog/icons/default-sites/bilibili.ico' alt='Bilibili'>
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow">
+                                    <img class='footer-social-icon footer-icon-xiaohongshu' src='/blog/icons/default-sites/xiaohongshu.ico' alt='Xiaohongshu'>
+                                </a>
+                            </li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2026 ORI2333's Blog 版权所有.</li>
+                            <li>本站已运行<span id="kr-since">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>自豪地使用 <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a> 主题</li>
+                            <li>站点由 <a href="https://github.com/ORI2333" target="_blank">ORI2333</a> 用 <i class="fa fa-heart" style="color:#d43f57"></i> 搭建</li>
+                        </div>
+                        <!-- 额外的追加注入项 -->
+                        
+                            <div>
+                                
+                                    <li>由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 强力驱动</li>
+                                
+                                    <li>在 <a href="https://github.io" target="_blank">Github Pages</a> 暖心托管</li>
+                                
+                            </div>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                <!-- 额外的追加注入项 -->
+                
+                
+                    <div class="box search-box">
+                        <a href="/blog/search">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                <div class="box theme-box" id="theme-toggle">
+                    <span class="fa fa-adjust"></span>
+                </div>
+            </div>
+            <div id="gotop-box" class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+
+    <div id="kr-donate-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseDonateModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-bitcoin"></i>
+            </div>
+            <div class="kr-modal-title">赞助喵</div>
+            <button class="kr-modal-close" onclick="krCloseDonateModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-donate-message">非常感谢您的喜欢！ <i class="fa fa-heart" style="color:#d43f57"></i></div>
+            <div class="kr-donate-qr" id="kr-donate-qr">
+                
+                    <img class="kr-donate-placeholder" src="https://dev.krt.moe/demo-assets/donate.webp" alt="赞助喵" />
+                
+            </div>
+            <div class="kr-donate-platforms">
+                
+                    
+                        <button class="kr-donate-platform-button" style="color: skyblue;" title="模拟支付" onclick="krDonateModalShowPlatformQR('example_payment', 'skyblue')">
+                            <i class="fa fa-credit-card"></i>
+                        </button>
+                    
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/blog/js/kr-modal/donate.min.js"></script>
+
+
+
+
+    <div id="kr-share-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseShareModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-share-alt"></i>
+            </div>
+            <div class="kr-modal-title">分享这一刻</div>
+            <button class="kr-modal-close" onclick="krCloseShareModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-share-message">让朋友们也来瞅瞅！</div>
+            <div class="kr-share-qr" id="kr-share-qr"></div>
+            <div class="kr-share-platforms">
+                
+                    <button class="kr-share-platform-button" style="color: #62b6e7;" title="喵窝" onclick="krShareModalOpenPlatform('https://nya.one/share?text=%3E%20$TITLE%0A%3E%0A%3E%20$SUMMARY%0A----%20$SITE%0A%0A$URL')">
+                        <svg fill="currentColor" width="18" height="18" viewBox="0 0 329 388"><path d="M0,36.226c0,-19.993 16.233,-36.226 36.226,-36.226c13.788,0 25.787,7.719 31.908,19.068l188.366,229.845l0,-111.259c-6.356,5.508 -14.645,8.843 -23.707,8.843c-19.994,0 -36.226,-16.232 -36.226,-36.226c-0,-8.551 2.968,-16.413 7.93,-22.613l-0.015,-0.013l56.614,-69.08c6.2,-11.073 18.047,-18.565 31.63,-18.565c19.994,0 36.227,16.233 36.227,36.226l-0,314.644c-0,19.994 -16.233,36.226 -36.227,36.226c-13.166,0 -24.701,-7.039 -31.044,-17.555l-189.229,-230.899l-0,212.228c-0,19.994 -16.233,36.226 -36.227,36.226c-19.993,0 -36.226,-16.232 -36.226,-36.226l0,-314.644Z" /></svg>
+                    </button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/blog/js/kr-modal/share.min.js"></script>
+
+
+
+<!-- 额外的追加注入项 -->
+
+
+        <script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/blog/";
+</script>
+
+
+  <script defer src="/blog/vendors/nprogress@0.2.0/nprogress.js"></script>
+
+
+
+  <script defer src="/blog/vendors/viewerjs@1.11.6/dist/viewer.min.js"></script>
+
+
+<script defer src="/blog/js/kr-core.min.js"></script>
+
+
+  <script defer src="/blog/js/kr-pjax.min.js"></script>
+
+
+<!-- 额外的追加注入项 -->
+
+  <script>window.__WALINE_SERVER='https://your-waline-server.example.com';window.__COMMENTS_ENABLED=true;</script>
+
+
+    </body>
+</html>
