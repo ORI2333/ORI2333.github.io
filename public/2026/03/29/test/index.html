@@ -4,6 +4,8 @@
   <!-- 元数据 -->
   <meta charset="utf-8">
   
+    <link rel="icon" href="/blog/images/theme/favicon.svg">
+  
   
   <title>test | ORI2333&#39;s Blog</title>
   <link rel="canonical" href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/test/">
@@ -26,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/theme/default-cover.webp">
 <meta property="article:published_time" content="2026-03-28T16:45:09.000Z">
-<meta property="article:modified_time" content="2026-03-29T05:11:27.403Z">
+<meta property="article:modified_time" content="2026-03-29T05:48:05.239Z">
 <meta property="article:author" content="ORI2333">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/theme/default-cover.webp">
@@ -35,7 +37,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"test","description":"测试用\n\n这是utf-8的原因吗？\n","image":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/test/images/theme/default-cover.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/user.svg"}},"datePublished":"2026-03-28T16:45:09.000Z","dateModified":"2026-03-29T05:11:27.403Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/test/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"test","description":"测试用\n\n这是utf-8的原因吗？\n","image":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/test/images/theme/default-cover.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-03-28T16:45:09.000Z","dateModified":"2026-03-29T05:48:05.239Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/test/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -65,19 +67,19 @@
   <style>
     
       .kratos-cover.kratos-cover-2 {
-        background-image: url('');
+        background-image: url('/blog/images/theme/banner-light.webp');
       }
       html[data-theme="dark"] .kratos-cover.kratos-cover-2 {
-        background-image: url('');
+        background-image: url('/blog/images/theme/banner-dark.webp');
       }
     
     
       @media(min-width:768px) {
         body.custom-background {
-          background-image: url('');
+          background-image: url('/blog/images/theme/bg-light.webp');
         }
         html[data-theme="dark"] body.custom-background {
-          background-image: url('');
+          background-image: url('/blog/images/theme/bg-dark.webp');
         }
       }
     
@@ -106,6 +108,66 @@
                     <div class="nav-header">
                         <nav id="kratos-menu-wrap">
                             <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/">
+                                        
+                                            
+                                                <i class="fa fa-home"></i>
+                                            
+                                            首页
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/archives/">
+                                        
+                                            
+                                                <i class="fa fa-archive"></i>
+                                            
+                                            归档
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/categories/">
+                                        
+                                            
+                                                <i class="fa fa-folder-open"></i>
+                                            
+                                            分类
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/tags/">
+                                        
+                                            
+                                                <i class="fa fa-tags"></i>
+                                            
+                                            标签
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/about/">
+                                        
+                                            
+                                                <i class="fa fa-user"></i>
+                                            
+                                            关于
+                                        </a>
+                                        
+                                    </li>
                                 
                             </ul>
                         </nav>
@@ -185,28 +247,6 @@
                     </li>
                 
                 
-                    <li>
-                        <i class="fa fa-commenting-o"></i>
-                        <script type="module">
-  const __COMMENTS_ENABLED = window.__COMMENTS_ENABLED !== false;
-  const commentEls = document.querySelectorAll('.waline-comment-count');
-  if (!__COMMENTS_ENABLED) {
-    commentEls.forEach((el) => {
-      const wrapper = el.closest('span') || el;
-      wrapper.style.display = 'none';
-    });
-  } else {
-  import { commentCount } from 'https://unpkg.com/@waline/client@v3/dist/comment.js';
-  commentCount({
-    serverURL: window.__WALINE_SERVER,
-    path: window.location.pathname,
-  });
-  }
-</script>
-<span class="waline-comment-count" data-path="/blog/2026/03/29/test/">0</span>
- 条评论
-                    </li>
-                
             </ul>
         </header>
         <div class="kratos-page-content kr-post">
@@ -243,7 +283,7 @@
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-03-29T05:11:27.403Z" itemprop="dateModified">最后编辑：2026-03-29</time>
+                    <time datetime="2026-03-29T05:48:05.239Z" itemprop="dateModified">最后编辑：2026-03-29</time>
                 </div>
             </div>
         </footer>
@@ -252,7 +292,7 @@
         <nav class="navigation post-navigation clearfix" role="navigation">
             
             <div class="nav-previous clearfix">
-                <a title=" Hello World" href="/blog/2025/08/02/hello-world/"><i class="fa fa-angle-left"></i> 上一篇</a>
+                <a title=" ISP之常用图像缩放算法" href="/blog/2025/08/02/ISP之常用图像缩放算法/"><i class="fa fa-angle-left"></i> 上一篇</a>
             </div>
             
             
@@ -262,49 +302,6 @@
             
         </nav>
     
-    
-        <div class="comment-post">
-            <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css">
-<div id="waline"></div>
-<script type="module">
-  const __COMMENTS_ENABLED = window.__COMMENTS_ENABLED !== false;
-  if (!__COMMENTS_ENABLED) {
-    const walineEl = document.getElementById('waline');
-    if (walineEl) {
-      walineEl.outerHTML = '<div class="kr-comments-disabled">评论已关闭（审查中）</div>';
-    }
-  } else {
-  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
-  init({
-    el: '#waline',
-    serverURL: window.__WALINE_SERVER,
-    path: '/blog/2026/03/29/test/',
-    dark: "html[data-theme='dark']",
-    pageview: false,
-    comment: false,
-    reaction: [
-      '/blog/icons/waline-reaction/weibo_heart_eyes.png',
-      '/blog/icons/waline-reaction/weibo_dog_joy.png',
-      '/blog/icons/waline-reaction/weibo_dog_consider.png',
-      '/blog/icons/waline-reaction/weibo_sob.png',
-      '/blog/icons/waline-reaction/weibo_sad.png',
-      '/blog/icons/waline-reaction/weibo_look_down.png',
-    ],
-    lang: 'zh-CN',
-    locale: {
-      reactionTitle: '感觉如何?',
-      reaction0: '大爱',
-      reaction1: '期待',
-      reaction2: '不明觉厉',
-      reaction3: '拳头硬了',
-      reaction4: '离谱',
-      reaction5: '困了',
-    },
-  });
-  }
-</script>
-
-        </div>
     
 </article>
 
@@ -323,7 +320,7 @@
     <div class="photo-background"></div>
     <div class="photo-wrapper clearfix">
         <div class="photo-wrapper-tip text-center">
-            <img class="about-photo" src="/images/user.svg" alt="ORI2333" loading="lazy" decoding="auto" />
+            <img class="about-photo" src="/blog/images/theme/头像.jpg" alt="ORI2333" loading="lazy" decoding="auto" />
         </div>
     </div>
     <div class="textwidget">
@@ -385,6 +382,12 @@
         
           
           
+            <a class="list-group-item" href="/blog/2026/03/29/hello-world/"><i class="fa fa-book"></i> Hello World</a>
+            
+          
+        
+          
+          
             <a class="list-group-item" href="/blog/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"><i class="fa fa-book"></i> 博客与主题使用指南</a>
             
           
@@ -392,12 +395,6 @@
           
           
             <a class="list-group-item" href="/blog/2026/03/29/test/"><i class="fa fa-book"></i> test</a>
-            
-          
-        
-          
-          
-            <a class="list-group-item" href="/blog/2025/08/02/hello-world/"><i class="fa fa-book"></i> Hello World</a>
             
           
         
@@ -429,6 +426,30 @@
                 <div class="col-md-6 col-md-offset-3 footer-list text-center">
                     <ul class="kratos-social-icons">
                         
+                            <li>
+                                <a href="mailto:ori2333.zh@gmail.com" title="Email">
+                                    <img class="footer-social-icon footer-icon-email" src="/blog/icons/default-sites/email.svg" alt="Email">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub">
+                                    <img class="footer-social-icon footer-icon-github" src="/blog/icons/default-sites/github.svg" alt="GitHub">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili">
+                                    <img class="footer-social-icon" src="/blog/icons/default-sites/bilibili.ico" alt="Bilibili">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu">
+                                    <img class="footer-social-icon" src="/blog/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu">
+                                </a>
+                            </li>
+                        
                     </ul>
                     <ul class="kratos-copyright">
                         <div>
@@ -437,9 +458,17 @@
                         </div>
                         <div>
                             <li>自豪地使用 <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a> 主题</li>
-                            <li>站点由 ORI2333 用 <i class="fa fa-heart" style="color:#d43f57"></i> 搭建</li>
+                            <li>站点由 <a href="https://github.com/ORI2333" target="_blank">ORI2333</a> 用 <i class="fa fa-heart" style="color:#d43f57"></i> 搭建</li>
                         </div>
                         <!-- 额外的追加注入项 -->
+                        
+                            <div>
+                                
+                                    <li>由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 强力驱动</li>
+                                
+                                    <li>在 <a href="https://github.com" target="_blank" rel="nofollow">GitHub</a> 暖心托管</li>
+                                
+                            </div>
                         
                     </ul>
                 </div>
@@ -562,7 +591,7 @@
 
 <!-- 额外的追加注入项 -->
 
-  <script>window.__WALINE_SERVER='https://your-waline-server.example.com';window.__COMMENTS_ENABLED=true;</script>
+  <script>window.__WALINE_SERVER='https://your-waline-server.example.com';window.__COMMENTS_ENABLED=false;</script>
 
 
     </body>
