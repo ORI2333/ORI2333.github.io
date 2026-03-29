@@ -9,7 +9,7 @@
     "push:static": "hexo clean && hexo generate && hexo deploy",
     "push": "npm run source:push",
     "source:status": "git status --short",
-    "source:push": "git add -A && git reset -- public db.json .deploy_git && (git diff --cached --quiet || git commit -m \"chore: sync source\") && git push",
+    "source:push": "git add -A && git reset -- public db.json .deploy_git && (git diff --cached --quiet || git commit -m \"chore: sync source\") && git push origin HEAD:main",
     "server": "hexo server"
   },
   "hexo": {
