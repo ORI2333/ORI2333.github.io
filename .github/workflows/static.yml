@@ -31,13 +31,39 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Hexo site
+        run: npm run build
+      - name: Prepare Pages artifact at /blog
+        run: |
+          mkdir -p out/blog
+          cp -a public/. out/blog/
+          cat > out/index.html << 'EOF'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8" />
+              <meta http-equiv="refresh" content="0; url=/blog/" />
+              <title>Redirecting...</title>
+            </head>
+            <body>
+              <a href="/blog/">Go to blog</a>
+            </body>
+          </html>
+          EOF
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          # Upload built static site
+          path: out
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
