@@ -1,0 +1,14 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Hexo build artifacts
+db.json
+public/
+.deploy*/
+
+# Dependencies
+node_modules/
+
+# Temp
+*.log
