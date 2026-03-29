@@ -238,14 +238,16 @@
                 
                     <li>
                         <i class="fa fa-eye"></i>
-                        <script type="module">
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/pageview.js';
-  pageviewCount({
-    serverURL: window.__WALINE_SERVER,
-    path: window.location.pathname,
+                        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var container = document.getElementById('busuanzi_container_page_pv');
+    if (container) {
+      container.style.display = 'inline';
+    }
   });
 </script>
-<span class="waline-pageview-count" data-path="/blog/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/">0</span>
+<span id="busuanzi_container_page_pv" style="display:none;"><span id="busuanzi_value_page_pv">0</span></span>
  次阅读
                     </li>
                 
@@ -635,7 +637,7 @@
 
 <!-- 额外的追加注入项 -->
 
-  <script>window.__WALINE_SERVER='https://your-waline-server.example.com';window.__COMMENTS_ENABLED=false;</script>
+  <script>window.__COMMENTS_ENABLED=false;</script>
 
 
     </body>

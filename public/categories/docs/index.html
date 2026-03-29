@@ -273,18 +273,6 @@
                     
                 </a>
                 
-                    <a>
-                        <i class="fa fa-eye"></i>
-                        <script type="module">
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/pageview.js';
-  pageviewCount({
-    serverURL: window.__WALINE_SERVER,
-    path: window.location.pathname,
-  });
-</script>
- 次阅读
-                    </a>
-                
                 
             </span>
             <span class="pull-right">
@@ -588,7 +576,7 @@
 
 <!-- 额外的追加注入项 -->
 
-  <script>window.__WALINE_SERVER='https://your-waline-server.example.com';window.__COMMENTS_ENABLED=false;</script>
+  <script>window.__COMMENTS_ENABLED=false;</script>
 
 
     </body>
