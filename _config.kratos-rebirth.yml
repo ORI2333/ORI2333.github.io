@@ -1,4 +1,6 @@
-﻿image:
+﻿check_update: false
+
+image:
   avatar: /blog/images/theme/头像.jpg
   banner:
     light: /blog/images/theme/banner-light.webp
