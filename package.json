@@ -6,10 +6,10 @@
     "build": "hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "push:static": "hexo clean && hexo generate && hexo deploy",
-    "push": "npm run source:push",
+    "push:static": "npm run clean && npm run build && npm run deploy",
+    "push": "git add -A && git reset -- public db.json .deploy_git && (git diff --cached --quiet || git commit -m \"chore: sync source\") && git push origin HEAD",
     "source:status": "git status --short",
-    "source:push": "git add -A && git reset -- public db.json .deploy_git && (git diff --cached --quiet || git commit -m \"chore: sync source\") && git push origin HEAD:main",
+    "source:push": "npm run push",
     "server": "hexo server"
   },
   "hexo": {
