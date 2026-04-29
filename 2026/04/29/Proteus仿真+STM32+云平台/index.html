@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  
+    <link rel="icon" href="/blog/images/theme/头像.jpg?v=20260329">
+  
+  
+  <title>Proteus仿真+STM32+云平台 | ORI2333&#39;s Blog</title>
+  <link rel="canonical" href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/">
+  <meta name="author" content="ORI2333" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="MQTT, STM32, proteus, 云平台, 接单" />
+  
+  <meta name="description" content="前言此项目为接单项目，负责数据上云和下发数据部分 碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发展快还是成长了，现在一个人两三小时就搞定了~，还是ai发展太快啦，很多需要查手册一点点写的，现在都全自动喽 需求温室的功能需求包括加热、制冷、加湿、光照等部分,作为温室的核心,需要保证设备达到课题的需求,能实现温度、湿度、光照等的调节,以及达到对当地气候进">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Proteus仿真+STM32+云平台">
+<meta property="og:url" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/index.html">
+<meta property="og:site_name" content="ORI2333&#39;s Blog">
+<meta property="og:description" content="前言此项目为接单项目，负责数据上云和下发数据部分 碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发展快还是成长了，现在一个人两三小时就搞定了~，还是ai发展太快啦，很多需要查手册一点点写的，现在都全自动喽 需求温室的功能需求包括加热、制冷、加湿、光照等部分,作为温室的核心,需要保证设备达到课题的需求,能实现温度、湿度、光照等的调节,以及达到对当地气候进">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/posts/huawieyun.webp">
+<meta property="article:published_time" content="2026-04-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-29T08:22:56.085Z">
+<meta property="article:author" content="ORI2333">
+<meta property="article:tag" content="接单">
+<meta property="article:tag" content="STM32">
+<meta property="article:tag" content="proteus">
+<meta property="article:tag" content="云平台">
+<meta property="article:tag" content="MQTT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/posts/huawieyun.webp">
+  
+  <!-- JSON-LD 结构化数据 -->
+  
+  
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"Proteus仿真+STM32+云平台","description":"前言此项目为接单项目，负责数据上云和下发数据部分\n碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发...","image":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/images/posts/huawieyun.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-04-28T16:00:00.000Z","dateModified":"2026-04-29T08:22:56.085Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/"}}
+    </script>
+  
+  <!-- 关键 CSS 预加载 -->
+  <link rel="preload" href="/blog/css/kr-core.min.css" as="style" crossorigin>
+  <link rel="preload" href="/blog/css/kr-theme/light.min.css" as="style" crossorigin>
+  <link rel="preload" href="/blog/css/kr-theme/dark.min.css" as="style" crossorigin>
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/blog/css/kr-core.min.css" media="all">
+  <link rel="stylesheet" id="theme-light-css" href="/blog/css/kr-theme/light.min.css" media="all">
+  <link rel="stylesheet" id="theme-dark-css" href="/blog/css/kr-theme/dark.min.css" media="(prefers-color-scheme: dark)">
+  
+    <link rel="stylesheet"  id="highlight-css" href="/blog/css/highlight/highlight.js/night-eighties.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/css/highlight/highlight.js/night-eighties.min.css"></noscript>
+  
+  <script src="/blog/js/kr-theme.min.js"></script>
+  <link rel="stylesheet"  id="fontawe-css" href="/blog/vendors/font-awesome@4.7.0/css/font-awesome.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/vendors/font-awesome@4.7.0/css/font-awesome.min.css"></noscript>
+  
+    <link rel="stylesheet"  id="nprogress-css" href="/blog/vendors/nprogress@0.2.0/nprogress.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/vendors/nprogress@0.2.0/nprogress.css"></noscript>
+  
+  
+    <link rel="stylesheet"  href="/blog/vendors/viewerjs@1.11.6/dist/viewer.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/vendors/viewerjs@1.11.6/dist/viewer.min.css"></noscript>
+  
+  <!-- 预先加载的JS文件 -->
+  
+    <script src="/blog/vendors/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  
+  <!-- 自定义站点横幅和背景 -->
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/blog/images/theme/banner-light.webp');
+      }
+      html[data-theme="dark"] .kratos-cover.kratos-cover-2 {
+        background-image: url('/blog/images/theme/banner-dark.webp');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/blog/images/theme/bg-light.webp');
+        }
+        html[data-theme="dark"] body.custom-background {
+          background-image: url('/blog/images/theme/bg-dark.webp');
+        }
+      }
+    
+    
+      .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+      html[data-theme="dark"] .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+    
+  </style>
+
+  <!-- 额外的追加注入项 -->
+  
+    <style>.widget-kratos-about .about-contact-icons{display:flex;justify-content:space-evenly;align-items:center;max-width:240px;margin:14px auto 0;}.widget-kratos-about .about-contact-icons a{line-height:1;color:inherit;display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;}.widget-kratos-about .about-contact-icons a i{font-size:24px;}.widget-kratos-about .about-contact-icons a img{width:24px;height:24px;object-fit:contain;display:block;}.widget-kratos-about .about-contact-icons a img[alt='Email']{width:27px;height:27px;opacity:.98;}html[data-theme='dark'] .widget-kratos-about .about-contact-icons a img[alt='GitHub']{filter:brightness(0) invert(1);opacity:.98;}.widget-kratos-about .about-contact-icons a:hover{transform:translateY(-1px);}#footer .kratos-social-icons li a{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;}#footer .kratos-social-icons li a .footer-social-icon{width:34px;height:34px;object-fit:contain;display:block;}#footer .kratos-social-icons li a .footer-icon-email{filter:brightness(0) invert(1);opacity:.94;}#footer .kratos-social-icons li a .footer-icon-github{filter:brightness(0) invert(1);opacity:.95;}.kr-comments-disabled{margin:16px 0;padding:12px 14px;border:1px dashed rgba(160,160,160,.45);border-radius:10px;color:#9aa3b7;background:rgba(90,98,120,.08);text-align:center;}</style>
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/">
+                                        
+                                            
+                                                <i class="fa fa-home"></i>
+                                            
+                                            首页
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/archives/">
+                                        
+                                            
+                                                <i class="fa fa-archive"></i>
+                                            
+                                            归档
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/categories/">
+                                        
+                                            
+                                                <i class="fa fa-folder-open"></i>
+                                            
+                                            分类
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/tags/">
+                                        
+                                            
+                                                <i class="fa fa-tags"></i>
+                                            
+                                            标签
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/about/">
+                                        
+                                            
+                                                <i class="fa fa-user"></i>
+                                            
+                                            关于
+                                        </a>
+                                        
+                                    </li>
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/blog/">ORI2333&#39;s Blog</a></div>
+                    <div id="kratos-nav-toggle-wrapper" class="nav-toggle">
+                        <a id="kratos-nav-toggle" class="kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/blog/">
+                        <h2>ORI2333&#39;s Blog</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+
+
+        
+
+            
+
+            <section class="kr-main-col col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/">
+    <div class="kratos-hentry kratos-page-inner clearfix">
+        <header class="kratos-page-header">
+            
+                <h1 class="kratos-page-title text-center" itemprop="name headline">Proteus仿真+STM32+云平台</h1>
+            
+            <ul class="kratos-page-meta text-center">
+                <li><time datetime="2026-04-28T16:00:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-04-29</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
+                </li>
+                
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~6.28K
+                        
+                        字
+                    </li>
+                
+                
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var container = document.getElementById('busuanzi_container_page_pv');
+    if (container) {
+      container.style.display = 'inline';
+    }
+  });
+</script>
+<span id="busuanzi_container_page_pv" style="display:none;"><span id="busuanzi_value_page_pv">0</span></span>
+ 次阅读
+                    </li>
+                
+                
+            </ul>
+        </header>
+        <div class="kratos-page-content kr-post">
+            
+            
+            
+            <hr />
+            <div itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此项目为接单项目，负责数据上云和下发数据部分</p>
+<p>碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发展快还是成长了，现在一个人两三小时就搞定了~，还是ai发展太快啦，很多需要查手册一点点写的，现在都全自动喽</p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>温室的功能需求包括加热、制冷、加湿、光照等部分,作为温室的核心,需要保证设备达到课题的需求,能实现温度、湿度、光照等的调节,以及达到对当地气候进行模拟。<br>a.选择合适的环境传感器，能够检测环境温湿度、光照强度、土壤湿度、二氧化碳浓度等；<br>b.温度调节采用PTC加热器升温与半导体制冷器降温；<br>c.湿度调节采用超声波雾化加湿器加湿；<br>d.光强调节采用LED补光灯和遮阳帘调节；<br>e.CO2浓度采用负压风机调节；<br>f.水肥采用水肥一体化系统进行调节，水肥一体化系统包括水泵、电磁阀、水箱、营养箱和混合箱,水泵进行水肥的抽取,电磁阀控制水肥抽取的时间,通过改变水肥的输送比例进行灌溉作业；</p>
+<p>g.可通过连接WIFI进行远程监控,实现手机端实时查看微型温室内各个环境的数据,对环境信息的远距离监</p>
+<p>提醒功能，当测的环境参数超过设定阈值就提醒</p>
+<h2 id="工具链"><a href="#工具链" class="headerlink" title="工具链"></a>工具链</h2><p><strong>软件：</strong></p>
+<ul>
+<li><p>proteus8.15.SP1：<a target="_blank" rel="noopener" href="https://blog.csdn.net/xiaoningaijishu/article/details/147325475">参考这个文章就行</a></p>
+</li>
+<li><p>keil5</p>
+</li>
+<li><p>vscode</p>
+</li>
+<li><p>Configure Virtual Serial Port Driver（虚拟串口软件）</p>
+</li>
+<li><p>安卓webview</p>
+</li>
+</ul>
+<p><strong>环境依赖：</strong></p>
+<ul>
+<li>Python3.12及其以上</li>
+<li>PyQt5 5.15.11</li>
+<li>pyserial 3.5</li>
+<li>paho-mqtt 1.6.1</li>
+<li>qrcode 7.4.2</li>
+<li>fastapi 0.115.12</li>
+<li>uvicorn 0.34.2</li>
+</ul>
+<h2 id="仿真器件列表"><a href="#仿真器件列表" class="headerlink" title="仿真器件列表"></a>仿真器件列表</h2><p>如下图<br>ps：proteus此仿真并非笔者所设计，进攻参考<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429001152511.png?imageSlim" alt="image.png"></p>
+<h2 id="检测数据"><a href="#检测数据" class="headerlink" title="检测数据"></a>检测数据</h2><p>STM32中的数据都是无符号16位<br>示例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;light&quot;</span><span class="punctuation">:</span><span class="number">36</span><span class="punctuation">,</span><span class="attr">&quot;co2&quot;</span><span class="punctuation">:</span><span class="number">54</span><span class="punctuation">,</span><span class="attr">&quot;air1&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;t&quot;</span><span class="punctuation">:</span><span class="number">30</span><span class="punctuation">,</span><span class="attr">&quot;h&quot;</span><span class="punctuation">:</span><span class="number">35</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;air2&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;t&quot;</span><span class="punctuation">:</span><span class="number">27</span><span class="punctuation">,</span><span class="attr">&quot;h&quot;</span><span class="punctuation">:</span><span class="number">41</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;soil&quot;</span><span class="punctuation">:</span><span class="number">41</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>linght：光照强度（ADC in2）</li>
+<li>co2：二氧化碳浓度（ADC in4）</li>
+<li>air1_h：湿度（DHT11_1）</li>
+<li>air1_t：温度(DHT11_1)</li>
+<li>air2_h:土壤湿度(DHT11_2)</li>
+<li>air2_t:土壤温度(DHT11_2)</li>
+<li>soil：土壤湿度(DHT11_2)</li>
+</ul>
+<h2 id="云平台"><a href="#云平台" class="headerlink" title="云平台"></a>云平台</h2><p><a target="_blank" rel="noopener" href="https://iot.console.aliyun.com/lk/vpc/instance/detail_s">阿里云物联网云平台</a><br>更新为华为云，阿里云新用户不支持使用公共免费实例，切换华为云<br><a target="_blank" rel="noopener" href="https://console.huaweicloud.com/iotdm/?region=cn-east-3&locale=zh-cn#/dm-dev/all-product">华为云物联网控制台</a></p>
+<h3 id="创建产品"><a href="#创建产品" class="headerlink" title="创建产品"></a>创建产品</h3><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425164401369.png?imageSlim" alt="image.png"><br>使用MQTT协议、JSON格式</p>
+<h3 id="创建模型"><a href="#创建模型" class="headerlink" title="创建模型"></a>创建模型</h3><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425164502436.png?imageSlim" alt="image.png"><br>服务：</p>
+<ul>
+<li><code>env_monitor</code>（环境监测）<br>属性与单位建议：</li>
+</ul>
+<ol>
+<li><code>soil_moisture</code><ul>
+<li>中文：土壤湿度</li>
+<li>单位：<code>%</code>（体积含水率或相对湿度百分比）</li>
+<li>数据类型建议：&#96;int，看传感器精度）</li>
+<li>典型范围：<code>0 ~ 100</code></li>
+</ul>
+</li>
+<li><code>current_humidity</code><ul>
+<li>中文：当前空气湿度</li>
+<li>单位：<code>%RH</code></li>
+<li>数据类型建议：int</li>
+<li>典型范围：<code>0 ~ 100</code></li>
+</ul>
+</li>
+<li><code>current_temperature</code><ul>
+<li>中文：当前温度</li>
+<li>单位：<code>℃</code></li>
+<li>数据类型建议：<code>int</code></li>
+<li>典型范围：<code>-40 ~ 125</code>（按你传感器能力可缩小）</li>
+</ul>
+</li>
+<li><code>co2</code><ul>
+<li>中文：二氧化碳浓度</li>
+<li>单位：<code>ppm</code></li>
+<li>数据类型建议：</li>
+<li>典型范围：<code>0 ~ 10000</code>（室内常用 400~5000）</li>
+</ul>
+</li>
+<li><code>light_lux</code><ul>
+<li>中文：光照度</li>
+<li>单位：<code>lx</code></li>
+<li>数据类型建议：<code>int</code></li>
+<li>典型范围：<code>0 ~ 100000</code></li>
+</ul>
+</li>
+<li>中文显示名分别配成土壤湿度、当前湿度、当前温度、二氧化碳、光照值<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425165046365.png?imageSlim" alt="image.png"></li>
+</ol>
+<h3 id="注册设备"><a href="#注册设备" class="headerlink" title="注册设备"></a>注册设备</h3><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425165152324.png?imageSlim" alt="image.png"></p>
+<h3 id="保存密钥"><a href="#保存密钥" class="headerlink" title="保存密钥"></a>保存密钥</h3><p>设备id：69ec7ee918855b39c5128106_QT_test1<br>设备密钥：266e1cde <del>隐藏</del> 5c0212b9a18f<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425165249794.png?imageSlim" alt="image.png"></p>
+<h3 id="接入信息"><a href="#接入信息" class="headerlink" title="接入信息"></a>接入信息</h3><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425175630846.png?imageSlim" alt="image.png"><br>获得：<br>{<br>    “access_key”: “DSYC9gpR”,<br>    “access_code”: “9KGfv8oPIU<del>隐藏</del>uudzqAKcUGs6”,<br>    “type”: “AMQP”<br>}</p>
+<h2 id="更换华为云账号-新建产品和设备后需修改的配置说明"><a href="#更换华为云账号-新建产品和设备后需修改的配置说明" class="headerlink" title="更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明"></a>更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明</h2><h1 id="更换华为云账号-新建产品和设备后需修改的配置说明-1"><a href="#更换华为云账号-新建产品和设备后需修改的配置说明-1" class="headerlink" title="更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明"></a>更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明</h1><p>本文档说明在华为云 IoTDA 控制台新建（或切换）产品与设备后，项目中需要同步修改的配置文件和代码位置。</p>
+<hr>
+<h3 id="一、host-env-—-Web-看板与云端连接的核心配置文件"><a href="#一、host-env-—-Web-看板与云端连接的核心配置文件" class="headerlink" title="一、host/.env — Web 看板与云端连接的核心配置文件"></a>一、<code>host/.env</code> — Web 看板与云端连接的核心配置文件</h3><p><strong>文件路径：</strong> <a href="host/.env">host&#x2F;.env</a><br>这是最核心的配置文件，被 <a href="qt.py">qt.py</a> 和 <a href="web_dashboard.py">web_dashboard.py</a> 共同读取。更换账号后，以下字段需要填写新值：</p>
+<h4 id="1-设备-MQTT-连接配置（必填）"><a href="#1-设备-MQTT-连接配置（必填）" class="headerlink" title="1. 设备 MQTT 连接配置（必填）"></a>1. 设备 MQTT 连接配置（必填）</h4><table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>说明</th>
+<th>在华为云控制台的位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>HUAWEI_DEVICE_NAME</code></td>
+<td>设备名称</td>
+<td>IoTDA 控制台 → 设备 → 设备详情</td>
+</tr>
+<tr>
+<td><code>HUAWEI_DEVICE_SECRET</code></td>
+<td>设备密钥</td>
+<td>注册设备时生成的密钥</td>
+</tr>
+<tr>
+<td><code>HUAWEI_MQTT_HOST</code></td>
+<td>MQTT 接入地址</td>
+<td>IoTDA 控制台 → 总览 → 接入信息 → MQTT 设备接入地址</td>
+</tr>
+<tr>
+<td><code>HUAWEI_MQTT_PORT</code></td>
+<td>MQTT 端口</td>
+<td>固定 <code>8883</code>（TLS）</td>
+</tr>
+<tr>
+<td><code>HUAWEI_MQTT_TLS</code></td>
+<td>是否启用 TLS</td>
+<td>固定 <code>1</code></td>
+</tr>
+<tr>
+<td><code>HUAWEI_REGION</code></td>
+<td>区域</td>
+<td>如 <code>cn-east-3</code>、<code>cn-shanghai</code> 等</td>
+</tr>
+</tbody></table>
+<h4 id="2-AMQP-模式配置（仅当-HUAWEI-BACKEND-MODE-amqp-时需要）"><a href="#2-AMQP-模式配置（仅当-HUAWEI-BACKEND-MODE-amqp-时需要）" class="headerlink" title="2. AMQP 模式配置（仅当 HUAWEI_BACKEND_MODE=amqp 时需要）"></a>2. AMQP 模式配置（仅当 <code>HUAWEI_BACKEND_MODE=amqp</code> 时需要）</h4><table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>说明</th>
+<th>在华为云控制台的位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>HUAWEI_ACCESS_KEY_ID</code></td>
+<td>访问密钥 ID</td>
+<td>华为云控制台 → 我的凭证 → 访问密钥</td>
+</tr>
+<tr>
+<td><code>HUAWEI_ACCESS_KEY_SECRET</code></td>
+<td>访问密钥 Secret</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>HUAWEI_AMQP_ENDPOINT</code></td>
+<td>AMQP 接入端点</td>
+<td>IoTDA 控制台 → 规则 → 数据转发 → AMQP 队列</td>
+</tr>
+<tr>
+<td><code>HUAWEI_AMQP_INSTANCE_ID</code></td>
+<td>实例 ID（新版必填）</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>HUAWEI_CONSUMER_GROUP_ID</code></td>
+<td>队列名称</td>
+<td>默认 <code>DefaultQueue</code></td>
+</tr>
+</tbody></table>
+<h4 id="3-其他配置"><a href="#3-其他配置" class="headerlink" title="3. 其他配置"></a>3. 其他配置</h4><table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>HUAWEI_BACKEND_MODE</code></td>
+<td>后端模式：<code>local_relay</code>（推荐）&#x2F; <code>mqtt_ws</code> &#x2F; <code>amqp</code></td>
+</tr>
+<tr>
+<td><code>HUAWEI_PRODUCT_KEY</code></td>
+<td>产品 ProductKey（非华为云 MQTT 必填，华为云可留空）</td>
+</tr>
+<tr>
+<td><code>LOCAL_RELAY_ENABLE</code></td>
+<td>本地 UDP 转发开关，固定 <code>1</code></td>
+</tr>
+<tr>
+<td><code>WEB_HOST</code> &#x2F; <code>WEB_PORT</code></td>
+<td>Web 看板监听地址和端口</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="二、host-qt-py-—-Qt-桌面程序的默认值"><a href="#二、host-qt-py-—-Qt-桌面程序的默认值" class="headerlink" title="二、host/qt.py — Qt 桌面程序的默认值"></a>二、<code>host/qt.py</code> — Qt 桌面程序的默认值</h3><p><strong>文件路径：</strong> <a href="host/qt.py#L48-L84">host&#x2F;qt.py:48-84</a><br>在 <code>APP_CONFIG[&quot;cloud&quot;]</code> 字典中有硬编码的默认值。更换账号后建议修改以下行：</p>
+<h4 id="需要修改的字段（第-59-73-行）"><a href="#需要修改的字段（第-59-73-行）" class="headerlink" title="需要修改的字段（第 59-73 行）"></a>需要修改的字段（第 59-73 行）</h4><p>“cloud”: {<br>    “product_key”: “a17MwdB5xAq”,                                          # 改为新产品的 ProductKey<br>    “device_name”: “your_device_id”,                                       # 改为新设备名称<br>    “device_secret”: “your_device_secret”,                                 # 改为新设备密钥<br>    “platform”: “huawei”,<br>    “mqtt_host”: “your-instance.st1.iotda-device.cn-east-3.myhuaweicloud.com”,  # 改为新实例的 MQTT 接入地址<br>    “mqtt_port”: 8883,<br>    “mqtt_tls”: True,<br>    “mqtt_username”: “”,                                                   # 华为云留空即可（自动签名）<br>    “mqtt_password”: “”,<br>    “mqtt_client_id”: “”,<br>    “service_id”: “env_monitor”,<br>    “regions”: [“cn-east-3”, “cn-shanghai”, “cn-beijing”, “cn-shenzhen”, “cn-hangzhou”],<br>    “default_region”: “cn-east-3”,                                        # 改为实例所在区域<br>},</p>
+<h4 id="关键字段说明"><a href="#关键字段说明" class="headerlink" title="关键字段说明"></a>关键字段说明</h4><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>是否必改</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>product_key</code></td>
+<td><strong>是</strong></td>
+<td>华为云 IoTDA 控制台 → 产品 → ProductKey</td>
+</tr>
+<tr>
+<td><code>device_name</code></td>
+<td><strong>是</strong></td>
+<td>注册设备时的设备名称</td>
+</tr>
+<tr>
+<td><code>device_secret</code></td>
+<td><strong>是</strong></td>
+<td>设备注册时生成的密钥</td>
+</tr>
+<tr>
+<td><code>mqtt_host</code></td>
+<td><strong>是</strong></td>
+<td>IoTDA 控制台 → 总览 → MQTT 设备接入地址（格式：<code>xxx.st1.iotda-device.cn-east-3.myhuaweicloud.com</code>）</td>
+</tr>
+<tr>
+<td><code>default_region</code></td>
+<td><strong>是</strong></td>
+<td>按实例所在区域填写</td>
+</tr>
+<tr>
+<td><code>service_id</code></td>
+<td>否</td>
+<td>与产品中定义的服务 ID 一致，默认 <code>env_monitor</code></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>提示：</strong> 也可以在 Qt 程序运行后通过 UI 界面直接填入 <code>ProductKey</code>、<code>DeviceName</code>、<code>DeviceSecret</code>、<code>Region</code> 等字段，无需每次修改代码。上述修改只是更改程序<strong>启动时的默认值</strong>。UI 中填写的值还可以通过点击 <strong>“保存 .env”</strong> 按钮持久化到 <code>.env</code> 文件。</p>
+</blockquote>
+<hr>
+<h3 id="三、host-web-dashboard-py-—-Web-看板程序"><a href="#三、host-web-dashboard-py-—-Web-看板程序" class="headerlink" title="三、host/web_dashboard.py — Web 看板程序"></a>三、<code>host/web_dashboard.py</code> — Web 看板程序</h3><p><strong>文件路径：</strong> <a href="host/web_dashboard.py#L136-L150">host&#x2F;web_dashboard.py:136-150</a></p>
+<p>该文件<strong>完全从 <code>.env</code> 文件读取配置</strong>，不存在必须修改的硬编码值。唯一需要注意的是 <code>load_huawei_config()</code> 函数中有一行硬编码的默认 ProductKey（仅作为 fallback）：</p>
+<p> 第 138 行<br>product_key&#x3D;_env_cloud(“HUAWEI_PRODUCT_KEY”, “ALIYUN_PRODUCT_KEY”, “a17MwdB5xAq”),</p>
+<p>建议将最后一个默认值 <code>&quot;a17MwdB5xAq&quot;</code> 改为空字符串 <code>&quot;&quot;</code> 或新产品 Key，避免旧值残留。</p>
+<h4 id="web-dashboard-py-支持的三种后端模式"><a href="#web-dashboard-py-支持的三种后端模式" class="headerlink" title="web_dashboard.py 支持的三种后端模式"></a>web_dashboard.py 支持的三种后端模式</h4><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>配置值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>本地转发（推荐）</strong></td>
+<td><code>local_relay</code></td>
+<td>仅监听 qt.py 通过 UDP 127.0.0.1:19091 转发的数据，无需额外云配置</td>
+</tr>
+<tr>
+<td><strong>MQTT(S)</strong></td>
+<td><code>mqtt_ws</code></td>
+<td>Web 直接连接华为云 MQTT，需填写 HUAWEI_DEVICE_NAME&#x2F;SECRET 和 HUAWEI_MQTT_HOST</td>
+</tr>
+<tr>
+<td><strong>AMQP</strong></td>
+<td><code>amqp</code></td>
+<td>云平台拉取模式，需填写 AMQP 全套配置 + 安装 <code>python-qpid-proton</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="四、host-run-all-py-—-启动器"><a href="#四、host-run-all-py-—-启动器" class="headerlink" title="四、host/run_all.py — 启动器"></a>四、<code>host/run_all.py</code> — 启动器</h3><p><strong>文件路径：</strong> <a href="host/run_all.py">host&#x2F;run_all.py</a></p>
+<p>此文件是纯启动器（同时启动 qt.py 和 web_dashboard.py），<strong>不包含任何云端配置信息</strong>，更换账号无需修改。</p>
+<hr>
+<h3 id="五、新账号更换操作步骤汇总"><a href="#五、新账号更换操作步骤汇总" class="headerlink" title="五、新账号更换操作步骤汇总"></a>五、新账号更换操作步骤汇总</h3><p>按以下顺序操作：</p>
+<h4 id="步骤-1：在华为云-IoTDA-控制台操作"><a href="#步骤-1：在华为云-IoTDA-控制台操作" class="headerlink" title="步骤 1：在华为云 IoTDA 控制台操作"></a>步骤 1：在华为云 IoTDA 控制台操作</h4><ol>
+<li>登录 <strong>华为云控制台</strong> → <strong>IoTDA 设备接入</strong></li>
+<li>创建 <strong>产品</strong>（获取 ProductKey）</li>
+<li>在产品下 <strong>注册设备</strong>（获取 DeviceName、DeviceSecret）</li>
+<li>记下 <strong>MQTT 接入地址</strong>（控制台总览页 → 接入信息）</li>
+<li>如需 AMQP 模式，创建 <strong>访问密钥</strong>（我的凭证 → 访问密钥）和 <strong>AMQP 队列</strong></li>
+</ol>
+<h4 id="步骤-2：修改-host-env"><a href="#步骤-2：修改-host-env" class="headerlink" title="步骤 2：修改 host/.env"></a>步骤 2：修改 <code>host/.env</code></h4><p>HUAWEI_BACKEND_MODE&#x3D;local_relay    # 或 amqp &#x2F; mqtt_ws<br>HUAWEI_DEVICE_NAME&#x3D;新设备名称<br>HUAWEI_DEVICE_SECRET&#x3D;新设备密钥<br>HUAWEI_MQTT_HOST&#x3D;新实例的MQTT接入地址<br>HUAWEI_MQTT_PORT&#x3D;8883<br>HUAWEI_MQTT_TLS&#x3D;1<br>HUAWEI_REGION&#x3D;实例所在区域  </p>
+<p> 如果用 AMQP 模式，还需要填 AMQP 相关字段</p>
+<h4 id="步骤-3：修改-host-qt-py-默认值（可选）"><a href="#步骤-3：修改-host-qt-py-默认值（可选）" class="headerlink" title="步骤 3：修改 host/qt.py 默认值（可选）"></a>步骤 3：修改 <code>host/qt.py</code> 默认值（可选）</h4><p>修改 <a href="qt.py#L59-L73">qt.py:59-73</a> 的 <code>APP_CONFIG[&quot;cloud&quot;]</code> 字典中的默认值。如果每次都在 UI 中手动填写并保存 <code>.env</code>，则可跳过此步。</p>
+<h4 id="步骤-4：启动并验证"><a href="#步骤-4：启动并验证" class="headerlink" title="步骤 4：启动并验证"></a>步骤 4：启动并验证</h4><ol>
+<li>双击 <code>run_all.py</code> 或执行 <code>python host/run_all.py</code></li>
+<li>在 Qt 窗口中点击 <strong>“连接”</strong> 按钮，确认状态变为 <strong>“云平台已连接”</strong></li>
+<li>浏览器打开 <code>http://127.0.0.1:8000/</code> 确认 Web 看板正常显示数据</li>
+</ol>
+<hr>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li><strong>DeviceName 互斥：</strong> qt.py 和 web_dashboard.py（MQTT&#x2F;AMQP 模式）如果使用<strong>同一个</strong> DeviceName + DeviceSecret 连接华为云，云平台可能会强制断开其中一个连接。建议：<ul>
+<li>推荐使用 <code>local_relay</code> 模式（Web 从 qt.py 本地转发获取数据，不直接连云平台）</li>
+<li>如果必须两处同时连接，注册两个不同的设备</li>
+</ul>
+</li>
+<li><strong>密钥安全：</strong> <code>.env</code> 文件包含敏感信息，已被 <code>.gitignore</code> 排除，<strong>切勿提交到 Git</strong></li>
+<li><strong>区域一致性：</strong> IoTDA 实例的区域必须与 <code>.env</code> 中的 <code>HUAWEI_REGION</code> 以及 qt.py 中选择的区域一致</li>
+</ol>
+<h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p>打开proteus<br>下载.hex文件<br>设置端口号和波特率<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429152653004.png?imageSlim" alt="image.png"></p>
+<p>打开Configure Virtual Serial Port Driver<br>设置虚拟端口，如图设置com10和11<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429152739435.png?imageSlim" alt="image.png"></p>
+<p>启动仿真<br>打开vscode或者打包好的exe程序<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153052832.png?imageSlim" alt="image.png"><br>只填写图中数据即可</p>
+<p>1.选择虚拟串口<br>2.打开串口<br>3.连接云端<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153249513.png?imageSlim" alt="image.png"></p>
+<p>此时数据已经上云<br>打开华为云设备页面<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153500503.png?imageSlim" alt="image.png"><br>此时已经有数据</p>
+<p>现在下发</p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153525609.png?imageSlim" alt="image.png"></p>
+<p>本地访问这个ip进入web页面<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153645465.png?imageSlim" alt="image.png"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153650893.png?imageSlim" alt="image.png"><br>下载专属app，确保在同一局域网内且本地web服务在运行，扫码可以进入手机页面<br>（这个app本质上是调用手机webview访问的，本质上还是浏览器）<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153933367.png?imageSlim" alt="50608685c684fce5a49e433b1e4d194a.jpg|400"></p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>GitHub:<a target="_blank" rel="noopener" href="https://github.com/ORI2333/stm32-QT-yun-push">https://github.com/ORI2333/stm32-QT-yun-push</a><br>如果对你有用或者喜欢，麻烦帮忙给个Star！</p>
+</div>
+        </div>
+        
+            <div class="kratos-copyright text-center clearfix">
+                <span itemprop="copyrightNotice">本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</span>
+            </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+            
+            
+                <div class="post-actions text-center clearfix" id="post-actions">
+                
+                    <a class="donate" href="javascript:;" onclick="krOpenDonateModal()"><i class="fa fa-bitcoin"></i> 打赏</a>
+                
+                
+                    <a class="share" href="javascript:;" onclick="krOpenShareModal()"><i class="fa fa-share-alt"></i> 分享</a>
+                
+                </div>
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    <a class="tag-none-link" href="/blog/tags/MQTT/" rel="tag">MQTT</a>, <a class="tag-none-link" href="/blog/tags/STM32/" rel="tag">STM32</a>, <a class="tag-none-link" href="/blog/tags/proteus/" rel="tag">proteus</a>, <a class="tag-none-link" href="/blog/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/" rel="tag">云平台</a>, <a class="tag-none-link" href="/blog/tags/%E6%8E%A5%E5%8D%95/" rel="tag">接单</a>
+                </div>
+                <div class="pull-date">
+                    <time datetime="2026-04-29T08:22:56.085Z" itemprop="dateModified">最后编辑：2026-04-29</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            <div class="nav-previous clearfix">
+                <a title=" ODDR原语说明" href="/blog/2026/04/18/ODDR（Xilinx 原语）/"><i class="fa fa-angle-left"></i> 上一篇</a>
+            </div>
+            
+            
+        </nav>
+    
+    
+</article>
+
+        
+
+            </section>
+
+            
+                
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/blog/images/theme/头像.jpg" alt="ORI2333" loading="lazy" decoding="auto" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">A blog about programming, technology, and more.<br><span class="about-contact-icons"><a href="mailto:ori2333.zh@gmail.com" title="Email"><img src="/blog/icons/default-sites/email.svg" alt="Email"></a><a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub"><img src="/blog/icons/default-sites/github.svg" alt="GitHub"></a><a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili"><img src="/blog/icons/default-sites/bilibili.ico" alt="Bilibili"></a><a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu"><img src="/blog/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu"></a></span></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/blog/archives/">
+            <span class="title">
+                文章
+            </span>
+            <span class="count">
+                5
+            </span>
+        </a>
+        <a class="meta-item" href="/blog/categories/">
+            <span class="title">
+                分类
+            </span>
+            <span class="count">
+                1
+            </span>
+        </a>
+        <a class="meta-item" href="/blog/tags/">
+            <span class="title">
+                标签
+            </span>
+            <span class="count">
+                9
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类列表</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/docs/">docs</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/blog/tags/FPGA/" style="font-size: 0.8em;">FPGA</a> <a href="/blog/tags/ISP/" style="font-size: 0.8em;">ISP</a> <a href="/blog/tags/MQTT/" style="font-size: 0.6em;">MQTT</a> <a href="/blog/tags/STM32/" style="font-size: 0.6em;">STM32</a> <a href="/blog/tags/proteus/" style="font-size: 0.6em;">proteus</a> <a href="/blog/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/" style="font-size: 0.6em;">云平台</a> <a href="/blog/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" style="font-size: 0.6em;">博客网站</a> <a href="/blog/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" style="font-size: 0.8em;">图像处理</a> <a href="/blog/tags/%E6%8E%A5%E5%8D%95/" style="font-size: 0.6em;">接单</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/"><i class="fa fa-book"></i> Proteus仿真+STM32+云平台</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/"><i class="fa fa-book"></i> ODDR原语说明</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/"><i class="fa fa-book"></i> HDMI Display设计手册</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"><i class="fa fa-book"></i> 博客与主题使用指南</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/"><i class="fa fa-book"></i> ISP之常用图像缩放算法</a>
+            
+          
+        
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+            
+
+        
+
+                </div>
+    </div>
+</div>
+
+<footer>
+    <div id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                            <li>
+                                <a href="mailto:ori2333.zh@gmail.com" title="Email">
+                                    <img class="footer-social-icon footer-icon-email" src="/blog/icons/default-sites/email.svg" alt="Email">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub">
+                                    <img class="footer-social-icon footer-icon-github" src="/blog/icons/default-sites/github.svg" alt="GitHub">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili">
+                                    <img class="footer-social-icon" src="/blog/icons/default-sites/bilibili.ico" alt="Bilibili">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu">
+                                    <img class="footer-social-icon" src="/blog/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu">
+                                </a>
+                            </li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2026 ORI2333's Blog 版权所有.</li>
+                            <li>本站已运行<span id="kr-since">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>自豪地使用 <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a> 主题</li>
+                            <li>站点由 <a href="https://github.com/ORI2333" target="_blank">ORI2333</a> 用 <i class="fa fa-heart" style="color:#d43f57"></i> 搭建</li>
+                        </div>
+                        <!-- 额外的追加注入项 -->
+                        
+                            <div>
+                                
+                                    <li>由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 强力驱动</li>
+                                
+                                    <li>在 <a href="https://github.com" target="_blank" rel="nofollow">GitHub</a> 暖心托管</li>
+                                
+                            </div>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                <!-- 额外的追加注入项 -->
+                
+                
+                    <div class="box search-box">
+                        <a href="/blog/search">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                <div class="box theme-box" id="theme-toggle">
+                    <span class="fa fa-adjust"></span>
+                </div>
+            </div>
+            <div id="gotop-box" class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+
+    <div id="kr-donate-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseDonateModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-bitcoin"></i>
+            </div>
+            <div class="kr-modal-title">赞助喵</div>
+            <button class="kr-modal-close" onclick="krCloseDonateModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-donate-message">非常感谢您的喜欢！ <i class="fa fa-heart" style="color:#d43f57"></i></div>
+            <div class="kr-donate-qr" id="kr-donate-qr">
+                
+                    <img class="kr-donate-placeholder" src="https://dev.krt.moe/demo-assets/donate.webp" alt="赞助喵" />
+                
+            </div>
+            <div class="kr-donate-platforms">
+                
+                    
+                        <button class="kr-donate-platform-button" style="color: skyblue;" title="模拟支付" onclick="krDonateModalShowPlatformQR('example_payment', 'skyblue')">
+                            <i class="fa fa-credit-card"></i>
+                        </button>
+                    
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/blog/js/kr-modal/donate.min.js"></script>
+
+
+
+
+    <div id="kr-share-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseShareModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-share-alt"></i>
+            </div>
+            <div class="kr-modal-title">分享这一刻</div>
+            <button class="kr-modal-close" onclick="krCloseShareModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-share-message">让朋友们也来瞅瞅！</div>
+            <div class="kr-share-qr" id="kr-share-qr"></div>
+            <div class="kr-share-platforms">
+                
+                    <button class="kr-share-platform-button" style="color: #62b6e7;" title="喵窝" onclick="krShareModalOpenPlatform('https://nya.one/share?text=%3E%20$TITLE%0A%3E%0A%3E%20$SUMMARY%0A----%20$SITE%0A%0A$URL')">
+                        <svg fill="currentColor" width="18" height="18" viewBox="0 0 329 388"><path d="M0,36.226c0,-19.993 16.233,-36.226 36.226,-36.226c13.788,0 25.787,7.719 31.908,19.068l188.366,229.845l0,-111.259c-6.356,5.508 -14.645,8.843 -23.707,8.843c-19.994,0 -36.226,-16.232 -36.226,-36.226c-0,-8.551 2.968,-16.413 7.93,-22.613l-0.015,-0.013l56.614,-69.08c6.2,-11.073 18.047,-18.565 31.63,-18.565c19.994,0 36.227,16.233 36.227,36.226l-0,314.644c-0,19.994 -16.233,36.226 -36.227,36.226c-13.166,0 -24.701,-7.039 -31.044,-17.555l-189.229,-230.899l-0,212.228c-0,19.994 -16.233,36.226 -36.227,36.226c-19.993,0 -36.226,-16.232 -36.226,-36.226l0,-314.644Z" /></svg>
+                    </button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/blog/js/kr-modal/share.min.js"></script>
+
+
+
+<!-- 额外的追加注入项 -->
+
+
+        <script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/blog/";
+</script>
+
+
+  <script defer src="/blog/vendors/nprogress@0.2.0/nprogress.js"></script>
+
+
+
+  <script defer src="/blog/vendors/viewerjs@1.11.6/dist/viewer.min.js"></script>
+
+
+<script defer src="/blog/js/kr-core.min.js"></script>
+
+
+  <script defer src="/blog/js/kr-pjax.min.js"></script>
+
+
+<!-- 额外的追加注入项 -->
+
+  <script>window.__COMMENTS_ENABLED=false;</script>
+
+
+    </body>
+</html>

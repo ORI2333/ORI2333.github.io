@@ -7,8 +7,8 @@
     <link rel="icon" href="/blog/images/theme/头像.jpg?v=20260329">
   
   
-  <title>文章归档: 2025-08 | ORI2333&#39;s Blog</title>
-  <link rel="canonical" href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/archives/2025/08/index.html">
+  <title>HDMI Display设计手册 | ORI2333&#39;s Blog</title>
+  <link rel="canonical" href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/">
   <meta name="author" content="ORI2333" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -17,22 +17,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="" />
+    <meta name="keywords" content="FPGA, ISP, 图像处理" />
   
-  <meta name="description" content="A blog about programming, technology, and more.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="文章归档: 2025-08">
-<meta property="og:url" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/archives/2025/08/index.html">
+  <meta name="description" content="前置原理补充SII9022这里不做详细介绍，主要侧重如何用FPGA驱动。 基于《LATTICE SiI9022A&#x2F;SiI9024A HDMI Transmitter Data Sheet 2016》 Video Input  xvYCC metadata support（和sRGB差不多，更宽广的色彩范围） BTA-T1004 video input format（没用过） Integr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HDMI Display设计手册">
+<meta property="og:url" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/index.html">
 <meta property="og:site_name" content="ORI2333&#39;s Blog">
-<meta property="og:description" content="A blog about programming, technology, and more.">
+<meta property="og:description" content="前置原理补充SII9022这里不做详细介绍，主要侧重如何用FPGA驱动。 基于《LATTICE SiI9022A&#x2F;SiI9024A HDMI Transmitter Data Sheet 2016》 Video Input  xvYCC metadata support（和sRGB差不多，更宽广的色彩范围） BTA-T1004 video input format（没用过） Integr">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg?v=20260329">
+<meta property="og:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/posts/hdmi.webp">
+<meta property="article:published_time" content="2026-04-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-29T08:22:56.086Z">
 <meta property="article:author" content="ORI2333">
+<meta property="article:tag" content="ISP">
+<meta property="article:tag" content="FPGA">
+<meta property="article:tag" content="图像处理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg?v=20260329">
+<meta name="twitter:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/posts/hdmi.webp">
   
   <!-- JSON-LD 结构化数据 -->
   
+  
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"HDMI Display设计手册","description":"前置原理补充","image":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/images/posts/hdmi.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-04-17T16:00:00.000Z","dateModified":"2026-04-29T08:22:56.086Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/"}}
+    </script>
   
   <!-- 关键 CSS 预加载 -->
   <link rel="preload" href="/blog/css/kr-core.min.css" as="style" crossorigin>
@@ -204,79 +213,228 @@
 
         
 
+            <article itemscope itemtype="https://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/">
+    <div class="kratos-hentry kratos-page-inner clearfix">
+        <header class="kratos-page-header">
             
-<style>
-  .post-meta time{color:#00a7e0}
-  @media (max-width:767px){.posts-collapse{margin:0 20px}
-  .posts-collapse .post-meta,
-  .posts-collapse .post-title{display:block;width:auto;text-align:left}}
-  .posts-collapse{position:relative}
-  .posts-collapse::after{content:" ";position:absolute;top:20px;left:0;margin-left:-2px;width:4px;height:calc(100% - 35px);background:#f5f5f5;z-index:-1}
-  @media (max-width:991px){.posts-collapse{margin:0 20px}}
-  .posts-collapse .collection-title{position:relative}
-  .posts-collapse .collection-title h1,
-  .posts-collapse .collection-title h2{margin-left:20px}
-  .posts-collapse .collection-title small{color:#bbb;margin-left:5px}
-  .posts-collapse .collection-title::before{content:" ";position:absolute;left:0;top:50%;margin-left:-4px;margin-top:-4px;width:8px;height:8px;background:#bbb;border-radius:50%}
-  .posts-collapse .post-header{position:relative;transition-duration:.2s;transition-timing-function:ease-in-out;transition-delay:0s;transition-property:border}
-  .posts-collapse .post-header::before{content:" ";position:absolute;left:0;top:12px;width:6px;height:6px;margin-left:-4px;background:#bbb;border-radius:50%;border:1px solid #fff;transition: all .3s ease-in-out}
-  .posts-collapse .post-header:hover{border-bottom-color:#666}
-  .posts-collapse .post-header:hover::before{background:#222}
-  .posts-collapse .post-meta{position:absolute;font-size:12px;left:20px;top:5px}
-  .posts-collapse .kr-comments-count{display:none}
-  .posts-collapse .post-title{margin-left:70px;font-size:16px;font-weight:400;line-height:inherit}
-  .posts-collapse .post-title::after{margin-left:3px;opacity:.6}
-  .posts-collapse .post-title a{color:#666;border-bottom:none}
-</style>
+                <h1 class="kratos-page-title text-center" itemprop="name headline">HDMI Display设计手册</h1>
+            
+            <ul class="kratos-page-meta text-center">
+                <li><time datetime="2026-04-17T16:00:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-04-18</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
+                </li>
+                
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~4.65K
+                        
+                        字
+                    </li>
+                
+                
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var container = document.getElementById('busuanzi_container_page_pv');
+    if (container) {
+      container.style.display = 'inline';
+    }
+  });
+</script>
+<span id="busuanzi_container_page_pv" style="display:none;"><span id="busuanzi_value_page_pv">0</span></span>
+ 次阅读
+                    </li>
+                
+                
+            </ul>
+        </header>
+        <div class="kratos-page-content kr-post">
+            
+            
+            
+            <hr />
+            <div itemprop="articleBody"><h2 id="前置原理补充"><a href="#前置原理补充" class="headerlink" title="前置原理补充"></a>前置原理补充</h2><h3 id="SII9022"><a href="#SII9022" class="headerlink" title="SII9022"></a>SII9022</h3><p>这里不做详细介绍，主要侧重如何用FPGA驱动。</p>
+<p>基于《LATTICE SiI9022A&#x2F;SiI9024A HDMI Transmitter Data Sheet 2016》</p>
+<p><strong>Video Input</strong></p>
+<ul>
+<li>xvYCC metadata support（和sRGB差不多，更宽广的色彩范围）</li>
+<li>BTA-T1004 video input format（没用过）</li>
+<li>Integrated color space converter allows direct connection to all major MPEG decoders, including those that provide only an ITU-R.656 output（单元内置的色彩空间转换器，能处理不同标准（如YUV到RGB）的转换）</li>
+<li><strong>Internal DE generator supports non-embedded sync formats（DE（数据使能）信号在数字视频中用于标识有效图像数据区域。）</strong></li>
+</ul>
+<p>这里本工程使用<strong>并行数字视频接口</strong> 24-bit RGB 4:4:4 Separate Sync 格式</p>
+<p><strong>HDMI Output</strong></p>
+<ul>
+<li>HDMI, HDCP, and DVI compatible</li>
+<li>TMDS™ core runs at &#x3D;&#x3D;165 MHz&#x3D;&#x3D;</li>
+<li>Video resolutions up to 1080p and UXGA (72-pin QFN package supports 165 MHz dual-edge mode</li>
+<li>3D-capable at 720p&#x2F;60, 1080i&#x2F;60, and 1080p&#x2F;24 frame-pack, side-by-side, L + D, and Top-and-Bottom modes</li>
+<li>HDMI Type A, Type-C, and micro-D connector support<br><strong>其它：</strong><br>支持热插拔</li>
+</ul>
+<p>型号特征：<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260416223535771.png?imageSlim" alt="image.png|700"><br><strong>功能框图：</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260416223747008.png?imageSlim" alt="image.png|700"></p>
+<p><strong>视频输入转换流程：</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260416224216955.png?imageSlim" alt="image.png|800"></p>
+<p><strong>可以倍频</strong><br>Video input formats which use a 2x clock (such as YC Mux mode) can then be transmitted across the HDMI link with a 1x clock. Similarly, 1x-to-2x, 1x-to-4x,and 2x-to-4x conversions are possible.</p>
+<p><strong>数据捕获与格式识别：</strong><br>以可配置的数据位宽（8&#x2F;10&#x2F;12&#x2F;16&#x2F;20&#x2F;24位）捕获RGB或YCbCr视频数据，并根据寄存器设置锁存数据。捕获的<strong>视频格式信息</strong>（如RGB范围、色彩imetry）会被芯片记录下来，并自动插入到后续HDMI数据包的“AVI信息帧”中，供显示设备正确解读，无需主机额外干预</p>
+<p><strong>Embedded Sync Decoding</strong><br>提供了三种生成关键时序信号（DE, HSYNC, VSYNC）的方式，以适应几乎所有视频源：</p>
+<ul>
+<li><strong>直接输入</strong>：最简单的情况，视频源直接提供独立的HSYNC、VSYNC和DE信号。</li>
+<li><strong>嵌入式同步解码</strong>：针对<strong>ITU-R BT.656</strong>等格式的数字视频流（常见于旧标清设备）。芯片能从视频数据流中内置的SAV&#x2F;EAV（有效视频开始&#x2F;结束）代码中，<strong>解码并还原出</strong>HSYNC、VSYNC和DE信号。<strong>这节省了额外的同步信号线。</strong></li>
+<li><strong>内部DE生成器</strong>：当视频源只提供HSYNC和VSYNC，却没有DE信号时，芯片可以利用这两个同步信号和像素时钟，<strong>内部生成一个精确的DE信号</strong>。用户可通过寄存器微调DE的活跃区域，以匹配CEA时序规范。<strong>这对于连接许多不输出DE的MPEG解码器至关重要。</strong></li>
+</ul>
+<p><strong>Video Input  Clock</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417180918149.png?imageSlim" alt="image.png|800"></p>
+<p><strong>Video Input Formats</strong><br>采用24bit的 RGB 444格式<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417181256092.png?imageSlim" alt="image.png|800"></p>
+<h3 id="VGA-LCD"><a href="#VGA-LCD" class="headerlink" title="VGA &#x2F; LCD"></a>VGA &#x2F; LCD</h3><p>为什么写VGA，这里VGA&#x2F;LCD封装的数据非常容易封装为24-bit RGB 4:4:4 Separate Sync 格式，因此这里再介绍一下VGA</p>
+<h4 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h4><table>
+<thead>
+<tr>
+<th>引脚编号</th>
+<th>信号名称</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>RED</td>
+<td>红色模拟视频信号（0 ~ 0.7V 峰峰值）</td>
+</tr>
+<tr>
+<td>2</td>
+<td>GREEN</td>
+<td>绿色模拟视频信号（0 ~ 0.7V 峰峰值）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>BLUE</td>
+<td>蓝色模拟视频信号（0 ~ 0.7V 峰峰值）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>ID2 &#x2F; RES</td>
+<td>显示器识别位 2（旧标准用于标识显示器类型，现代多未使用或保留）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>GND (HSYNC)</td>
+<td>自测试 &#x2F; 接地（早期用于自检，现通常接地；部分设备用作 HSYNC 返回地）</td>
+</tr>
+<tr>
+<td>6</td>
+<td>RGND</td>
+<td>红色信号地（Red Ground）</td>
+</tr>
+<tr>
+<td>7</td>
+<td>GGND</td>
+<td>绿色信号地（Green Ground）</td>
+</tr>
+<tr>
+<td>8</td>
+<td>BGND</td>
+<td>蓝色信号地（Blue Ground）</td>
+</tr>
+<tr>
+<td>9</td>
+<td>+5V &#x2F; KEY</td>
+<td>+5V 电源（可选，用于为显示器 EEPROM 供电）或物理防呆键位（部分线缆为空）</td>
+</tr>
+<tr>
+<td>10</td>
+<td>GND (SYNC)</td>
+<td>数字地（同步信号公共地）</td>
+</tr>
+<tr>
+<td>11</td>
+<td>ID0 &#x2F; SDA</td>
+<td>显示器识别位 0 &#x2F; I²C 数据线（DDC 通信，用于读取 EDID 信息）</td>
+</tr>
+<tr>
+<td>12</td>
+<td>ID1 &#x2F; SCL</td>
+<td>显示器识别位 1 &#x2F; I²C 时钟线（DDC 通信）</td>
+</tr>
+<tr>
+<td>13</td>
+<td>HSYNC</td>
+<td>行同步信号（Horizontal Sync）</td>
+</tr>
+<tr>
+<td>14</td>
+<td>VSYNC</td>
+<td>场同步信号（Vertical Sync）</td>
+</tr>
+<tr>
+<td>15</td>
+<td>DDC GND</td>
+<td>DDC（显示数据通道）地，用于 I²C 通信</td>
+</tr>
+</tbody></table>
+<h4 id="显示原理"><a href="#显示原理" class="headerlink" title="显示原理"></a>显示原理</h4><p><strong>VGA时序标准</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417214859686.png?imageSlim" alt="image.png"></p>
+<p><strong>Hsync 时序</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417215007905.png?imageSlim" alt="image.png"></p>
+<p><strong>VGA时序图</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417214543829.png?imageSlim" alt="image.png|900"><br>图中的红色区域表示在一个完整的行扫描周期中，Video图像信息只在此区域有效，黄色区域表示在一个完整的场扫描周期中，Video图像信息只在此区域有效，两者相交的橙色区域，就是VGA图像的最终显示区域。</p>
+<p><strong>VGA显示模式</strong><br>这里只是放在这里，和项目无关<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417234220162.png?imageSlim" alt="image.png"><br>行扫描周期 * 场扫描周期 * 刷新频率 &#x3D; 时钟频率</p>
+<h2 id="工程"><a href="#工程" class="headerlink" title="工程"></a>工程</h2><h3 id="接口-1"><a href="#接口-1" class="headerlink" title="接口"></a>接口</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">module hdmi_display(</span><br><span class="line">    // global clock</span><br><span class="line">    input                               clk                        ,</span><br><span class="line">    input                               rst_n                      ,</span><br><span class="line"></span><br><span class="line">    //lcd interface</span><br><span class="line">    output                              lcd_clk                    ,</span><br><span class="line">    output                              lcd_hs                     ,</span><br><span class="line">    output                              lcd_vs                     ,</span><br><span class="line">    output                              lcd_de                     ,</span><br><span class="line"></span><br><span class="line">    output               [   7: 0]      lcd_red                    ,</span><br><span class="line">    output               [   7: 0]      lcd_green                  ,</span><br><span class="line">    output               [   7: 0]      lcd_blue                    </span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
-  <article>
-      <div class="kratos-hentry kratos-page-inner clearfix">
-          <header class="kratos-page-header">
-            <h1 class="kratos-page-title text-center" itemprop="name headline">文章归档</h1>
-          </header>
-          <div class="kratos-page-content kr-archive">
-            <div id="archives">
-              <div class="post-block archive post" style="margin-left: 2em;">
-                <h3 class="archive-page-counter">当前共有 5 篇文章 (゜-゜)つロ 干杯~</h3>
-                <div class="posts-collapse">
-                  
-                  
-                    
-                    
-                      <!-- 没遇到Title的会被自动忽略年份，即使并不一致 -->
-                      
-                      <div class="collection-title">
-                        <a href="/blog/blog/archives/2025/"><h2 class="archive-year">2025</h2></a>
-                      </div>
-                    
-                    
-                      <article class="post" itemscope itemtype="https://schema.org/Article">
-                        <header class="post-header">
-                          <h3 class="post-title">
-                            
-                                <a class="post-title-link" href="/blog/2025/08/02/ISP%E4%B9%8B%E5%B8%B8%E7%94%A8%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E7%AE%97%E6%B3%95/" itemprop="mainEntityOfPage">
-                                  <span itemprop="name headline">ISP之常用图像缩放算法</span>
-                                </a>
-                            
-                          </h3>
-                          <div class="post-meta">
-                            <time class="post-time" itemprop="datePublished"
-                                  datetime="2025-08-01T16:00:00.000Z">
-                              08-02
-                            </time>
-                          </div>
-                        </header>
-                      </article>
-                    
-                  
-                </div>
-              </div>
-            </div>
+<h3 id="系统上电时钟"><a href="#系统上电时钟" class="headerlink" title="系统上电时钟"></a>系统上电时钟</h3><p>代码见：<code>hdmi_display\rtl\sys_clk_ctrl.sv</code><br>功能：延时50ms保证时钟稳定<br>关键时序设计：<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/wavedrom.svg?imageSlim" alt="wavedrom.svg"><br>目标分辨率为720p，这里使用74.25MHz时钟<br>这里使用了clock wizard IP核<br><strong>IP：</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260416230948486.png?imageSlim" alt="image.png|800"></p>
+<h3 id="lCD-VGA-驱动"><a href="#lCD-VGA-驱动" class="headerlink" title="lCD&#x2F;VGA 驱动"></a>lCD&#x2F;VGA 驱动</h3><p>代码见：<code>hdmi_display\rtl\lcd_driver.sv</code><br>关键时序设计：<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260418160047140.png?imageSlim" alt="image.png"></p>
+<h3 id="时钟转发"><a href="#时钟转发" class="headerlink" title="时钟转发"></a>时钟转发</h3><p>解决时钟网络无法直接连到普通 I&#x2F;O 引脚的问题<br>采用ODDR<br>参考[[ODDR（Xilinx 原语）]]说明<br>这里设计为：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ODDR #(</span><br><span class="line">    <span class="variable">.DDR_CLK_EDGE</span>        (<span class="string">&quot;OPPOSITE_EDGE&quot;</span>           ),<span class="comment">// &quot;OPPOSITE_EDGE&quot; or &quot;SAME_EDGE&quot; </span></span><br><span class="line">    <span class="variable">.INIT</span>                (<span class="number">1&#x27;b0</span>                      ),<span class="comment">// Initial value of Q: 1&#x27;b0 or 1&#x27;b1</span></span><br><span class="line">    <span class="variable">.SRTYPE</span>              (<span class="string">&quot;SYNC&quot;</span>                    ) <span class="comment">// Set/Reset type: &quot;SYNC&quot; or &quot;ASYNC&quot; </span></span><br><span class="line">   ) ODDR_inst (</span><br><span class="line">    <span class="variable">.Q</span>                   (lcd_dclk                  ),<span class="comment">// 1-bit DDR output</span></span><br><span class="line">    <span class="variable">.C</span>                   (lcd_dclk_reg              ),<span class="comment">// 1-bit clock input</span></span><br><span class="line">    <span class="variable">.CE</span>                  (<span class="number">1&#x27;b1</span>                      ),<span class="comment">// 1-bit clock enable input</span></span><br><span class="line">    <span class="variable">.D1</span>                  (<span class="number">1&#x27;b1</span>                      ),<span class="comment">// 1-bit data input (positive edge)</span></span><br><span class="line">    <span class="variable">.D2</span>                  (<span class="number">1&#x27;b0</span>                      ),<span class="comment">// 1-bit data input (negative edge)</span></span><br><span class="line">    <span class="variable">.R</span>                   (<span class="number">1&#x27;b0</span>                      ),<span class="comment">// 1-bit reset</span></span><br><span class="line">    <span class="variable">.S</span>                   (<span class="number">1&#x27;b0</span>                      ) <span class="comment">// 1-bit set</span></span><br><span class="line">   );</span><br></pre></td></tr></table></figure>
+<h3 id="显示测试"><a href="#显示测试" class="headerlink" title="显示测试"></a>显示测试</h3><p>使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Author              :       CrazyBingo</span><br><span class="line">Technology blogs    :       www.crazyfpga.com</span><br></pre></td></tr></table></figure>
+<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C.jpg?imageSlim" alt="测试结果.jpg"></p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p><a target="_blank" rel="noopener" href="https://github.com/ORI2333/FPGA_ISP/tree/main/hdmi_display">https://github.com/ORI2333/FPGA_ISP/tree/main/hdmi_display</a><br>如果对你有用，请帮忙给个Star！😘</p>
+</div>
         </div>
-      </div>
-      
-  </article>
-
+        
+            <div class="kratos-copyright text-center clearfix">
+                <span itemprop="copyrightNotice">本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</span>
+            </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+            
+            
+                <div class="post-actions text-center clearfix" id="post-actions">
+                
+                    <a class="donate" href="javascript:;" onclick="krOpenDonateModal()"><i class="fa fa-bitcoin"></i> 打赏</a>
+                
+                
+                    <a class="share" href="javascript:;" onclick="krOpenShareModal()"><i class="fa fa-share-alt"></i> 分享</a>
+                
+                </div>
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    <a class="tag-none-link" href="/blog/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/blog/tags/ISP/" rel="tag">ISP</a>, <a class="tag-none-link" href="/blog/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag">图像处理</a>
+                </div>
+                <div class="pull-date">
+                    <time datetime="2026-04-29T08:22:56.086Z" itemprop="dateModified">最后编辑：2026-04-29</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            <div class="nav-previous clearfix">
+                <a title=" 博客与主题使用指南" href="/blog/2026/03/29/博客与主题使用指南/"><i class="fa fa-angle-left"></i> 上一篇</a>
+            </div>
+            
+            
+            <div class="nav-next clearfix">
+                <a title=" ODDR原语说明" href="/blog/2026/04/18/ODDR（Xilinx 原语）/">下一篇 <i class="fa fa-angle-right"></i></a>
+            </div>
+            
+        </nav>
+    
+    
+</article>
 
         
 
@@ -287,8 +445,6 @@
 
 <section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
     <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
-    
-        <div class="sticky-area">
     
     
                 <aside id="krw-about" class="widget widget-kratos-about clearfix">
@@ -329,6 +485,8 @@
     </div>
 </aside>
             
+                    <div class="sticky-area">
+                
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
     <h4 class="widget-title"><i class="fa fa-folder"></i>分类列表</h4>
