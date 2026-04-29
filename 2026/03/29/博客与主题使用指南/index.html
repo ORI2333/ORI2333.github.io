@@ -27,8 +27,8 @@
 <meta property="og:description" content="这篇文章记录本博客当前的使用方式，包含：如何写文章、改文章、删文章、改主题配置、替换各位置图片、预览与部署。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/posts/test.webp">
-<meta property="article:published_time" content="2026-03-29T04:30:00.000Z">
-<meta property="article:modified_time" content="2026-04-29T08:23:08.608Z">
+<meta property="article:published_time" content="2026-03-29T12:30:00.000Z">
+<meta property="article:modified_time" content="2026-04-29T08:41:58.373Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="博客网站">
 <meta name="twitter:card" content="summary">
@@ -38,7 +38,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"博客与主题使用指南","description":"这篇文章记录本博客当前的使用方式，包含：如何写文章、改文章、删文章、改主题配置、替换各位置图片、预览与部署。\n\n\n","image":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/images/posts/test.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-03-29T04:30:00.000Z","dateModified":"2026-04-29T08:23:08.608Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"博客与主题使用指南","description":"这篇文章记录本博客当前的使用方式，包含：如何写文章、改文章、删文章、改主题配置、替换各位置图片、预览与部署。\n\n\n","image":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/images/posts/test.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-03-29T12:30:00.000Z","dateModified":"2026-04-29T08:41:58.373Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -219,7 +219,7 @@
                 <h1 class="kratos-page-title text-center" itemprop="name headline">博客与主题使用指南</h1>
             
             <ul class="kratos-page-meta text-center">
-                <li><time datetime="2026-03-29T04:30:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-03-29</time></li>
+                <li><time datetime="2026-03-29T12:30:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-03-29</time></li>
                 <li itemprop="author" itemscope itemtype="https://schema.org/Person">
                     <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
                 </li>
@@ -228,7 +228,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~6.04K
+                            ~6.39K
                         
                         字
                     </li>
@@ -278,7 +278,7 @@
 <li><code>server</code>：本地预览，默认访问 <code>http://localhost:4000/blog/</code></li>
 <li><code>deploy</code>：按 <code>_config.yml</code> 的 deploy 配置发布（仅执行 Hexo deploy）</li>
 <li><code>push:static</code>：一键执行 <code>clean + build + deploy</code>（推静态站到部署仓库）</li>
-<li><code>push</code>：执行 <code>source:push</code>（推源码到主仓库，触发 CI&#x2F;CloudBase 部署）</li>
+<li><code>push</code>：执行 <code>source:push</code>（推源码到主仓库，触发 GitHub Actions 部署）</li>
 <li><code>source:status</code>：查看源码仓库改动状态</li>
 <li><code>source:push</code>：将源码仓库改动执行 <code>add + commit + push</code></li>
 </ul>
@@ -288,7 +288,7 @@
 <p>如果要查看当前项目脚本定义，可直接看 <code>package.json</code> 的 <code>scripts</code> 字段。</p>
 <p>注意区分两类“推送”：</p>
 <ul>
-<li><code>npm run push</code>：推送的是源码仓库改动（用于触发 GitHub Actions -&gt; CloudBase 部署）。</li>
+<li><code>npm run push</code>：推送的是源码仓库改动（用于触发 GitHub Actions 自动部署）。</li>
 <li><code>npm run push:static</code>：推送的是静态站内容（<code>public</code> -&gt; 部署仓库）。</li>
 </ul>
 <p>结论（当前项目推荐）：</p>
@@ -399,7 +399,7 @@
 <li>阅读量统计可以独立于评论开关运行；即使评论关闭（<code>__COMMENTS_ENABLED=false</code>），文章页阅读量仍可显示。</li>
 <li>如果你以后想在首页列表也显示“每篇文章阅读量”，需要接入带后端存储的计数服务（如 Waline pageview）。</li>
 </ul>
-<h2 id="7-发布建议流程"><a href="#7-发布建议流程" class="headerlink" title="7. 发布建议流程"></a>7. 发布建议流程</h2><p>推荐的 CloudBase（CI 自动部署）流程：</p>
+<h2 id="7-发布建议流程"><a href="#7-发布建议流程" class="headerlink" title="7. 发布建议流程"></a>7. 发布建议流程</h2><p>推荐的 GitHub Actions（CI 自动部署）流程：</p>
 <ol>
 <li><code>npm run clean</code></li>
 <li><code>npm run build</code></li>
@@ -414,11 +414,12 @@
 <li>推送时会自动排除构建产物：<code>public/</code>、<code>db.json</code>、<code>.deploy_git/</code>。</li>
 <li>你需要提交和推送的内容，通常是：<code>source/</code>、<code>_config*.yml</code>、主题相关配置、workflow。</li>
 </ul>
-<p>如果你要走 Hexo 部署仓库（不是 CloudBase CI）流程：</p>
+<p>如果你要走 Hexo 部署仓库（不是 GitHub Actions CI）流程：</p>
 <ol>
 <li><code>npm run push:static</code></li>
 </ol>
 <h2 id="8-🎉-新部署架构说明（2026-年-4-月更新）"><a href="#8-🎉-新部署架构说明（2026-年-4-月更新）" class="headerlink" title="8. 🎉 新部署架构说明（2026 年 4 月更新）"></a>8. 🎉 新部署架构说明（2026 年 4 月更新）</h2><p>本仓库已进行重大架构升级，采用业界标准的”<strong>源码与产物分离</strong>“策略。这彻底解决了之前混合托管带来的问题。</p>
+<p>这部分就是原来独立的部署说明内容，现已并入本文，方便你只维护一篇文档。</p>
 <h3 id="主要改进"><a href="#主要改进" class="headerlink" title="主要改进"></a>主要改进</h3><h4 id="问题回顾"><a href="#问题回顾" class="headerlink" title="问题回顾"></a>问题回顾</h4><ul>
 <li>❌ 源码、配置、依赖混杂在同一分支</li>
 <li>❌ <code>node_modules</code> 被上传，仓库臃肿</li>
@@ -431,6 +432,12 @@
 <li>✅ CI 自动化：GitHub Actions 自动构建和部署</li>
 <li>✅ 安全隔离：敏感信息不再进入 GitHub Pages</li>
 </ul>
+<h3 id="安全边界：会不会有密钥泄漏风险"><a href="#安全边界：会不会有密钥泄漏风险" class="headerlink" title="安全边界：会不会有密钥泄漏风险"></a>安全边界：会不会有密钥泄漏风险</h3><p>如果你基本没有后端交互，风险通常很低，但不是绝对为零。关键看你有没有把真正的 Secret 放进仓库。</p>
+<ul>
+<li><strong>通常没问题的内容</strong>：文章正文、图片、CSS、JS、主题配置里只用于前端展示的公开站点 ID 或地址。</li>
+<li><strong>仍然要避免的内容</strong>：真正的 API Secret、Token、数据库密码、云存储私钥、可写权限密钥。</li>
+</ul>
+<p>对于你现在这种纯静态博客，如果只是做展示、评论和统计，而且没有自建后端，那么大多数情况下不会产生“服务器密钥泄漏”问题。真正需要警惕的是以后如果接入了第三方后端能力，别把私钥直接写进 <code>_config.yml</code>、<code>_config.kratos-rebirth.yml</code> 或文章内容里。</p>
 <h3 id="新工作流（强烈推荐）"><a href="#新工作流（强烈推荐）" class="headerlink" title="新工作流（强烈推荐）"></a>新工作流（强烈推荐）</h3><p><strong>你只需关心一件事：编辑 source 分支并推送。</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 在 source 分支编辑（默认分支）</span></span><br><span class="line">vim <span class="built_in">source</span>/_posts/xxx.md</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 本地预览</span></span><br><span class="line">npm run server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 提交并推送</span></span><br><span class="line">git add -A</span><br><span class="line">git commit -m <span class="string">&quot;docs: update article&quot;</span></span><br><span class="line">git push origin <span class="built_in">source</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 完成！✨ </span></span><br><span class="line"><span class="comment"># GitHub Actions 自动构建 → 部署到 main → GitHub Pages 更新</span></span><br></pre></td></tr></table></figure>
 
@@ -466,7 +473,7 @@
 <li><p><strong>切到 source 分支</strong>（应该已经是默认）</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout <span class="built_in">source</span></span><br><span class="line">git branch -v  <span class="comment"># 验证 * source</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>阅读详细文档</strong><br>参考项目根目录的 <code>DEPLOY_GUIDE.md</code></p>
+<li><p><strong>阅读详细文档</strong><br>  直接看本文第 7、8 节即可，相关部署说明已经合并到这里。</p>
 </li>
 <li><p><strong>验证 CI 工作流</strong><br>进入 GitHub 仓库 &gt; <strong>Actions</strong> 标签页，查看最新的工作流执行结果</p>
 </li>
@@ -505,7 +512,7 @@
                     <a class="tag-none-link" href="/blog/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" rel="tag">博客网站</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-04-29T08:23:08.608Z" itemprop="dateModified">最后编辑：2026-04-29</time>
+                    <time datetime="2026-04-29T08:41:58.373Z" itemprop="dateModified">最后编辑：2026-04-29</time>
                 </div>
             </div>
         </footer>
