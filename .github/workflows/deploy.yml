@@ -7,33 +7,65 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v4
         with:
           ref: source
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-      
+          node-version: 22
+          cache: npm
+
       - name: Install dependencies
         run: npm ci
-      
-      - name: Build site
+
+      - name: Build Hexo site
         run: npm run clean && npm run build
-      
-      - name: Deploy to main branch
-        uses: peaceiris/actions-gh-pages@v3
+
+      - name: Prepare Pages artifact at /blog
+        run: |
+          mkdir -p out/blog
+          cp -a public/. out/blog/
+          cat > out/index.html << 'EOF'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8" />
+              <meta http-equiv="refresh" content="0; url=/blog/" />
+              <title>Redirecting...</title>
+            </head>
+            <body>
+              <a href="/blog/">Go to blog</a>
+            </body>
+          </html>
+          EOF
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: main
+          path: out
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
