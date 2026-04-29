@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/images/posts/test.webp">
 <meta property="article:published_time" content="2026-03-29T12:30:00.000Z">
-<meta property="article:modified_time" content="2026-04-29T08:49:47.642Z">
+<meta property="article:modified_time" content="2026-04-29T09:03:26.476Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="博客网站">
 <meta name="twitter:card" content="summary">
@@ -38,7 +38,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"博客与主题使用指南","description":"这篇文章记录本博客当前的使用方式，包含：如何写文章、改文章、删文章、改主题配置、替换各位置图片、预览与部署。\n\n\n","image":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/images/posts/test.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-03-29T12:30:00.000Z","dateModified":"2026-04-29T08:49:47.642Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"博客与主题使用指南","description":"这篇文章记录本博客当前的使用方式，包含：如何写文章、改文章、删文章、改主题配置、替换各位置图片、预览与部署。\n\n\n","image":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/images/posts/test.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-03-29T12:30:00.000Z","dateModified":"2026-04-29T09:03:26.476Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -439,7 +439,7 @@
 </ul>
 <p>对于你现在这种纯静态博客，如果只是做展示、评论和统计，而且没有自建后端，那么大多数情况下不会产生“服务器密钥泄漏”问题。真正需要警惕的是以后如果接入了第三方后端能力，别把私钥直接写进 <code>_config.yml</code>、<code>_config.kratos-rebirth.yml</code> 或文章内容里。</p>
 <h3 id="新工作流（强烈推荐）"><a href="#新工作流（强烈推荐）" class="headerlink" title="新工作流（强烈推荐）"></a>新工作流（强烈推荐）</h3><p><strong>你只需关心一件事：编辑 source 分支并推送。</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 在 source 分支编辑（默认分支）</span></span><br><span class="line">vim <span class="built_in">source</span>/_posts/xxx.md</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 本地预览</span></span><br><span class="line">npm run server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 提交并推送</span></span><br><span class="line">git add -A</span><br><span class="line">git commit -m <span class="string">&quot;docs: update article&quot;</span></span><br><span class="line">git push origin <span class="built_in">source</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 完成！✨ </span></span><br><span class="line"><span class="comment"># GitHub Actions 自动构建 → 部署到 main → GitHub Pages 更新</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 在 source 分支编辑（默认分支）</span></span><br><span class="line">vim <span class="built_in">source</span>/_posts/xxx.md</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 本地预览</span></span><br><span class="line">npm run server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 提交并推送</span></span><br><span class="line">git add -A</span><br><span class="line">git commit -m <span class="string">&quot;docs: update article&quot;</span></span><br><span class="line">git push origin <span class="built_in">source</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 完成！✨ </span></span><br><span class="line"><span class="comment"># GitHub Actions 自动构建 → 直接部署到 GitHub Pages → 网站更新</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="分支说明"><a href="#分支说明" class="headerlink" title="分支说明"></a>分支说明</h3><table>
 <thead>
@@ -512,7 +512,7 @@
                     <a class="tag-none-link" href="/blog/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" rel="tag">博客网站</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-04-29T08:49:47.642Z" itemprop="dateModified">最后编辑：2026-04-29</time>
+                    <time datetime="2026-04-29T09:03:26.476Z" itemprop="dateModified">最后编辑：2026-04-29</time>
                 </div>
             </div>
         </footer>
