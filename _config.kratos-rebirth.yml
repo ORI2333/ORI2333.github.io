@@ -1,14 +1,14 @@
 ﻿check_update: false
 
 image:
-  avatar: /blog/images/theme/头像.jpg
+  avatar: /images/theme/头像.jpg
   banner:
-    light: /blog/images/theme/banner-light.webp
-    dark: /blog/images/theme/banner-dark.webp
+    light: /images/theme/banner-light.webp
+    dark: /images/theme/banner-dark.webp
   background:
-    light: /blog/images/theme/bg-light.webp
-    dark: /blog/images/theme/bg-dark.webp
-  favicon: /blog/images/theme/头像.jpg?v=20260329
+    light: /images/theme/bg-light.webp
+    dark: /images/theme/bg-dark.webp
+  favicon: /images/theme/头像.jpg?v=20260329
 
 nav:
   auto_hide: true
@@ -43,16 +43,16 @@ posts:
 
 footer:
   links:
-    - icon: <img class="footer-social-icon footer-icon-email" src="/blog/icons/default-sites/email.svg" alt="Email">
+    - icon: <img class="footer-social-icon footer-icon-email" src="/icons/default-sites/email.svg" alt="Email">
       link: "mailto:ori2333.zh@gmail.com"
       addition: title="Email"
-    - icon: <img class="footer-social-icon footer-icon-github" src="/blog/icons/default-sites/github.svg" alt="GitHub">
+    - icon: <img class="footer-social-icon footer-icon-github" src="/icons/default-sites/github.svg" alt="GitHub">
       link: "https://github.com/ORI2333/"
       addition: target="_blank" rel="nofollow" title="GitHub"
-    - icon: <img class="footer-social-icon" src="/blog/icons/default-sites/bilibili.ico" alt="Bilibili">
+    - icon: <img class="footer-social-icon" src="/icons/default-sites/bilibili.ico" alt="Bilibili">
       link: "https://space.bilibili.com/37400250"
       addition: target="_blank" rel="nofollow" title="Bilibili"
-    - icon: <img class="footer-social-icon" src="/blog/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu">
+    - icon: <img class="footer-social-icon" src="/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu">
       link: "https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf"
       addition: target="_blank" rel="nofollow" title="Xiaohongshu"
   components:
@@ -118,12 +118,12 @@ comments:
               pageview: false,
               comment: true,
               reaction: [
-                '/blog/icons/waline-reaction/weibo_heart_eyes.png',
-                '/blog/icons/waline-reaction/weibo_dog_joy.png',
-                '/blog/icons/waline-reaction/weibo_dog_consider.png',
-                '/blog/icons/waline-reaction/weibo_sob.png',
-                '/blog/icons/waline-reaction/weibo_sad.png',
-                '/blog/icons/waline-reaction/weibo_look_down.png',
+                '/icons/waline-reaction/weibo_heart_eyes.png',
+                '/icons/waline-reaction/weibo_dog_joy.png',
+                '/icons/waline-reaction/weibo_dog_consider.png',
+                '/icons/waline-reaction/weibo_sob.png',
+                '/icons/waline-reaction/weibo_sad.png',
+                '/icons/waline-reaction/weibo_look_down.png',
               ],
               lang: 'zh-CN',
               locale: {
@@ -157,12 +157,12 @@ comments:
               pageview: false,
               comment: true,
               reaction: [
-                '/blog/icons/waline-reaction/weibo_heart_eyes.png',
-                '/blog/icons/waline-reaction/weibo_dog_joy.png',
-                '/blog/icons/waline-reaction/weibo_dog_consider.png',
-                '/blog/icons/waline-reaction/weibo_sob.png',
-                '/blog/icons/waline-reaction/weibo_sad.png',
-                '/blog/icons/waline-reaction/weibo_look_down.png',
+                '/icons/waline-reaction/weibo_heart_eyes.png',
+                '/icons/waline-reaction/weibo_dog_joy.png',
+                '/icons/waline-reaction/weibo_dog_consider.png',
+                '/icons/waline-reaction/weibo_sob.png',
+                '/icons/waline-reaction/weibo_sad.png',
+                '/icons/waline-reaction/weibo_look_down.png',
               ],
               lang: 'zh-CN',
               locale: {

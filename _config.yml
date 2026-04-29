@@ -5,17 +5,17 @@
 # Site
 title: ORI2333's Blog
 subtitle: ''
-description: 'A blog about programming, technology, and more.<br><span class="about-contact-icons"><a href="mailto:ori2333.zh@gmail.com" title="Email"><img src="/blog/icons/default-sites/email.svg" alt="Email"></a><a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub"><img src="/blog/icons/default-sites/github.svg" alt="GitHub"></a><a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili"><img src="/blog/icons/default-sites/bilibili.ico" alt="Bilibili"></a><a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu"><img src="/blog/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu"></a></span>'
+description: 'A blog about programming, technology, and more.<br><span class="about-contact-icons"><a href="mailto:ori2333.zh@gmail.com" title="Email"><img src="/icons/default-sites/email.svg" alt="Email"></a><a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub"><img src="/icons/default-sites/github.svg" alt="GitHub"></a><a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili"><img src="/icons/default-sites/bilibili.ico" alt="Bilibili"></a><a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu"><img src="/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu"></a></span>'
 keywords:
 author: ORI2333
 language: en
 timezone: ''
 
 # URL
-## Current deployment is under a subpath on Tencent Cloud (`/blog/`).
+## Current deployment is under the GitHub Pages root domain.
 ## Keep `root` aligned with the public access path to avoid broken CSS/JS links.
-url: https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com
-root: /blog/
+url: https://ori2333.github.io
+root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
