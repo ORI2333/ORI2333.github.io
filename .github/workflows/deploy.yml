@@ -63,5 +63,4 @@ jobs:
         run: |
           npm install @cloudbase/cli --no-audit --no-fund --prefer-offline
           npx tcb login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY"
-          npx tcb hosting delete /images/theme -e "$TCB_ENV_ID" --force || true
           npx tcb hosting deploy ./public / -e "$TCB_ENV_ID"
