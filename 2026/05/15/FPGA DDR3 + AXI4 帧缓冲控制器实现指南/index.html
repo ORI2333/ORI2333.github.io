@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  
+    <link rel="icon" href="/images/theme/头像.jpg?v=20260329">
+  
+  
+  <title>FPGA DDR3 + AXI4 帧缓冲控制器实现指南 | ORI2333&#39;s Blog</title>
+  <link rel="canonical" href="https://ori2333.github.io/2026/05/15/FPGA%20DDR3%20+%20AXI4%20%E5%B8%A7%E7%BC%93%E5%86%B2%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AE%9E%E7%8E%B0%E6%8C%87%E5%8D%97/">
+  <meta name="author" content="ORI2333" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="FPGA, ISP, 图像处理" />
+  
+  <meta name="description" content="FPGA DDR3 + AXI4 帧缓冲控制器实现指南目录 系统架构 DDR3 硬件与 MIG 配置 AXI4 协议要点 axi4_ctrl 模块详解 时钟域与帧缓冲管理 关键 Bug 与修复 调试方法 参考资料 测试结果 源码   1. 系统架构本设计实现了一条完整的图像数据通路：摄像头&#x2F;测试图案 → DDR3 帧缓冲 → HDMI 显示。 12345678910111213">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FPGA DDR3 + AXI4 帧缓冲控制器实现指南">
+<meta property="og:url" content="https://ori2333.github.io/2026/05/15/FPGA%20DDR3%20+%20AXI4%20%E5%B8%A7%E7%BC%93%E5%86%B2%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AE%9E%E7%8E%B0%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="ORI2333&#39;s Blog">
+<meta property="og:description" content="FPGA DDR3 + AXI4 帧缓冲控制器实现指南目录 系统架构 DDR3 硬件与 MIG 配置 AXI4 协议要点 axi4_ctrl 模块详解 时钟域与帧缓冲管理 关键 Bug 与修复 调试方法 参考资料 测试结果 源码   1. 系统架构本设计实现了一条完整的图像数据通路：摄像头&#x2F;测试图案 → DDR3 帧缓冲 → HDMI 显示。 12345678910111213">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ori2333.github.io/images/posts/%E4%B8%8A%E4%BC%8A.webp">
+<meta property="article:published_time" content="2026-05-15T00:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-15T10:51:56.697Z">
+<meta property="article:author" content="ORI2333">
+<meta property="article:tag" content="ISP">
+<meta property="article:tag" content="FPGA">
+<meta property="article:tag" content="图像处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ori2333.github.io/images/posts/%E4%B8%8A%E4%BC%8A.webp">
+  
+  <!-- JSON-LD 结构化数据 -->
+  
+  
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"FPGA DDR3 + AXI4 帧缓冲控制器实现指南","description":"FPGA DDR3 + AXI4...","image":"https://ori2333.github.io/2026/05/15/FPGA%20DDR3%20+%20AXI4%20%E5%B8%A7%E7%BC%93%E5%86%B2%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AE%9E%E7%8E%B0%E6%8C%87%E5%8D%97/images/posts/%E4%B8%8A%E4%BC%8A.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-05-15T00:00:00.000Z","dateModified":"2026-05-15T10:51:56.697Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/05/15/FPGA%20DDR3%20+%20AXI4%20%E5%B8%A7%E7%BC%93%E5%86%B2%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AE%9E%E7%8E%B0%E6%8C%87%E5%8D%97/"}}
+    </script>
+  
+  <!-- 关键 CSS 预加载 -->
+  <link rel="preload" href="/css/kr-core.min.css" as="style" crossorigin>
+  <link rel="preload" href="/css/kr-theme/light.min.css" as="style" crossorigin>
+  <link rel="preload" href="/css/kr-theme/dark.min.css" as="style" crossorigin>
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kr-core.min.css" media="all">
+  <link rel="stylesheet" id="theme-light-css" href="/css/kr-theme/light.min.css" media="all">
+  <link rel="stylesheet" id="theme-dark-css" href="/css/kr-theme/dark.min.css" media="(prefers-color-scheme: dark)">
+  
+    <link rel="stylesheet"  id="highlight-css" href="/css/highlight/highlight.js/night-eighties.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/css/highlight/highlight.js/night-eighties.min.css"></noscript>
+  
+  <script src="/js/kr-theme.min.js"></script>
+  <link rel="stylesheet"  id="fontawe-css" href="/vendors/font-awesome@4.7.0/css/font-awesome.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/vendors/font-awesome@4.7.0/css/font-awesome.min.css"></noscript>
+  
+    <link rel="stylesheet"  id="nprogress-css" href="/vendors/nprogress@0.2.0/nprogress.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/vendors/nprogress@0.2.0/nprogress.css"></noscript>
+  
+  
+    <link rel="stylesheet"  href="/vendors/viewerjs@1.11.6/dist/viewer.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/vendors/viewerjs@1.11.6/dist/viewer.min.css"></noscript>
+  
+  <!-- 预先加载的JS文件 -->
+  
+    <script src="/vendors/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  
+  <!-- 自定义站点横幅和背景 -->
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/theme/banner-light.webp');
+      }
+      html[data-theme="dark"] .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/theme/banner-dark.webp');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/images/theme/bg-light.webp');
+        }
+        html[data-theme="dark"] body.custom-background {
+          background-image: url('/images/theme/bg-dark.webp');
+        }
+      }
+    
+    
+      .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+      html[data-theme="dark"] .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+    
+  </style>
+
+  <!-- 额外的追加注入项 -->
+  
+    <style>.widget-kratos-about .about-contact-icons{display:flex;justify-content:space-evenly;align-items:center;max-width:240px;margin:14px auto 0;}.widget-kratos-about .about-contact-icons a{line-height:1;color:inherit;display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;}.widget-kratos-about .about-contact-icons a i{font-size:24px;}.widget-kratos-about .about-contact-icons a img{width:24px;height:24px;object-fit:contain;display:block;}.widget-kratos-about .about-contact-icons a img[alt='Email']{width:27px;height:27px;opacity:.98;}html[data-theme='dark'] .widget-kratos-about .about-contact-icons a img[alt='GitHub']{filter:brightness(0) invert(1);opacity:.98;}.widget-kratos-about .about-contact-icons a:hover{transform:translateY(-1px);}#footer .kratos-social-icons li a{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;}#footer .kratos-social-icons li a .footer-social-icon{width:34px;height:34px;object-fit:contain;display:block;}#footer .kratos-social-icons li a .footer-icon-email{filter:brightness(0) invert(1);opacity:.94;}#footer .kratos-social-icons li a .footer-icon-github{filter:brightness(0) invert(1);opacity:.95;}.kr-comments-disabled{margin:16px 0;padding:12px 14px;border:1px dashed rgba(160,160,160,.45);border-radius:10px;color:#9aa3b7;background:rgba(90,98,120,.08);text-align:center;}</style>
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    <li>
+                                        
+                                            <a href="/">
+                                        
+                                            
+                                                <i class="fa fa-home"></i>
+                                            
+                                            首页
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/archives/">
+                                        
+                                            
+                                                <i class="fa fa-archive"></i>
+                                            
+                                            归档
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/categories/">
+                                        
+                                            
+                                                <i class="fa fa-folder-open"></i>
+                                            
+                                            分类
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/tags/">
+                                        
+                                            
+                                                <i class="fa fa-tags"></i>
+                                            
+                                            标签
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/about/">
+                                        
+                                            
+                                                <i class="fa fa-user"></i>
+                                            
+                                            关于
+                                        </a>
+                                        
+                                    </li>
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">ORI2333&#39;s Blog</a></div>
+                    <div id="kratos-nav-toggle-wrapper" class="nav-toggle">
+                        <a id="kratos-nav-toggle" class="kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>ORI2333&#39;s Blog</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+
+
+        
+
+            
+
+            <section class="kr-main-col col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://ori2333.github.io/2026/05/15/FPGA%20DDR3%20+%20AXI4%20%E5%B8%A7%E7%BC%93%E5%86%B2%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AE%9E%E7%8E%B0%E6%8C%87%E5%8D%97/">
+    <div class="kratos-hentry kratos-page-inner clearfix">
+        <header class="kratos-page-header">
+            
+                <h1 class="kratos-page-title text-center" itemprop="name headline">FPGA DDR3 + AXI4 帧缓冲控制器实现指南</h1>
+            
+            <ul class="kratos-page-meta text-center">
+                <li><time datetime="2026-05-15T00:00:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-05-15</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
+                </li>
+                
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~22.90K
+                        
+                        字
+                    </li>
+                
+                
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var container = document.getElementById('busuanzi_container_page_pv');
+    if (container) {
+      container.style.display = 'inline';
+    }
+  });
+</script>
+<span id="busuanzi_container_page_pv" style="display:none;"><span id="busuanzi_value_page_pv">0</span></span>
+ 次阅读
+                    </li>
+                
+                
+            </ul>
+        </header>
+        <div class="kratos-page-content kr-post">
+            
+            
+            
+            <hr />
+            <div itemprop="articleBody"><h1 id="FPGA-DDR3-AXI4-帧缓冲控制器实现指南"><a href="#FPGA-DDR3-AXI4-帧缓冲控制器实现指南" class="headerlink" title="FPGA DDR3 + AXI4 帧缓冲控制器实现指南"></a>FPGA DDR3 + AXI4 帧缓冲控制器实现指南</h1><h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#1-%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84">系统架构</a></li>
+<li><a href="#2-ddr3-%E7%A1%AC%E4%BB%B6%E4%B8%8E-mig-%E9%85%8D%E7%BD%AE">DDR3 硬件与 MIG 配置</a></li>
+<li><a href="#3-axi4-%E5%8D%8F%E8%AE%AE%E8%A6%81%E7%82%B9">AXI4 协议要点</a></li>
+<li><a href="#4-axi4_ctrl-%E6%A8%A1%E5%9D%97%E8%AF%A6%E8%A7%A3">axi4_ctrl 模块详解</a></li>
+<li><a href="#5-%E6%97%B6%E9%92%9F%E5%9F%9F%E4%B8%8E%E5%B8%A7%E7%BC%93%E5%86%B2%E7%AE%A1%E7%90%86">时钟域与帧缓冲管理</a></li>
+<li><a href="#6-%E5%85%B3%E9%94%AE-bug-%E4%B8%8E%E4%BF%AE%E5%A4%8D">关键 Bug 与修复</a></li>
+<li><a href="#7-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95">调试方法</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">参考资料</a></li>
+<li><a href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C">测试结果</a></li>
+<li><a href="#%E6%BA%90%E7%A0%81">源码</a></li>
+</ol>
+<hr>
+<h2 id="1-系统架构"><a href="#1-系统架构" class="headerlink" title="1. 系统架构"></a>1. 系统架构</h2><p>本设计实现了一条完整的图像数据通路：摄像头&#x2F;测试图案 → DDR3 帧缓冲 → HDMI 显示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">                        ┌─────────────┐</span><br><span class="line">SC1336 Sensor ─────────→│             │</span><br><span class="line">(DVP 8-bit)             │  axi4_ctrl  │     ┌──────────┐     ┌─────────┐</span><br><span class="line">                        │             │────→│  DDR3_0  │────→│         │</span><br><span class="line">Test Pattern @24MHz ───→│  W0_FIFO    │     │  (MIG)   │     │  HDMI   │</span><br><span class="line">                        │  256b×?     │     │  MT41K.. │     │ 720p@60 │</span><br><span class="line">                        │             │←────│  667MHz  │────→│         │</span><br><span class="line">                        │  R0_FIFO    │     └──────────┘     └─────────┘</span><br><span class="line">                        │  256b×?     │</span><br><span class="line">                        └─────────────┘</span><br><span class="line">                          ↑        ↓</span><br><span class="line">                       clk_cmos  clk_video</span><br><span class="line">                       (24MHz)   (74.25MHz)</span><br></pre></td></tr></table></figure>
+
+<p><strong>核心设计原则：写读时钟域分离。</strong></p>
+<ul>
+<li>写侧用 <code>clk_cmos</code>（24MHz），独立于显示时序</li>
+<li>读侧用 <code>clk_video</code>（74.25MHz），与 LCD 扫描同步</li>
+<li>4 个帧缓冲区避免读写冲突</li>
+</ul>
+<hr>
+<h2 id="2-DDR3-硬件与-MIG-配置"><a href="#2-DDR3-硬件与-MIG-配置" class="headerlink" title="2. DDR3 硬件与 MIG 配置"></a>2. DDR3 硬件与 MIG 配置</h2><h3 id="2-1-硬件规格"><a href="#2-1-硬件规格" class="headerlink" title="2.1 硬件规格"></a>2.1 硬件规格</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FPGA</td>
+<td>XC7K70T-FBG676 (-3)</td>
+</tr>
+<tr>
+<td>DDR3 芯片</td>
+<td>MT41K128M16XX-15E × 2pcs</td>
+</tr>
+<tr>
+<td>数据位宽</td>
+<td>32-bit（两片 16-bit 拼接）</td>
+</tr>
+<tr>
+<td>DDR 频率</td>
+<td>666.67MHz (1333 MT&#x2F;s)</td>
+</tr>
+<tr>
+<td>带宽</td>
+<td>32bit × 1333MT&#x2F;s &#x3D; 5.3 GB&#x2F;s</td>
+</tr>
+</tbody></table>
+<h3 id="2-2-MIG-IP-配置"><a href="#2-2-MIG-IP-配置" class="headerlink" title="2.2 MIG IP 配置"></a>2.2 MIG IP 配置</h3><p>MIG（Memory Interface Generator）是 Xilinx 提供的 DDR3 控制器 IP 核。关键参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Design Clock Frequency         : 666.67 MHz (1500 ps)</span><br><span class="line">PHY to Controller Clock Ratio  : 4:1</span><br><span class="line">Input Clock Period             : 3999 ps   (~250 MHz)</span><br><span class="line">CLKFBOUT_MULT (PLL)            : 16</span><br><span class="line">DIVCLK_DIVIDE (PLL)            : 3</span><br><span class="line">Memory Part                    : MT41K128M16XX-15E</span><br><span class="line">Data Width                     : 32</span><br><span class="line">AXI Data Width                 : 256</span><br><span class="line">ID Width                       : 4</span><br><span class="line">Address Mapping                : BANK_ROW_COLUMN</span><br><span class="line">SysResetPolarity               : ACTIVE LOW   ← 关键！</span><br></pre></td></tr></table></figure>
+
+<p><strong>理解 PHY to Controller Ratio (4:1)</strong>：</p>
+<ul>
+<li>DDR PHY 跑 666.67MHz</li>
+<li>UI Clock &#x3D; 666.67 &#x2F; 4 &#x3D; 166.67MHz</li>
+<li>每个 UI 时钟周期传输 4 个 DDR 数据拍（256-bit）</li>
+</ul>
+<h3 id="2-3-MIG-用户接口信号"><a href="#2-3-MIG-用户接口信号" class="headerlink" title="2.3 MIG 用户接口信号"></a>2.3 MIG 用户接口信号</h3><p>MIG 以 AXI4 Slave 接口对外暴露，信号宽度如下：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 时钟与复位</span></span><br><span class="line"><span class="keyword">input</span>         sys_clk_i,        <span class="comment">// 系统时钟 250MHz</span></span><br><span class="line"><span class="keyword">input</span>         clk_ref_i,        <span class="comment">// IDELAYCTRL 参考钟 200MHz（必须！）</span></span><br><span class="line"><span class="keyword">input</span>         sys_rst,          <span class="comment">// 系统复位（ACTIVE LOW）</span></span><br><span class="line"><span class="keyword">output</span>        ui_clk,           <span class="comment">// 用户时钟 166.67MHz</span></span><br><span class="line"><span class="keyword">output</span>        ui_clk_sync_rst,  <span class="comment">// 用户复位（高有效）</span></span><br><span class="line"><span class="keyword">output</span>        init_calib_complete, <span class="comment">// 校准完成标志</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// AXI Write Address</span></span><br><span class="line"><span class="keyword">input</span>  [<span class="number">3</span>:<span class="number">0</span>]  s_axi_awid,</span><br><span class="line"><span class="keyword">input</span>  [<span class="number">28</span>:<span class="number">0</span>] s_axi_awaddr,</span><br><span class="line"><span class="keyword">input</span>  [<span class="number">7</span>:<span class="number">0</span>]  s_axi_awlen,</span><br><span class="line"><span class="keyword">input</span>  [<span class="number">2</span>:<span class="number">0</span>]  s_axi_awsize,     <span class="comment">// 2^5=32 Bytes = 256-bit</span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// AXI Write Data</span></span><br><span class="line"><span class="keyword">input</span>  [<span class="number">255</span>:<span class="number">0</span>] s_axi_wdata,</span><br><span class="line"><span class="keyword">input</span>  [<span class="number">31</span>:<span class="number">0</span>]  s_axi_wstrb,</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// AXI Read Data</span></span><br><span class="line"><span class="keyword">output</span> [<span class="number">255</span>:<span class="number">0</span>] s_axi_rdata,</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>关键教训</strong>：<code>clk_ref_i</code> 必须接 200MHz ±10MHz。这是 IDELAYCTRL 硬核的参考钟，不是可选的。我们的设计从 <code>sys_clk_ddr_ref</code> PLL 同时输出 250MHz 和 200MHz。</p>
+</blockquote>
+<hr>
+<h2 id="3-AXI4-协议要点"><a href="#3-AXI4-协议要点" class="headerlink" title="3. AXI4 协议要点"></a>3. AXI4 协议要点</h2><h3 id="3-1-五个独立通道与-VALID-READY-握手"><a href="#3-1-五个独立通道与-VALID-READY-握手" class="headerlink" title="3.1 五个独立通道与 VALID&#x2F;READY 握手"></a>3.1 五个独立通道与 VALID&#x2F;READY 握手</h3><p>AXI4 协议定义了 5 个独立的单向通道，每个通道都使用相同的 VALID&#x2F;READY 握手机制：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">                    Master                         Slave</span><br><span class="line">Write Address (AW): ──── awvalid/awaddr ────→  (awready)</span><br><span class="line">Write Data    (W):  ──── wvalid/wdata ──────→  (wready)</span><br><span class="line">Write Response (B):  ←── bvalid/bresp ───────  (bready)</span><br><span class="line">Read Address  (AR):  ──── arvalid/araddr ────→  (arready)</span><br><span class="line">Read Data     (R):   ←── rvalid/rdata ───────  (rready)</span><br></pre></td></tr></table></figure>
+
+<p><strong>VALID&#x2F;READY 握手规则</strong>：</p>
+<ul>
+<li>发送方（Master）准备好数据后拉高 VALID，保持直到握手完成</li>
+<li>接收方（Slave）准备好接收时拉高 READY</li>
+<li><strong>当 VALID &amp;&amp; READY 同时为高的时钟沿，一次传输完成</strong></li>
+<li>VALID 不能等待 READY——发送方必须先拉高 VALID</li>
+<li>READY 可以在 VALID 之前拉高（Slave 提前表示可以接收）</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">clk     ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐</span><br><span class="line">        ┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─</span><br><span class="line">awvalid ────────┐           ┌─────────</span><br><span class="line">awready ────────────┐   ┌───────────</span><br><span class="line">                    │   │</span><br><span class="line">                    ├───┤ ← 握手！传输在这一拍发生</span><br><span class="line">wdata   ────────[ D0 ][ D1 ][ D2 ]...</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-AXI4-Burst-传输详解"><a href="#3-2-AXI4-Burst-传输详解" class="headerlink" title="3.2 AXI4 Burst 传输详解"></a>3.2 AXI4 Burst 传输详解</h3><p>本设计使用 INCR（递增）Burst 类型。一次 Burst 传输连续 16 拍数据（<code>awlen=15</code>）。</p>
+<p><strong>写 Burst 时序</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">         ┌─ AW 握手 ─┐  ┌──────── W 通道 16 拍 ────────────┐ ┌─ B 响应 ─┐</span><br><span class="line">awvalid  ──┐         ┌──</span><br><span class="line">awready  ────┐     ┌────</span><br><span class="line">awaddr   ────[ADDR]─────────────────────────────────────────────</span><br><span class="line">wvalid   ───────────┐                                     ┌────</span><br><span class="line">wready   ─────────────┐                               ┌──────</span><br><span class="line">wdata    ─────────────[D0][D1][D2]...[D14][D15]─────────────</span><br><span class="line">wlast    ───────────────────────────────────────┐       ┌─────</span><br><span class="line">bvalid   ───────────────────────────────────────────┐ ┌──────</span><br><span class="line">bready   ─────────────────────────────────────────────┐┌─────</span><br></pre></td></tr></table></figure>
+
+<p>关键点：</p>
+<ul>
+<li>AW 通道先于 W 通道发起（或同时）</li>
+<li>W 通道 16 拍数据连续发送</li>
+<li>最后一拍（第 16 拍）<code>wlast=1</code></li>
+<li>Burst 完成后，Slave 通过 B 通道回复写响应</li>
+</ul>
+<p><strong>读 Burst 时序</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">         ┌─ AR 握手 ─┐  ┌──────── R 通道 16 拍 ────────────┐</span><br><span class="line">arvalid  ──┐         ┌──</span><br><span class="line">arready  ────┐     ┌────</span><br><span class="line">araddr   ────[ADDR]─────────────────────────────────────────────</span><br><span class="line">rvalid   ─────────────────┐                               ┌────</span><br><span class="line">rready   ───────────────────┐                           ┌──────</span><br><span class="line">rdata    ───────────────────[D0][D1][D2]...[D14][D15]──────</span><br><span class="line">rlast    ───────────────────────────────────────┐       ┌─────</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-AXI4-地址计算与-DDR-内存布局"><a href="#3-3-AXI4-地址计算与-DDR-内存布局" class="headerlink" title="3.3 AXI4 地址计算与 DDR 内存布局"></a>3.3 AXI4 地址计算与 DDR 内存布局</h3><h4 id="3-3-1-地址拼接"><a href="#3-3-1-地址拼接" class="headerlink" title="3.3.1 地址拼接"></a>3.3.1 地址拼接</h4><p>DDR 地址空间使用 <strong>{帧索引, 帧内偏移}</strong> 的拼接方式。本设计中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">32-bit 地址:</span><br><span class="line">┌──────────┬──────┬──────────────────────────┐</span><br><span class="line">│ 未使用    │ 帧索引 │  帧内偏移 (22 bits = 4MB)  │</span><br><span class="line">│ [31:24]  │ [23:22]│  [21:0]                    │</span><br><span class="line">└──────────┴──────┴──────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<p>传递给 MIG 时截取低 29 位 <code>[28:0]</code>。</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// awaddr 计算——每行代码对应硬件上的一个加法器</span></span><br><span class="line"><span class="keyword">assign</span> axi4_awaddr = BASE_ADDR + &#123;rc_wframe_index, rc_w_ptr&#125;;</span><br><span class="line"><span class="comment">//                   = 0x00000000 + &#123;2&#x27;dN, 22&#x27;dOffset&#125;</span></span><br><span class="line"><span class="comment">//                   = N × 4MB + Offset</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// araddr 计算——与 awaddr 对称</span></span><br><span class="line"><span class="keyword">assign</span> axi4_araddr = BASE_ADDR + &#123;rc_rframe_index, araddr&#125;;</span><br><span class="line"><span class="comment">//                   = 0x00000000 + &#123;2&#x27;dN, 22&#x27;dOffset&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-2-帧内偏移-rc-w-ptr-araddr"><a href="#3-3-2-帧内偏移-rc-w-ptr-araddr" class="headerlink" title="3.3.2 帧内偏移 (rc_w_ptr &#x2F; araddr)"></a>3.3.2 帧内偏移 (rc_w_ptr &#x2F; araddr)</h4><p>每写完一个 512 字节的 Burst，指针增加 <code>ADDR_INC = 16 × 32 = 512</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Burst 0:  rc_w_ptr = 0        → awaddr = 0x000000</span><br><span class="line">Burst 1:  rc_w_ptr = 512      → awaddr = 0x000200</span><br><span class="line">Burst 2:  rc_w_ptr = 1024     → awaddr = 0x000400</span><br><span class="line">...</span><br><span class="line">Burst 1799: rc_w_ptr = 1799×512 = 921088  → awaddr = 0x0E0E00</span><br></pre></td></tr></table></figure>
+
+<p>一帧共 921600 字节（1280×720×1 byte），1799 个完整的 512 字节 Burst  &#x3D; 1799×512 &#x3D; 921088 字节，最后一 Burst 不足 512 字节（仅 512 字节中的前 512 字节有效）。实际 1800 个 Burst 共 1800×512 &#x3D; 921600 字节，恰好一帧。</p>
+<h4 id="3-3-3-地址递增参数计算"><a href="#3-3-3-地址递增参数计算" class="headerlink" title="3.3.3 地址递增参数计算"></a>3.3.3 地址递增参数计算</h4><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">parameter</span> BURST_LEN = <span class="number">16</span>;                    <span class="comment">// 每 Burst 16 拍</span></span><br><span class="line"><span class="keyword">parameter</span> STRB_LEN  = DATA_LEN / <span class="number">8</span>;          <span class="comment">// 256/8 = 32 字节/拍</span></span><br><span class="line"><span class="keyword">parameter</span> ADDR_INC  = BURST_LEN * STRB_LEN;  <span class="comment">// 16 × 32 = 512 字节/Burst</span></span><br><span class="line"><span class="keyword">parameter</span> BUF_SIZE  = <span class="number">22</span>;                    <span class="comment">// 2^22 = 4,194,304 字节/缓冲</span></span><br><span class="line"><span class="keyword">parameter</span> BASE_ADDR = <span class="number">32&#x27;h0000_0000</span>;         <span class="comment">// DDR 起始地址 = 0</span></span><br></pre></td></tr></table></figure>
+
+<p>4 个帧缓冲区的地址分布：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Buffer 0: 0x00000000 ~ 0x003FFFFF  (0 ~ 4MB)</span><br><span class="line">Buffer 1: 0x00400000 ~ 0x007FFFFF  (4MB ~ 8MB)</span><br><span class="line">Buffer 2: 0x00800000 ~ 0x00BFFFFF  (8MB ~ 12MB)</span><br><span class="line">Buffer 3: 0x00C00000 ~ 0x00FFFFFF  (12MB ~ 16MB)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-awvalid-与-awready-的精确保序"><a href="#3-4-awvalid-与-awready-的精确保序" class="headerlink" title="3.4 awvalid 与 awready 的精确保序"></a>3.4 awvalid 与 awready 的精确保序</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// awvalid 在 IDLE 态发起，在收到 awready 后清除</span></span><br><span class="line"><span class="keyword">if</span> (axi4_awvalid &amp;&amp; axi4_awready)</span><br><span class="line">    axi4_awvalid &lt;= <span class="number">1&#x27;b0</span>;   <span class="comment">// 握手完成，拉低 valid</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 在 WS_W_IDLE 态，FIFO 有数据时重新拉高</span></span><br><span class="line">WS_W_IDLE: <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span> (~w_wfifo_pempty || ...) <span class="keyword">begin</span></span><br><span class="line">        axi4_awvalid &lt;= <span class="number">1&#x27;b1</span>;   <span class="comment">// 发起新的写地址请求</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>关键约束：<strong>同一时刻只能有一个未完成的写地址</strong>（awvalid 拉高后，必须等 awready 握手完成才能再拉高）。</p>
+<h3 id="3-5-awsize-必须匹配数据位宽"><a href="#3-5-awsize-必须匹配数据位宽" class="headerlink" title="3.5 awsize 必须匹配数据位宽"></a>3.5 awsize 必须匹配数据位宽</h3><p><code>awsize</code> 编码表：</p>
+<table>
+<thead>
+<tr>
+<th>awsize</th>
+<th>字节&#x2F;拍</th>
+<th>适用数据位宽</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>1</td>
+<td>8-bit</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>16-bit</td>
+</tr>
+<tr>
+<td>2</td>
+<td>4</td>
+<td>32-bit</td>
+</tr>
+<tr>
+<td>3</td>
+<td>8</td>
+<td>64-bit</td>
+</tr>
+<tr>
+<td>4</td>
+<td>16</td>
+<td>128-bit</td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td><strong>32</strong></td>
+<td><strong>256-bit</strong> ← 本设计</td>
+</tr>
+<tr>
+<td>6</td>
+<td>64</td>
+<td>512-bit</td>
+</tr>
+<tr>
+<td>7</td>
+<td>128</td>
+<td>1024-bit</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>致命教训</strong>：曾经 awsize&#x3D;4（16 字节&#x2F;拍），但数据位宽是 256-bit&#x3D;32 字节。MIG 每拍只存取低 128-bit，高位数据永久丢失→雪花屏。</p>
+</blockquote>
+<hr>
+<h2 id="4-axi4-ctrl-模块详解"><a href="#4-axi4-ctrl-模块详解" class="headerlink" title="4. axi4_ctrl 模块详解"></a>4. axi4_ctrl 模块详解</h2><h3 id="4-1-模块参数"><a href="#4-1-模块参数" class="headerlink" title="4.1 模块参数"></a>4.1 模块参数</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> axi4_ctrl #(</span><br><span class="line">    <span class="keyword">parameter</span> ID_LEN       = <span class="number">8</span>,          <span class="comment">// AXI ID 宽度</span></span><br><span class="line">    <span class="keyword">parameter</span> ADDR_LEN     = <span class="number">32</span>,         <span class="comment">// 地址宽度</span></span><br><span class="line">    <span class="keyword">parameter</span> DATA_LEN     = <span class="number">256</span>,        <span class="comment">// 数据位宽 (bit)</span></span><br><span class="line">    <span class="keyword">parameter</span> DATA_SIZE    = <span class="number">5</span>,          <span class="comment">// 2^5=32 字节/拍</span></span><br><span class="line">    <span class="keyword">parameter</span> BURST_LEN    = <span class="number">16</span>,         <span class="comment">// Burst 拍数</span></span><br><span class="line">    <span class="keyword">parameter</span> STRB_LEN     = DATA_LEN/<span class="number">8</span>, <span class="comment">// 写选通宽度</span></span><br><span class="line">    <span class="keyword">parameter</span> ADDR_INC     = BURST_LEN * STRB_LEN, <span class="comment">// 512 字节</span></span><br><span class="line">    <span class="keyword">parameter</span> W_WIDTH      = <span class="number">8</span>,          <span class="comment">// 写数据输入位宽</span></span><br><span class="line">    <span class="keyword">parameter</span> R_WIDTH      = <span class="number">8</span>,          <span class="comment">// 读数据输出位宽</span></span><br><span class="line">    <span class="keyword">parameter</span> BUF_SIZE     = <span class="number">22</span>,         <span class="comment">// 2^22 = 4MB 缓冲区</span></span><br><span class="line">    <span class="keyword">parameter</span> RD_END_ADDR  = <span class="number">1280</span>*<span class="number">720</span>,   <span class="comment">// 一帧像素数</span></span><br><span class="line">    <span class="keyword">parameter</span> BASE_ADDR    = <span class="number">32&#x27;h0000_0000</span></span><br><span class="line">)(</span><br><span class="line">    <span class="keyword">input</span>  <span class="keyword">wire</span>        axi4_clk,         <span class="comment">// AXI 时钟 (ui_clk 166.67MHz)</span></span><br><span class="line">    <span class="keyword">input</span>  <span class="keyword">wire</span>        axi4_rst_n,       <span class="comment">// AXI 复位 (低有效)</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// AXI4 五个通道 (略，详见源码)</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 帧接口</span></span><br><span class="line">    <span class="keyword">input</span>  <span class="keyword">wire</span>        wframe_pclk,      <span class="comment">// 写像素时钟 (24MHz)</span></span><br><span class="line">    <span class="keyword">input</span>  <span class="keyword">wire</span>        wframe_vsync,     <span class="comment">// 写帧同步</span></span><br><span class="line">    <span class="keyword">input</span>  <span class="keyword">wire</span>        wframe_data_en,   <span class="comment">// 写数据有效</span></span><br><span class="line">    <span class="keyword">input</span>  <span class="keyword">wire</span> [<span class="number">7</span>:<span class="number">0</span>]  wframe_data,      <span class="comment">// 写数据</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">input</span>  <span class="keyword">wire</span>        rframe_pclk,      <span class="comment">// 读像素时钟 (74.25MHz)</span></span><br><span class="line">    <span class="keyword">input</span>  <span class="keyword">wire</span>        rframe_vsync,     <span class="comment">// 读帧同步</span></span><br><span class="line">    <span class="keyword">input</span>  <span class="keyword">wire</span>        rframe_data_en,   <span class="comment">// 读数据请求</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">wire</span> [<span class="number">7</span>:<span class="number">0</span>]  rframe_data       <span class="comment">// 读数据输出</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-写数据通路"><a href="#4-2-写数据通路" class="headerlink" title="4.2 写数据通路"></a>4.2 写数据通路</h3><p>数据从窄位宽（8-bit）拼成宽位宽（256-bit）再写 DDR：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 移位寄存器：每次移入 W_WIDTH=8 位</span></span><br><span class="line"><span class="keyword">reg</span>  [DATA_LEN-<span class="number">1</span>:<span class="number">0</span>] r_wfifo_wdata;</span><br><span class="line"><span class="keyword">wire</span> [DATA_LEN-<span class="number">1</span>:<span class="number">0</span>] w_wfifo_wdata;</span><br><span class="line"><span class="keyword">assign</span> w_wfifo_wdata = &#123;wframe_data, r_wfifo_wdata[DATA_LEN-<span class="number">1</span>:W_WIDTH]&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> wframe_pclk) <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span> (!r_w_rst_n) <span class="keyword">begin</span></span><br><span class="line">        r_wfifo_wdata &lt;= &#123;DATA_LEN&#123;<span class="number">1&#x27;b0</span>&#125;&#125;;   <span class="comment">// 帧结束时清空</span></span><br><span class="line">    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">if</span> (wframe_data_en) <span class="keyword">begin</span></span><br><span class="line">        r_wfifo_wdata &lt;= w_wfifo_wdata;       <span class="comment">// 每有效像素移入 8 位</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>工作原理</strong>：</p>
+<ol>
+<li>每来一个像素（<code>wframe_data_en=1</code>），8-bit 数据从右侧移入移位寄存器</li>
+<li>累计 32 个像素（32×8&#x3D;256 bit）后，写入 W0_FIFO</li>
+<li>写状态机从 W0_FIFO 读出 256-bit 字，通过 AXI Burst 写入 DDR</li>
+</ol>
+<p><strong>帧结束处理</strong>：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">WS_W_EOF: <span class="keyword">begin</span></span><br><span class="line">    r_weof_pending &lt;= <span class="number">1&#x27;b0</span>;      <span class="comment">// 清除 EOF 标志</span></span><br><span class="line">    rc_w_ptr       &lt;= <span class="number">1&#x27;b0</span>;      <span class="comment">// 写指针归零（新帧从头开始）</span></span><br><span class="line">    state_write    &lt;= WS_W_IDLE;  <span class="comment">// 回到空闲</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-写状态机"><a href="#4-3-写状态机" class="headerlink" title="4.3 写状态机"></a>4.3 写状态机</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">localparam</span> WS_W_IDLE  = <span class="number">2&#x27;b00</span>;   <span class="comment">// 空闲：等待 FIFO 数据</span></span><br><span class="line"><span class="keyword">localparam</span> WS_W_WDATA = <span class="number">2&#x27;b01</span>;   <span class="comment">// 写数据：发送 Burst</span></span><br><span class="line"><span class="keyword">localparam</span> WS_W_WINC  = <span class="number">2&#x27;b10</span>;   <span class="comment">// 指针递增：Burst 完成</span></span><br><span class="line"><span class="keyword">localparam</span> WS_W_EOF   = <span class="number">2&#x27;b11</span>;   <span class="comment">// 帧结束：复位指针</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">case</span> (state_write)</span><br><span class="line">    WS_W_IDLE: <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span> (~w_wfifo_pempty || ...) <span class="keyword">begin</span></span><br><span class="line">            axi4_awvalid &lt;= <span class="number">1&#x27;b1</span>;              <span class="comment">// 发起写请求</span></span><br><span class="line">            axi4_wvalid  &lt;= <span class="number">1&#x27;b1</span>;</span><br><span class="line">            state_write  &lt;= WS_W_WDATA;</span><br><span class="line">        <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">if</span> (r_weof_pending) <span class="keyword">begin</span></span><br><span class="line">            r_w_rst_n &lt;= <span class="number">1&#x27;b0</span>;                 <span class="comment">// 帧结束，复位 FIFO</span></span><br><span class="line">            r_wframe_inc &lt;= <span class="number">1&#x27;b1</span>;              <span class="comment">// 通知帧索引管理</span></span><br><span class="line">            state_write &lt;= WS_W_EOF;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    WS_W_WDATA: <span class="keyword">begin</span></span><br><span class="line">        rc_burst &lt;= rc_burst + axi4_wready;</span><br><span class="line">        <span class="keyword">if</span> (axi4_wlast &amp;&amp; axi4_wready) <span class="keyword">begin</span>   <span class="comment">// Burst 最后一拍</span></span><br><span class="line">            axi4_wvalid &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line">            state_write &lt;= WS_W_WINC;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    WS_W_WINC: <span class="keyword">begin</span></span><br><span class="line">        rc_w_ptr &lt;= rc_w_ptr + ADDR_INC;       <span class="comment">// 指针增加 512 字节</span></span><br><span class="line">        state_write &lt;= WS_W_IDLE;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    WS_W_EOF: <span class="keyword">begin</span></span><br><span class="line">        r_weof_pending &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line">        rc_w_ptr &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line">        state_write &lt;= WS_W_IDLE;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">endcase</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>致命教训</strong>：曾经的 case 标签中 <code>WS_W_WINC</code> 被错误标记为 <code>WS_W_EOF</code>（重复标签），导致状态 <code>2&#39;b10</code> 无匹配分支 → 写完第一个 Burst 后永久死锁。修复方法是确保 4 个编码各有唯一 case 标签。</p>
+</blockquote>
+<h3 id="4-4-读数据通路"><a href="#4-4-读数据通路" class="headerlink" title="4.4 读数据通路"></a>4.4 读数据通路</h3><p>从 DDR 读出 256-bit 字，拆成 8-bit 像素输出：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计数器：每读取一个像素 +1，0→31 循环</span></span><br><span class="line"><span class="keyword">localparam</span> RFIFO_CNT_SIZE = (R_WIDTH == <span class="number">8</span>) ? <span class="number">5</span> : ...;</span><br><span class="line"><span class="keyword">reg</span> [RFIFO_CNT_SIZE-<span class="number">1</span>:<span class="number">0</span>] rc_rfifo_rd;</span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> rframe_pclk <span class="keyword">or</span> <span class="keyword">posedge</span> r_rfifo_rst_rclk) <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span> (r_rfifo_rst_rclk) <span class="keyword">begin</span></span><br><span class="line">        rc_rfifo_rd &lt;= <span class="number">&#x27;d0</span>;</span><br><span class="line">    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">if</span> (rframe_data_en) <span class="keyword">begin</span></span><br><span class="line">        rc_rfifo_rd &lt;= rc_rfifo_rd + <span class="number">1&#x27;b1</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 在 rc_rfifo_rd==0 时从 FIFO 加载新 256-bit 字</span></span><br><span class="line"><span class="keyword">assign</span> w_rframe_data_en_gen = rframe_data_en &amp;&amp; (rc_rfifo_rd == <span class="number">0</span>)</span><br><span class="line">                              &amp;&amp; !w_rfifo_empty;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 数据移位输出</span></span><br><span class="line"><span class="keyword">reg</span> [<span class="number">255</span>:<span class="number">0</span>] r_rframe_data_gen;</span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> rframe_pclk) <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span> (w_rframe_data_en_gen) <span class="keyword">begin</span></span><br><span class="line">        r_rframe_data_gen &lt;= w_rframe_data_gen;   <span class="comment">// 加载新字</span></span><br><span class="line">    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">if</span> (rframe_data_en) <span class="keyword">begin</span></span><br><span class="line">        r_rframe_data_gen &lt;= r_rframe_data_gen &gt;&gt; R_WIDTH; <span class="comment">// 右移 8 位</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">assign</span> rframe_data = w_rfifo_empty ? <span class="number">8&#x27;h00</span></span><br><span class="line">                    : r_rframe_data_gen[R_WIDTH-<span class="number">1</span>:<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+
+<p><strong>工作原理</strong>：</p>
+<ol>
+<li>R0_FIFO 写侧在 <code>axi4_clk</code> 域接收 AXI 读数据</li>
+<li>R0_FIFO 读侧在 <code>rframe_pclk</code> 域按需输出</li>
+<li>每 32 个像素触发一次 FIFO 读（<code>rc_rfifo_rd == 0</code>）</li>
+<li>加载 256-bit 字后，每次右移 8 位输出一个像素</li>
+</ol>
+<h4 id="4-2-1-移位寄存器打包详解（时序图）"><a href="#4-2-1-移位寄存器打包详解（时序图）" class="headerlink" title="4.2.1 移位寄存器打包详解（时序图）"></a>4.2.1 移位寄存器打包详解（时序图）</h4><p>每来一个像素（<code>wframe_data_en=1</code>），8-bit 数据从右侧移入 256-bit 移位寄存器：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">PCLK     ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ... ┌─┐ ┌─┐</span><br><span class="line">wframe_data_en ────┐     ┌───┐     ┌─── ... ──┐</span><br><span class="line">                   │     │   │     │           │</span><br><span class="line">Pixel #:           P0    P1  P2    P3  ...     P31</span><br><span class="line"></span><br><span class="line">r_wfifo_wdata[7:0]     ← P0</span><br><span class="line">r_wfifo_wdata[15:8]    ← (shifted)</span><br><span class="line">r_wfifo_wdata[23:16]   ← (shifted)</span><br><span class="line">...</span><br><span class="line">经过 32 个 data_en 后:</span><br><span class="line">r_wfifo_wdata[7:0]   = P31 (最新)</span><br><span class="line">r_wfifo_wdata[15:8]  = P30</span><br><span class="line">...</span><br><span class="line">r_wfifo_wdata[255:248] = P0 (最早)</span><br><span class="line"></span><br><span class="line">此时 rc_wfifo_we = 5&#x27;b11111 = 31, (&amp;rc_wfifo_we) = 1</span><br><span class="line">→ W0_FIFO.wr_en = 1 → w_wfifo_wdata 被写入 FIFO</span><br></pre></td></tr></table></figure>
+
+<p><strong>PCLK 速率计算</strong>（clk_cmos @24MHz）：</p>
+<ul>
+<li>每秒采样 24M 像素</li>
+<li>每 32 像素填满一个 256-bit 字 → 24M&#x2F;32 &#x3D; 750K 字&#x2F;秒</li>
+<li>FIFO 写入带宽 &#x3D; 750K × 32 bytes &#x3D; 24 MB&#x2F;s</li>
+<li>AXI 写带宽 &#x3D; 166.67M × 32 bytes（每拍）× 16 拍&#x2F;16 拍 &#x3D; 5.3 GB&#x2F;s</li>
+<li>写不溢出：5.3 GB&#x2F;s &gt;&gt; 24 MB&#x2F;s</li>
+</ul>
+<h4 id="4-2-2-帧结束时的移位寄存器清理"><a href="#4-2-2-帧结束时的移位寄存器清理" class="headerlink" title="4.2.2 帧结束时的移位寄存器清理"></a>4.2.2 帧结束时的移位寄存器清理</h4><p>这是一个关键的边缘情况处理：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">帧尾最后一拍数据（P_last）到达后:</span><br><span class="line">  r_wfifo_wdata 中可能还残留 0~31 个像素未写入 FIFO</span><br><span class="line"></span><br><span class="line">如果不清空:</span><br><span class="line">  → 下一帧的前 31 个像素会和残留数据混合 → 每帧第一条水平条纹的 31 像素错乱 → &quot;重影/撕裂&quot;</span><br><span class="line"></span><br><span class="line">修复：r_w_rst_n = 0 时清空整个移位寄存器</span><br><span class="line">  r_wfifo_wdata &lt;= &#123;DATA_LEN&#123;1&#x27;b0&#125;&#125;;   // 256 位全零</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>致命教训</strong>：R0_FIFO 的 <code>din</code> 曾错误连接到 FIFO 自己的 <code>dout</code>→自循环永远为空。<code>wr_clk</code> 曾设为 <code>rframe_pclk</code> 而非 <code>axi4_clk</code>。R0_FIFO 复位逻辑曾有双取反导致永远不复位的 bug。</p>
+</blockquote>
+<h4 id="4-3-1-写状态机完整时序"><a href="#4-3-1-写状态机完整时序" class="headerlink" title="4.3.1 写状态机完整时序"></a>4.3.1 写状态机完整时序</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">          ┌──── IDLE ────┐ ┌──── WDATA ────┐ ┌─WINC┐ ┌─IDLE─┐</span><br><span class="line">state:   2&#x27;b00            2&#x27;b01              2&#x27;b10   2&#x27;b00</span><br><span class="line">awvalid: ──────┐         ┌──────────────────────</span><br><span class="line">awready: ────────┐     ┌────────────────────────</span><br><span class="line">wvalid:  ──────┐         ┌────────────────┐</span><br><span class="line">wready:  ────┐             ┌────────────┐</span><br><span class="line">wdata:   ────[D0][D1]...[D14][D15]───────</span><br><span class="line">wlast:   ───────────────────────┐       ┌───</span><br><span class="line">rw_ptr:  [   N    ]             │       [N+512]</span><br><span class="line">rc_burst: 0 → 1 → 2 → ... → 15 │       0</span><br><span class="line">                                │</span><br><span class="line">                           Burst 完成，指针+512</span><br></pre></td></tr></table></figure>
+
+<p><strong>状态转移条件</strong>：</p>
+<ul>
+<li>IDLE → WDATA：FIFO 非空（<code>~w_wfifo_pempty</code>）或帧结束+FIFO 有残留数据</li>
+<li>WDATA → WINC：最后一拍握手完成（<code>axi4_wlast &amp;&amp; axi4_wready</code>）</li>
+<li>WINC → IDLE：无条件，单周期</li>
+<li>IDLE → EOF：帧结束标志 &amp; FIFO 全空</li>
+<li>EOF → IDLE：单周期，完成指针归零和帧索引递增</li>
+</ul>
+<h3 id="4-4-读数据通路（完整版）"><a href="#4-4-读数据通路（完整版）" class="headerlink" title="4.4 读数据通路（完整版）"></a>4.4 读数据通路（完整版）</h3><h4 id="4-4-1-R0-FIFO-跨时钟域架构"><a href="#4-4-1-R0-FIFO-跨时钟域架构" class="headerlink" title="4.4.1 R0_FIFO 跨时钟域架构"></a>4.4.1 R0_FIFO 跨时钟域架构</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">axi4_clk 域 (166.67MHz)              rframe_pclk 域 (74.25MHz)</span><br><span class="line">┌─────────────────────┐              ┌──────────────────────┐</span><br><span class="line">│ axi4_rdata[255:0]   │              │ rframe_data[7:0]     │</span><br><span class="line">│        ↓            │              │        ↑             │</span><br><span class="line">│ rfifo_wenb (1-cycle)│   R0_FIFO    │ r_rframe_data_gen    │</span><br><span class="line">│ rfifo_wdata[255:0]  │════256b═════→│   &gt;&gt; 8 each cycle    │</span><br><span class="line">│        ↓            │  Async FIFO  │        ↑             │</span><br><span class="line">│   (FIFO write)      │              │ w_rframe_data_gen    │</span><br><span class="line">└─────────────────────┘              │   (FIFO output)      │</span><br><span class="line">                                     │        ↑             │</span><br><span class="line">                                     │ rc_rfifo_rd counter  │</span><br><span class="line">                                     │  0→31→0→31...        │</span><br><span class="line">                                     └──────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-4-2-解包计数器与-FIFO-读时序"><a href="#4-4-2-解包计数器与-FIFO-读时序" class="headerlink" title="4.4.2 解包计数器与 FIFO 读时序"></a>4.4.2 解包计数器与 FIFO 读时序</h4><p>每 32 个像素（<code>rc_rfifo_rd == 0</code>）触发一次 FIFO 读：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Pixel #:    0  1  2 ... 30 31  0  1 ...</span><br><span class="line">rd_count:   0  1  2 ... 30 31  0  1 ...</span><br><span class="line">rd_en:     ┌┐                       ┌┐</span><br><span class="line">           └┘                       └┘</span><br><span class="line">           加载新 256b 字            加载下一个字</span><br><span class="line">           </span><br><span class="line">rdata:   [P0][P1][P2]...[P30][P31][P0][P1]...</span><br><span class="line">          ↑                       ↑</span><br><span class="line">      r_rframe_data_gen[7:0]   r_rframe_data_gen[7:0]</span><br><span class="line">      after load               after next load</span><br></pre></td></tr></table></figure>
+
+<p><strong>空 FIFO 保护</strong>：若 FIFO 空（<code>w_rfifo_empty=1</code>），<code>w_rframe_data_en_gen=0</code>→不加载→输出 0→显示黑像素（瞬时闪过，比撕裂&#x2F;花屏好）。</p>
+<h4 id="4-4-3-R0-FIFO-写侧（AXI-时钟域）"><a href="#4-4-3-R0-FIFO-写侧（AXI-时钟域）" class="headerlink" title="4.4.3 R0_FIFO 写侧（AXI 时钟域）"></a>4.4.3 R0_FIFO 写侧（AXI 时钟域）</h4><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 当 AXI 读数据到达时，写入 R0_FIFO</span></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> axi4_clk) <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span> (axi4_rvalid &amp;&amp; axi4_rready) <span class="keyword">begin</span></span><br><span class="line">        rfifo_wenb  &lt;= <span class="number">1&#x27;b1</span>;        <span class="comment">// 单周期写使能</span></span><br><span class="line">    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">        rfifo_wenb  &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> axi4_clk) <span class="keyword">begin</span></span><br><span class="line">    rfifo_wdata &lt;= axi4_rdata;      <span class="comment">// 延迟一拍对齐写使能</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>关键时序：<code>rfifo_wenb</code> 和 <code>rfifo_wdata</code> 是同一拍产生的——data 在 cycle N 采样，wen 在 cycle N 拉高，data 在 cycle N+1 呈现 → 此时 wen&#x3D;1 → FIFO 写入正确数据。</p>
+<h4 id="4-4-4-读状态机详细流程"><a href="#4-4-4-读状态机详细流程" class="headerlink" title="4.4.4 读状态机详细流程"></a>4.4.4 读状态机详细流程</h4><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 读地址递增管理</span></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> axi4_clk <span class="keyword">or</span> <span class="keyword">posedge</span> r_rfifo_rst) <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span> (r_rfifo_rst)</span><br><span class="line">        araddr &lt;= <span class="number">0</span>;                       <span class="comment">// 帧复位：归零</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (axi4_arvalid &amp;&amp; axi4_arready)</span><br><span class="line">        araddr &lt;= araddr + ADDR_INC;        <span class="comment">// Burst 完成：+512</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 读完成跟踪</span></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> axi4_clk <span class="keyword">or</span> <span class="keyword">posedge</span> r_rfifo_rst) <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span> (r_rfifo_rst) <span class="keyword">begin</span></span><br><span class="line">        rd_state    &lt;= S_READ_IDLE;</span><br><span class="line">        r_rd_pend   &lt;= <span class="number">0</span>;</span><br><span class="line">        axi4_arvalid &lt;= <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">        <span class="comment">// arvalid 在握手后清除</span></span><br><span class="line">        <span class="keyword">if</span> (axi4_arready &amp;&amp; axi4_arvalid)</span><br><span class="line">            axi4_arvalid &lt;= <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// r_rd_pend 在最后一拍数据到达时清除</span></span><br><span class="line">        <span class="keyword">if</span> (axi4_rvalid &amp;&amp; axi4_rlast)</span><br><span class="line">            r_rd_pend &lt;= <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">case</span> (rd_state)</span><br><span class="line">            S_READ_IDLE:</span><br><span class="line">                <span class="keyword">if</span> (ready) <span class="keyword">begin</span>           <span class="comment">// FIFO 稳定 &amp;&amp; 地址未超 &amp;&amp; FIFO 未满</span></span><br><span class="line">                    rd_state    &lt;= S_READ_ADDR;</span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line">            S_READ_ADDR: <span class="keyword">begin</span></span><br><span class="line">                axi4_arvalid &lt;= <span class="number">1</span>;         <span class="comment">// 发起读请求</span></span><br><span class="line">                r_rd_pend    &lt;= <span class="number">1</span>;</span><br><span class="line">                rd_state     &lt;= S_READ_DATA;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            S_READ_DATA:</span><br><span class="line">                <span class="keyword">if</span> (!axi4_arvalid &amp;&amp; !r_rd_pend) <span class="comment">// Burst 全部完成</span></span><br><span class="line">                    rd_state &lt;= S_READ_IDLE;</span><br><span class="line">        <span class="keyword">endcase</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-5-W0-FIFO-与-R0-FIFO-的完整连接"><a href="#4-5-W0-FIFO-与-R0-FIFO-的完整连接" class="headerlink" title="4.5 W0_FIFO 与 R0_FIFO 的完整连接"></a>4.5 W0_FIFO 与 R0_FIFO 的完整连接</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ========== W0_FIFO：写侧 FIFO ==========</span></span><br><span class="line">W0_FIFO_256 u_W0_FIFO_256 (</span><br><span class="line">    <span class="variable">.rst</span>        (~r_w_rst_n),          <span class="comment">// 帧结束时复位（高有效）</span></span><br><span class="line">    <span class="variable">.wr_clk</span>     (wframe_pclk),         <span class="comment">// 写时钟 = 像素时钟 (24MHz)</span></span><br><span class="line">    <span class="variable">.wr_en</span>      (wframe_data_en &amp;&amp; (&amp;rc_wfifo_we)), <span class="comment">// 32 像素写一次</span></span><br><span class="line">    <span class="variable">.din</span>        (w_wfifo_wdata),       <span class="comment">// 拼接后的 256-bit 数据</span></span><br><span class="line">    <span class="variable">.rd_clk</span>     (axi4_clk),            <span class="comment">// 读时钟 = AXI 时钟 (166.67MHz)</span></span><br><span class="line">    <span class="variable">.rd_en</span>      (w_wfifo_ren),         <span class="comment">// axi4_wvalid &amp;&amp; axi4_wready</span></span><br><span class="line">    <span class="variable">.dout</span>       (w_wfifo_rdata),       <span class="comment">// 输出到 AXI 写数据总线</span></span><br><span class="line">    <span class="variable">.empty</span>      (w_wfifo_empty),</span><br><span class="line">    <span class="variable">.prog_empty</span> (w_wfifo_pempty)       <span class="comment">// 几乎空：触发 Burst 的条件</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ========== R0_FIFO：读侧 FIFO ==========</span></span><br><span class="line">R0_FIFO_256 u_R0_FIFO_256 (</span><br><span class="line">    <span class="variable">.rst</span>        (w_rfifo_rst),         <span class="comment">// 帧边界复位（高有效）</span></span><br><span class="line">    <span class="variable">.wr_clk</span>     (axi4_clk),            <span class="comment">// 写时钟 = AXI 时钟 ← 必须是 axi4_clk!</span></span><br><span class="line">    <span class="variable">.wr_en</span>      (rfifo_wenb),          <span class="comment">// axi4_rvalid &amp;&amp; axi4_rready</span></span><br><span class="line">    <span class="variable">.din</span>        (rfifo_wdata),         <span class="comment">// AXI 读回的数据 ← 必须接 rfifo_wdata!</span></span><br><span class="line">    <span class="variable">.rd_clk</span>     (rframe_pclk),         <span class="comment">// 读时钟 = 像素时钟 (74.25MHz)</span></span><br><span class="line">    <span class="variable">.rd_en</span>      (w_rframe_data_en_gen),<span class="comment">// 每 32 像素读一次</span></span><br><span class="line">    <span class="variable">.dout</span>       (w_rframe_data_gen),   <span class="comment">// 输出到解包移位寄存器</span></span><br><span class="line">    <span class="variable">.empty</span>      (w_rfifo_empty),</span><br><span class="line">    <span class="variable">.prog_empty</span> (w_rfifo_aempty)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>W0_FIFO 和 R0_FIFO 都是异步 FIFO</strong>——写读两侧在不同时钟域。这要求 FIFO IP 配置为独立时钟模式（Independent Clocks），且数据位宽 256-bit，深度通常 512 或 1024。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">S_READ_IDLE → S_READ_ADDR → S_READ_DATA → S_READ_IDLE</span><br><span class="line">     ↑                           │</span><br><span class="line">     └───────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> (rd_state)</span><br><span class="line">    S_READ_IDLE: <span class="keyword">begin</span></span><br><span class="line">        <span class="comment">// 条件：FIFO 稳定 &amp;&amp; 地址未到帧尾 &amp;&amp; FIFO 未满</span></span><br><span class="line">        <span class="keyword">if</span> (rfifo_wr_rst_busy_dly[<span class="number">15</span>]</span><br><span class="line">            &amp;&amp; (araddr &lt; RD_END_ADDR)</span><br><span class="line">            &amp;&amp; (~rfifo_wfull))</span><br><span class="line">            rd_state &lt;= S_READ_ADDR;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    S_READ_ADDR: <span class="keyword">begin</span></span><br><span class="line">        axi4_arvalid &lt;= <span class="number">1</span>;          <span class="comment">// 发起读请求</span></span><br><span class="line">        r_rd_pend    &lt;= <span class="number">1</span>;          <span class="comment">// 标记有待处理读</span></span><br><span class="line">        rd_state     &lt;= S_READ_DATA;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    S_READ_DATA: <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span> ((~axi4_arvalid) &amp;&amp; (~r_rd_pend))</span><br><span class="line">            rd_state &lt;= S_READ_IDLE; <span class="comment">// Burst 完成</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">endcase</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-时钟域与帧缓冲管理"><a href="#5-时钟域与帧缓冲管理" class="headerlink" title="5. 时钟域与帧缓冲管理"></a>5. 时钟域与帧缓冲管理</h2><h3 id="5-1-时钟域划分"><a href="#5-1-时钟域划分" class="headerlink" title="5.1 时钟域划分"></a>5.1 时钟域划分</h3><table>
+<thead>
+<tr>
+<th>时钟</th>
+<th>频率</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>clk_50m</code></td>
+<td>50MHz</td>
+<td>板上晶振，PLL 输入</td>
+</tr>
+<tr>
+<td><code>clk_ctrl</code></td>
+<td>100MHz</td>
+<td>I2C、UART 控制域</td>
+</tr>
+<tr>
+<td><code>clk_cmos</code></td>
+<td>24MHz</td>
+<td>传感器时钟、DDR 写域</td>
+</tr>
+<tr>
+<td><code>clk_video</code></td>
+<td>74.25MHz</td>
+<td>LCD 像素时钟、DDR 读域</td>
+</tr>
+<tr>
+<td><code>clk_ddr_ref</code></td>
+<td>250MHz</td>
+<td>MIG 系统时钟</td>
+</tr>
+<tr>
+<td><code>clk_ddr_ref_200m</code></td>
+<td>200MHz</td>
+<td>MIG IDELAYCTRL 参考钟</td>
+</tr>
+<tr>
+<td><code>ui_clk</code></td>
+<td>166.67MHz</td>
+<td>MIG 用户接口、AXI 总线域</td>
+</tr>
+</tbody></table>
+<h3 id="5-2-帧缓冲管理"><a href="#5-2-帧缓冲管理" class="headerlink" title="5.2 帧缓冲管理"></a>5.2 帧缓冲管理</h3><p>使用 4 个缓冲区实现读写并行，避免冲突：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 缓冲区分配：每个 4MB，4 个共 16MB</span></span><br><span class="line"><span class="comment">// rc_wframe_index: 写指针 (0→1→2→3→0→...)</span></span><br><span class="line"><span class="comment">// rc_rframe_index: 读指针 (初始 2，远离写指针)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 写完成后</span></span><br><span class="line">rc_wframe_index &lt;= w_wframe_index_next;       <span class="comment">// 移到下一个安全位置</span></span><br><span class="line">r_wframe_index_last &lt;= rc_wframe_index;       <span class="comment">// 记录刚写完的缓冲</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 读开始时（仅在写完成至少一帧后）</span></span><br><span class="line"><span class="keyword">if</span> (wframe_done)</span><br><span class="line">    rc_rframe_index &lt;= r_wframe_index_last;   <span class="comment">// 读取刚写完的缓冲</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>wframe_done 保护机制</strong>：防止读在写完成前切到未写完的缓冲。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">初始: 写→buf0, 读→buf2(空)</span><br><span class="line">帧0完成: wframe_done=1, 写→buf1, 读→buf0(有效!)</span><br><span class="line">帧1完成: 写→buf2, 读→buf1</span><br><span class="line">帧2完成: 写→buf3, 读→buf2</span><br><span class="line">帧3完成: 写→buf0, 读→buf3  (循环)</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-写读分离——根治撕裂"><a href="#5-3-写读分离——根治撕裂" class="headerlink" title="5.3 写读分离——根治撕裂"></a>5.3 写读分离——根治撕裂</h3><p><strong>核心设计决策</strong>：写和读使用不同时钟域。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">写侧: clk_cmos (24MHz)          读侧: clk_video (74.25MHz)</span><br><span class="line">  XOR帧生成器 (24MHz, 独立时序)     LCD 驱动时序</span><br><span class="line">       ↓                               ↓</span><br><span class="line">  W0_FIFO (async)                 R0_FIFO (async)</span><br><span class="line">       ↓                               ↓</span><br><span class="line">  axi4_clk (166.67MHz) ←── DDR3 ──→ axi4_clk</span><br></pre></td></tr></table></figure>
+
+<p>因为写和读用完全不同的时钟、不同的帧生成器、不同的 vsync 信号，它们永远不可能在同一时刻操作同一个缓冲。撕裂从根本上被消除了。</p>
+<blockquote>
+<p>曾尝试让写读共用 <code>clk_video</code> 和 <code>lcd_vs</code>——反复出现撕裂，因为写读在同一时刻竞争访问相邻缓冲。</p>
+</blockquote>
+<hr>
+<h2 id="6-关键-Bug-与修复"><a href="#6-关键-Bug-与修复" class="headerlink" title="6. 关键 Bug 与修复"></a>6. 关键 Bug 与修复</h2><h3 id="6-1-axi4-awaddr-未驱动（致命）"><a href="#6-1-axi4-awaddr-未驱动（致命）" class="headerlink" title="6.1 axi4_awaddr 未驱动（致命）"></a>6.1 <code>axi4_awaddr</code> 未驱动（致命）</h3><p><strong>症状</strong>：DDR 写响应正常（<code>bvalid</code> 脉冲），但读回全是随机垃圾。</p>
+<p><strong>根因</strong>：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误代码</span></span><br><span class="line"><span class="keyword">assign</span> awaddr = BASE_ADDR + &#123;rc_wframe_index, rc_w_ptr&#125;; <span class="comment">// awaddr 未声明！隐式 1-bit wire</span></span><br><span class="line"><span class="comment">// axi4_awaddr 端口从未被赋值！→ 悬空</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>修复</strong>：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">assign</span> axi4_awaddr = BASE_ADDR + &#123;rc_wframe_index, rc_w_ptr&#125;;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这是雪花屏的根本原因。写地址永远为 0——所有数据写到地址 0，但读地址正确。读读到的是随机的 DDR 残留数据。</p>
+</blockquote>
+<h3 id="6-2-awsize-错误（致命）"><a href="#6-2-awsize-错误（致命）" class="headerlink" title="6.2 awsize 错误（致命）"></a>6.2 <code>awsize</code> 错误（致命）</h3><p><strong>症状</strong>：每个 AXI 字有一半数据丢失。</p>
+<p><strong>根因</strong>：<code>DATA_SIZE = 4</code> → <code>awsize = 4</code> → 2^4 &#x3D; 16 字节&#x2F;拍。但数据位宽是 256-bit &#x3D; 32 字节。</p>
+<p><strong>修复</strong>：<code>DATA_SIZE = 5</code> → <code>awsize = 5</code> → 2^5 &#x3D; 32 字节&#x2F;拍。</p>
+<h3 id="6-3-MIG-sys-rst-极性错误（致命）"><a href="#6-3-MIG-sys-rst-极性错误（致命）" class="headerlink" title="6.3 MIG sys_rst 极性错误（致命）"></a>6.3 MIG <code>sys_rst</code> 极性错误（致命）</h3><p><strong>症状</strong>：DDR 永远不校准（<code>ui_clk_sync_rst</code> 永久为 1）。</p>
+<p><strong>根因</strong>：MIG 配置 <code>SysResetPolarity = ACTIVE LOW</code>，但代码生成了 ACTIVE HIGH 复位。</p>
+<p><strong>修复</strong>：<code>assign mig_sys_rst = sys_rst_n;</code> ——直接用低有效系统复位。</p>
+<h3 id="6-4-R0-FIFO-din-自循环（致命）"><a href="#6-4-R0-FIFO-din-自循环（致命）" class="headerlink" title="6.4 R0_FIFO din 自循环（致命）"></a>6.4 R0_FIFO <code>din</code> 自循环（致命）</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误</span></span><br><span class="line"><span class="variable">.din</span> (w_rframe_data_gen),    <span class="comment">// w_rframe_data_gen 是 FIFO 的 dout！</span></span><br><span class="line"><span class="variable">.dout</span>(w_rframe_data_gen),    <span class="comment">// 同一个 wire！</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 正确</span></span><br><span class="line"><span class="variable">.din</span> (rfifo_wdata),          <span class="comment">// AXI 读数据</span></span><br><span class="line"><span class="variable">.dout</span>(w_rframe_data_gen),    <span class="comment">// FIFO 输出</span></span><br><span class="line"><span class="variable">.wr_clk</span>(axi4_clk),           <span class="comment">// 写时钟 = AXI 时钟（不是 rframe_pclk！）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-5-R0-FIFO-复位双取反（致命）"><a href="#6-5-R0-FIFO-复位双取反（致命）" class="headerlink" title="6.5 R0_FIFO 复位双取反（致命）"></a>6.5 R0_FIFO 复位双取反（致命）</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误</span></span><br><span class="line"><span class="keyword">wire</span> w_rfifo_rst_n = (~axi4_rst_n) || (~rfifo_rst_n); <span class="comment">// 命名为 _n 但存 active-high</span></span><br><span class="line">R0_FIFO <span class="variable">.rst</span>(~w_rfifo_rst_n);  <span class="comment">// 又取反一次 = 双取反 = 和原意相反</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 正确</span></span><br><span class="line"><span class="keyword">wire</span> w_rfifo_rst = (~axi4_rst_n) || (~rfifo_rst_n); <span class="comment">// active-high</span></span><br><span class="line">R0_FIFO <span class="variable">.rst</span>(w_rfifo_rst);</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-6-写状态机-case-标签错位（致命）"><a href="#6-6-写状态机-case-标签错位（致命）" class="headerlink" title="6.6 写状态机 case 标签错位（致命）"></a>6.6 写状态机 case 标签错位（致命）</h3><p>4 状态中 <code>WS_W_WINC (2&#39;b10)</code> 的 case 标签被错误写成了重复的 <code>WS_W_EOF</code> → 无匹配 → default → 死锁。</p>
+<h3 id="6-7-顶层参数覆盖（隐蔽）"><a href="#6-7-顶层参数覆盖（隐蔽）" class="headerlink" title="6.7 顶层参数覆盖（隐蔽）"></a>6.7 顶层参数覆盖（隐蔽）</h3><p><code>axi4_ctrl.sv</code> 默认值 <code>DATA_SIZE=5</code>，但 <code>sc1336_hdmi.sv</code> 例化时写 <code>.DATA_SIZE(4)</code>——顶层覆盖了模块默认值。</p>
+<h3 id="6-8-读帧索引起始值"><a href="#6-8-读帧索引起始值" class="headerlink" title="6.8 读帧索引起始值"></a>6.8 读帧索引起始值</h3><p><code>rc_rframe_index</code> 初始为 <code>2&#39;d0</code>（和写指针相同）→ 第一帧读写撞 buffer。<br>修复为 <code>2&#39;d2</code>（远离写指针 2 个 buffer）。</p>
+<hr>
+<h2 id="7-调试方法"><a href="#7-调试方法" class="headerlink" title="7. 调试方法"></a>7. 调试方法</h2><h3 id="7-1-分步验证策略"><a href="#7-1-分步验证策略" class="headerlink" title="7.1 分步验证策略"></a>7.1 分步验证策略</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Step 1: LCD 测试图案 (bypass DDR)</span><br><span class="line">  → 验证 LCD 驱动、时钟、复位正常</span><br><span class="line"></span><br><span class="line">Step 2: 常量写入 DDR (0xA5)</span><br><span class="line">  → 纯灰屏 = DDR 通路正常</span><br><span class="line"></span><br><span class="line">Step 3: 静态 XOR 图案</span><br><span class="line">  → 确认地址计算、数据完整性</span><br><span class="line"></span><br><span class="line">Step 4: 动态图案 (lcd_display_test)</span><br><span class="line">  → 验证帧切换、多缓冲</span><br><span class="line"></span><br><span class="line">Step 5: 传感器输入</span><br><span class="line">  → 真实数据通路</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-UART-快速切换"><a href="#7-2-UART-快速切换" class="headerlink" title="7.2 UART 快速切换"></a>7.2 UART 快速切换</h3><p>4 条串口命令（115200 bps）在一秒内完成 A&#x2F;B 对比：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>数据路径</th>
+<th>验证内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>L</code></td>
+<td>图案→LCD</td>
+<td>LCD 完好？</td>
+</tr>
+<tr>
+<td><code>G</code></td>
+<td>0xA5→DDR→LCD</td>
+<td>DDR 读写基础？</td>
+</tr>
+<tr>
+<td><code>X</code></td>
+<td>XOR→DDR→LCD</td>
+<td>地址&#x2F;数据完整？</td>
+</tr>
+<tr>
+<td><code>D</code></td>
+<td>动画→DDR→LCD</td>
+<td>帧缓冲&#x2F;多帧？</td>
+</tr>
+</tbody></table>
+<h3 id="7-3-ILA-关键观测点"><a href="#7-3-ILA-关键观测点" class="headerlink" title="7.3 ILA 关键观测点"></a>7.3 ILA 关键观测点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Probe0: state_write 看写状态机是否在跑</span><br><span class="line">Probe1: s_axi_rdata vs w_lcd_data 对比→定位故障在 DDR 侧还是 FIFO 侧</span><br><span class="line">Probe2: ddr_init_done, rc_wframe_index, rc_rframe_index</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-4-常见故障模式"><a href="#7-4-常见故障模式" class="headerlink" title="7.4 常见故障模式"></a>7.4 常见故障模式</h3><table>
+<thead>
+<tr>
+<th>现象</th>
+<th>可能原因</th>
+<th>检查</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全黑</td>
+<td>PLL 未锁 &#x2F; 一直复位</td>
+<td><code>sys_rst_n</code>, <code>ddr_init_done</code></td>
+</tr>
+<tr>
+<td>雪花</td>
+<td>读写地址不匹配</td>
+<td><code>awaddr</code> 是否正确驱动</td>
+</tr>
+<tr>
+<td>撕裂</td>
+<td>读写撞缓冲 &#x2F; 同钟</td>
+<td>时钟域是否分离</td>
+</tr>
+<tr>
+<td>第一列异常</td>
+<td>解包计数器偏移</td>
+<td><code>rc_rfifo_rd</code> 时序</td>
+</tr>
+<tr>
+<td>图案不切换</td>
+<td>vsync 未对齐</td>
+<td>切换逻辑 vsync 门控</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li>Xilinx UG586: 7 Series FPGAs Memory Interface Solutions</li>
+<li>ARM IHI 0022: AMBA AXI4 Protocol Specification</li>
+<li>MT41K128M16XX-15E Datasheet (Micron)</li>
+<li>项目源码: <code>sc1336_hdmi/rtl</code></li>
+</ul>
+<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p>使用HDMI输出到RK3588开发版，通过远程桌面访问显示<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260515184445124.png?imageSlim" alt="image.png"></p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p><a target="_blank" rel="noopener" href="https://github.com/ORI2333/FPGA_ISP/tree/main/sc1336_hdmi">https://github.com/ORI2333/FPGA_ISP/tree/main/sc1336_hdmi</a><br>如果对你有用，请帮忙给个Star！😘</p>
+</div>
+        </div>
+        
+            <div class="kratos-copyright text-center clearfix">
+                <span itemprop="copyrightNotice">本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</span>
+            </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+            
+            
+                <div class="post-actions text-center clearfix" id="post-actions">
+                
+                    <a class="donate" href="javascript:;" onclick="krOpenDonateModal()"><i class="fa fa-bitcoin"></i> 打赏</a>
+                
+                
+                    <a class="share" href="javascript:;" onclick="krOpenShareModal()"><i class="fa fa-share-alt"></i> 分享</a>
+                
+                </div>
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    <a class="tag-none-link" href="/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/tags/ISP/" rel="tag">ISP</a>, <a class="tag-none-link" href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag">图像处理</a>
+                </div>
+                <div class="pull-date">
+                    <time datetime="2026-05-15T10:51:56.697Z" itemprop="dateModified">最后编辑：2026-05-15</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            <div class="nav-previous clearfix">
+                <a title=" Proteus仿真+STM32+云平台" href="/2026/04/29/Proteus仿真+STM32+云平台/"><i class="fa fa-angle-left"></i> 上一篇</a>
+            </div>
+            
+            
+        </nav>
+    
+    
+</article>
+
+        
+
+            </section>
+
+            
+                
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/theme/头像.jpg" alt="ORI2333" loading="lazy" decoding="auto" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">A blog about programming, technology, and more.<br><span class="about-contact-icons"><a href="mailto:ori2333.zh@gmail.com" title="Email"><img src="/icons/default-sites/email.svg" alt="Email"></a><a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub"><img src="/icons/default-sites/github.svg" alt="GitHub"></a><a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili"><img src="/icons/default-sites/bilibili.ico" alt="Bilibili"></a><a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu"><img src="/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu"></a></span></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/archives/">
+            <span class="title">
+                文章
+            </span>
+            <span class="count">
+                6
+            </span>
+        </a>
+        <a class="meta-item" href="/categories/">
+            <span class="title">
+                分类
+            </span>
+            <span class="count">
+                1
+            </span>
+        </a>
+        <a class="meta-item" href="/tags/">
+            <span class="title">
+                标签
+            </span>
+            <span class="count">
+                9
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类列表</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/docs/">docs</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/tags/FPGA/" style="font-size: 0.8em;">FPGA</a> <a href="/tags/ISP/" style="font-size: 0.8em;">ISP</a> <a href="/tags/MQTT/" style="font-size: 0.6em;">MQTT</a> <a href="/tags/STM32/" style="font-size: 0.6em;">STM32</a> <a href="/tags/proteus/" style="font-size: 0.6em;">proteus</a> <a href="/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/" style="font-size: 0.6em;">云平台</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" style="font-size: 0.6em;">博客网站</a> <a href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" style="font-size: 0.8em;">图像处理</a> <a href="/tags/%E6%8E%A5%E5%8D%95/" style="font-size: 0.6em;">接单</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/2026/05/15/FPGA%20DDR3%20+%20AXI4%20%E5%B8%A7%E7%BC%93%E5%86%B2%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AE%9E%E7%8E%B0%E6%8C%87%E5%8D%97/"><i class="fa fa-book"></i> FPGA DDR3 + AXI4 帧缓冲控制器实现指南</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/"><i class="fa fa-book"></i> Proteus仿真+STM32+云平台</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/"><i class="fa fa-book"></i> ODDR原语说明</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/"><i class="fa fa-book"></i> HDMI Display设计手册</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"><i class="fa fa-book"></i> 博客运维指南</a>
+            
+          
+        
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+            
+
+        
+
+                </div>
+    </div>
+</div>
+
+<footer>
+    <div id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                            <li>
+                                <a href="mailto:ori2333.zh@gmail.com" title="Email">
+                                    <img class="footer-social-icon footer-icon-email" src="/icons/default-sites/email.svg" alt="Email">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub">
+                                    <img class="footer-social-icon footer-icon-github" src="/icons/default-sites/github.svg" alt="GitHub">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili">
+                                    <img class="footer-social-icon" src="/icons/default-sites/bilibili.ico" alt="Bilibili">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu">
+                                    <img class="footer-social-icon" src="/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu">
+                                </a>
+                            </li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2026 ORI2333's Blog 版权所有.</li>
+                            <li>本站已运行<span id="kr-since">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>自豪地使用 <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a> 主题</li>
+                            <li>站点由 <a href="https://github.com/ORI2333" target="_blank">ORI2333</a> 用 <i class="fa fa-heart" style="color:#d43f57"></i> 搭建</li>
+                        </div>
+                        <!-- 额外的追加注入项 -->
+                        
+                            <div>
+                                
+                                    <li>由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 强力驱动</li>
+                                
+                                    <li>在 <a href="https://github.com" target="_blank" rel="nofollow">GitHub</a> 暖心托管</li>
+                                
+                            </div>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                <!-- 额外的追加注入项 -->
+                
+                
+                    <div class="box search-box">
+                        <a href="/search">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                <div class="box theme-box" id="theme-toggle">
+                    <span class="fa fa-adjust"></span>
+                </div>
+            </div>
+            <div id="gotop-box" class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+
+    <div id="kr-donate-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseDonateModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-bitcoin"></i>
+            </div>
+            <div class="kr-modal-title">赞助喵</div>
+            <button class="kr-modal-close" onclick="krCloseDonateModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-donate-message">非常感谢您的喜欢！ <i class="fa fa-heart" style="color:#d43f57"></i></div>
+            <div class="kr-donate-qr" id="kr-donate-qr">
+                
+                    <img class="kr-donate-placeholder" src="https://dev.krt.moe/demo-assets/donate.webp" alt="赞助喵" />
+                
+            </div>
+            <div class="kr-donate-platforms">
+                
+                    
+                        <button class="kr-donate-platform-button" style="color: skyblue;" title="模拟支付" onclick="krDonateModalShowPlatformQR('example_payment', 'skyblue')">
+                            <i class="fa fa-credit-card"></i>
+                        </button>
+                    
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/js/kr-modal/donate.min.js"></script>
+
+
+
+
+    <div id="kr-share-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseShareModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-share-alt"></i>
+            </div>
+            <div class="kr-modal-title">分享这一刻</div>
+            <button class="kr-modal-close" onclick="krCloseShareModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-share-message">让朋友们也来瞅瞅！</div>
+            <div class="kr-share-qr" id="kr-share-qr"></div>
+            <div class="kr-share-platforms">
+                
+                    <button class="kr-share-platform-button" style="color: #62b6e7;" title="喵窝" onclick="krShareModalOpenPlatform('https://nya.one/share?text=%3E%20$TITLE%0A%3E%0A%3E%20$SUMMARY%0A----%20$SITE%0A%0A$URL')">
+                        <svg fill="currentColor" width="18" height="18" viewBox="0 0 329 388"><path d="M0,36.226c0,-19.993 16.233,-36.226 36.226,-36.226c13.788,0 25.787,7.719 31.908,19.068l188.366,229.845l0,-111.259c-6.356,5.508 -14.645,8.843 -23.707,8.843c-19.994,0 -36.226,-16.232 -36.226,-36.226c-0,-8.551 2.968,-16.413 7.93,-22.613l-0.015,-0.013l56.614,-69.08c6.2,-11.073 18.047,-18.565 31.63,-18.565c19.994,0 36.227,16.233 36.227,36.226l-0,314.644c-0,19.994 -16.233,36.226 -36.227,36.226c-13.166,0 -24.701,-7.039 -31.044,-17.555l-189.229,-230.899l-0,212.228c-0,19.994 -16.233,36.226 -36.227,36.226c-19.993,0 -36.226,-16.232 -36.226,-36.226l0,-314.644Z" /></svg>
+                    </button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/js/kr-modal/share.min.js"></script>
+
+
+
+<!-- 额外的追加注入项 -->
+
+
+        <script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/";
+</script>
+
+
+  <script defer src="/vendors/nprogress@0.2.0/nprogress.js"></script>
+
+
+
+  <script defer src="/vendors/viewerjs@1.11.6/dist/viewer.min.js"></script>
+
+
+<script defer src="/js/kr-core.min.js"></script>
+
+
+  <script defer src="/js/kr-pjax.min.js"></script>
+
+
+<!-- 额外的追加注入项 -->
+
+  <script>window.__COMMENTS_ENABLED=false;</script>
+
+
+    </body>
+</html>
