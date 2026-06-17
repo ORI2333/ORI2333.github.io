@@ -1,12 +1,12 @@
-# Blog workflow tools
+# 博客工作流工具
 
-Run the GUI from the repo root:
+在仓库根目录启动图形界面：
 
 ```bash
 npm run blog
 ```
 
-Run direct CLI actions:
+也可以直接运行命令行操作：
 
 ```bash
 npm run blog:sync

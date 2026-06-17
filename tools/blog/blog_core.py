@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import shlex
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime
@@ -89,6 +90,7 @@ class BlogWorkflow:
             f"Obsidian assets: {self.config.obsidian_assets_folder}",
             f"Hexo posts: {self.config.hexo_posts_folder}",
             f"Hexo images: {self.config.hexo_images_folder}",
+            f"npm: {self.npm_executable()}",
         ]
         proc = self.run(["git", "status", "--short"], check=False)
         if proc.stdout.strip():
@@ -147,11 +149,12 @@ class BlogWorkflow:
         return post_count, draft_count, asset_count
 
     def build(self, log: LogFn | None = None) -> None:
-        self.stream_command(["npm", "run", "clean"], log)
-        self.stream_command(["npm", "run", "build"], log)
+        npm = self.npm_executable()
+        self.stream_command([npm, "run", "clean"], log)
+        self.stream_command([npm, "run", "build"], log)
 
     def publish(self, log: LogFn | None = None) -> None:
-        command = self.config.publish_command.split()
+        command = self.resolve_command(self.config.publish_command)
         self.stream_command(command, log)
 
     def all(self, log: LogFn | None = None) -> tuple[int, int, int]:
@@ -161,22 +164,28 @@ class BlogWorkflow:
         return result
 
     def run(self, command: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
+        command = self.resolve_command(command)
         return subprocess.run(
             command,
             cwd=self.repo_root,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             capture_output=True,
             shell=False,
             check=check,
         )
 
     def stream_command(self, command: list[str], log: LogFn | None = None) -> None:
+        command = self.resolve_command(command)
         if log:
             log(f"$ {' '.join(command)}")
         proc = subprocess.Popen(
             command,
             cwd=self.repo_root,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             shell=False,
@@ -188,6 +197,31 @@ class BlogWorkflow:
         code = proc.wait()
         if code != 0:
             raise RuntimeError(f"Command failed with exit code {code}: {' '.join(command)}")
+
+    def npm_executable(self) -> str:
+        found = shutil.which("npm.cmd") or shutil.which("npm")
+        if found:
+            return found
+
+        candidates = [
+            Path(os.environ.get("ProgramFiles", "")) / "nodejs" / "npm.cmd",
+            Path(os.environ.get("ProgramFiles(x86)", "")) / "nodejs" / "npm.cmd",
+            Path("E:/Program Files/nodejs/npm.cmd"),
+            Path("D:/Program Files/nodejs/npm.cmd"),
+            Path("C:/Program Files/nodejs/npm.cmd"),
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                return str(candidate)
+
+        raise RuntimeError("找不到 npm。请确认 Node.js 已安装，或把 npm.cmd 加入 PATH。")
+
+    def resolve_command(self, command: list[str] | str) -> list[str]:
+        if isinstance(command, str):
+            command = shlex.split(command, posix=False)
+        if command and command[0].lower() == "npm":
+            return [self.npm_executable(), *command[1:]]
+        return command
 
 
 def yaml_scalar(value: str) -> str:

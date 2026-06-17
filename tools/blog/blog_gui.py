@@ -76,25 +76,25 @@ class Worker(QObject):
             elif self.action == "new":
                 assert self.title is not None
                 path = workflow.create_post(self.title, open_after=True)
-                self.done.emit(f"Created: {path}")
+                self.done.emit(f"已创建草稿：{path}")
             elif self.action == "import":
                 posts, assets = workflow.import_to_obsidian(self.log.emit)
-                self.done.emit(f"Imported {posts} post(s) and {assets} asset(s).")
+                self.done.emit(f"已导入 {posts} 篇文章和 {assets} 个资源。")
             elif self.action == "sync":
                 posts, drafts, assets = workflow.sync_to_hexo(self.log.emit)
-                self.done.emit(f"Synced {posts} post(s), skipped {drafts} draft(s), copied {assets} asset(s).")
+                self.done.emit(f"已同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源。")
             elif self.action == "build":
                 workflow.build(self.log.emit)
-                self.done.emit("Build finished.")
+                self.done.emit("构建完成。")
             elif self.action == "publish":
                 workflow.publish(self.log.emit)
-                self.done.emit("Publish finished.")
+                self.done.emit("发布完成。")
             elif self.action == "all":
                 posts, drafts, assets = workflow.all(self.log.emit)
-                self.done.emit(f"Done. Synced {posts} post(s), skipped {drafts} draft(s), copied {assets} asset(s).")
+                self.done.emit(f"全部完成：同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源。")
             elif self.action == "open-vault":
                 open_path(workflow.require_vault())
-                self.done.emit("Opened vault.")
+                self.done.emit("已打开 Obsidian vault。")
         except Exception as exc:
             self.failed.emit(str(exc))
 
@@ -104,9 +104,10 @@ class BlogWindow(QMainWindow):
         super().__init__()
         self.workflow = BlogWorkflow()
         self.thread: QThread | None = None
+        self.worker: Worker | None = None
         self.process: QProcess | None = None
 
-        self.setWindowTitle("Blog Workflow")
+        self.setWindowTitle("博客工作流")
         self.resize(920, 620)
 
         root = QWidget()
@@ -121,35 +122,35 @@ class BlogWindow(QMainWindow):
         layout.addWidget(self.log, 1)
 
         self.setCentralWidget(root)
-        self.write_log("Ready.")
+        self.write_log("就绪。")
         self.write_log("\n".join(self.workflow.status_lines()))
 
     def make_paths_box(self) -> QGroupBox:
-        box = QGroupBox("Paths")
+        box = QGroupBox("路径")
         layout = QGridLayout(box)
         self.repo_field = QLineEdit(str(self.workflow.repo_root))
         self.vault_field = QLineEdit(str(self.workflow.config.obsidian_vault_path))
         for field in (self.repo_field, self.vault_field):
             field.setReadOnly(True)
-        layout.addWidget(QLabel("Repo"), 0, 0)
+        layout.addWidget(QLabel("博客仓库"), 0, 0)
         layout.addWidget(self.repo_field, 0, 1)
-        layout.addWidget(QLabel("Vault"), 1, 0)
+        layout.addWidget(QLabel("Obsidian 库"), 1, 0)
         layout.addWidget(self.vault_field, 1, 1)
         return box
 
     def make_actions_box(self) -> QGroupBox:
-        box = QGroupBox("Actions")
+        box = QGroupBox("操作")
         layout = QHBoxLayout(box)
         actions = [
-            ("New Draft", self.new_post),
-            ("Import", lambda: self.run_worker("import")),
-            ("Sync", lambda: self.run_worker("sync")),
-            ("Build", lambda: self.run_worker("build")),
-            ("Preview", self.preview),
-            ("Publish", lambda: self.run_worker("publish")),
-            ("All", lambda: self.run_worker("all")),
-            ("Open Vault", lambda: self.run_worker("open-vault")),
-            ("Status", lambda: self.run_worker("status")),
+            ("新建草稿", self.new_post),
+            ("导入到 Obsidian", lambda: self.run_worker("import")),
+            ("同步到 Hexo", lambda: self.run_worker("sync")),
+            ("构建检查", lambda: self.run_worker("build")),
+            ("本地预览", self.preview),
+            ("发布", lambda: self.run_worker("publish")),
+            ("一键完成", lambda: self.run_worker("all")),
+            ("打开 Obsidian", lambda: self.run_worker("open-vault")),
+            ("查看状态", lambda: self.run_worker("status")),
         ]
         for label, callback in actions:
             button = QPushButton(label)
@@ -158,39 +159,39 @@ class BlogWindow(QMainWindow):
         return box
 
     def new_post(self) -> None:
-        title, ok = QInputDialog.getText(self, "New Draft", "Post title:")
+        title, ok = QInputDialog.getText(self, "新建草稿", "文章标题：")
         if ok and title.strip():
             self.run_worker("new", title.strip())
 
     def run_worker(self, action: str, title: str | None = None) -> None:
         if self.thread is not None:
-            QMessageBox.information(self, "Busy", "A task is already running.")
+            QMessageBox.information(self, "正在处理", "已有任务正在运行。")
             return
         self.write_log(f"\n> {action}")
         self.thread = QThread()
-        worker = Worker(action, title)
-        worker.moveToThread(self.thread)
-        self.thread.started.connect(worker.run)
-        worker.log.connect(self.write_log)
-        worker.done.connect(self.task_done)
-        worker.failed.connect(self.task_failed)
-        worker.done.connect(self.thread.quit)
-        worker.failed.connect(self.thread.quit)
-        worker.done.connect(worker.deleteLater)
-        worker.failed.connect(worker.deleteLater)
+        self.worker = Worker(action, title)
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.run)
+        self.worker.log.connect(self.write_log)
+        self.worker.done.connect(self.task_done)
+        self.worker.failed.connect(self.task_failed)
+        self.worker.done.connect(self.thread.quit)
+        self.worker.failed.connect(self.thread.quit)
+        self.worker.done.connect(self.worker.deleteLater)
+        self.worker.failed.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.finished.connect(self.clear_thread)
         self.thread.start()
 
     def preview(self) -> None:
         if self.process is not None:
-            QMessageBox.information(self, "Preview", "Preview server is already running.")
+            QMessageBox.information(self, "本地预览", "预览服务已经在运行。")
             return
         port = str(self.workflow.config.preferred_preview_port)
         self.write_log(f"\n> npm run server -- -p {port}")
         self.process = QProcess(self)
         self.process.setWorkingDirectory(str(self.workflow.repo_root))
-        self.process.setProgram("npm")
+        self.process.setProgram(self.workflow.npm_executable())
         self.process.setArguments(["run", "server", "--", "-p", port])
         self.process.readyReadStandardOutput.connect(self.read_process_output)
         self.process.readyReadStandardError.connect(self.read_process_output)
@@ -206,17 +207,18 @@ class BlogWindow(QMainWindow):
                 self.write_log(text.rstrip())
 
     def preview_finished(self) -> None:
-        self.write_log("Preview server stopped.")
+        self.write_log("预览服务已停止。")
         self.process = None
 
     def task_done(self, message: str) -> None:
         self.write_log(message)
 
     def task_failed(self, message: str) -> None:
-        self.write_log(f"ERROR: {message}")
-        QMessageBox.critical(self, "Blog Workflow", message)
+        self.write_log(f"错误：{message}")
+        QMessageBox.critical(self, "博客工作流", message)
 
     def clear_thread(self) -> None:
+        self.worker = None
         self.thread = None
 
     def write_log(self, message: str) -> None:
