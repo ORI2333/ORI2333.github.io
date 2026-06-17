@@ -1,0 +1,14 @@
+{
+  "obsidianVaultPath": "D:/Program Files/Obsidian/Obsidian_store_GM12",
+  "obsidianPostsFolder": "Blog/Posts",
+  "obsidianAssetsFolder": "Blog/Assets",
+  "hexoPostsFolder": "source/_posts",
+  "hexoImagesFolder": "source/images/posts",
+  "postTemplateName": "blog-post.md",
+  "defaultCategories": [
+    "docs"
+  ],
+  "preferredPreviewPort": 4000,
+  "useOutGridView": true,
+  "publishCommand": "npm run push"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blog Workflow"
+  short_description: "Sync Obsidian notes into this Hexo blog workflow."
+  default_prompt: "Help me sync, preview, or publish this Hexo blog from Obsidian drafts."
