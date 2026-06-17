@@ -7,8 +7,8 @@
     <link rel="icon" href="/images/theme/头像.jpg?v=20260329">
   
   
-  <title>ODDR原语说明 | ORI2333&#39;s Blog</title>
-  <link rel="canonical" href="https://ori2333.github.io/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/">
+  <title>新流程方法 | ORI2333&#39;s Blog</title>
+  <link rel="canonical" href="https://ori2333.github.io/2026/06/18/2026-06-18-%E6%96%B0%E6%B5%81%E7%A8%8B%E6%96%B9%E6%B3%95/">
   <meta name="author" content="ORI2333" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -17,30 +17,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="FPGA, ISP, 图像处理" />
+    <meta name="keywords" content="" />
   
-  <meta name="description" content="ODDR（Output Double Data Rate，双数据率输出）原语是 FPGA 内部（特别是 Xilinx FPGA 的 I&#x2F;O 模块中）一个非常重要的底层硬件资源。 简单来说，它的核心功能是：在一个时钟周期内，利用时钟的上升沿和下降沿向外部引脚发送两次数据。 以下是关于 ODDR 的详细使用说明和应用场景解析 ODDR 的基本原理与端口说明普通触发器（Flip-Flop）只能">
+  <meta name="description" content="新流程测测试方法">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ODDR原语说明">
-<meta property="og:url" content="https://ori2333.github.io/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/index.html">
+<meta property="og:title" content="新流程方法">
+<meta property="og:url" content="https://ori2333.github.io/2026/06/18/2026-06-18-%E6%96%B0%E6%B5%81%E7%A8%8B%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="ORI2333&#39;s Blog">
-<meta property="og:description" content="ODDR（Output Double Data Rate，双数据率输出）原语是 FPGA 内部（特别是 Xilinx FPGA 的 I&#x2F;O 模块中）一个非常重要的底层硬件资源。 简单来说，它的核心功能是：在一个时钟周期内，利用时钟的上升沿和下降沿向外部引脚发送两次数据。 以下是关于 ODDR 的详细使用说明和应用场景解析 ODDR 的基本原理与端口说明普通触发器（Flip-Flop）只能">
+<meta property="og:description" content="新流程测测试方法">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://ori2333.github.io/images/posts/ODDR.webp">
-<meta property="article:published_time" content="2026-04-18T00:00:00.000Z">
+<meta property="og:image" content="https://ori2333.github.io/images/posts/test.webp">
+<meta property="article:published_time" content="2026-06-18T02:01:15.000Z">
 <meta property="article:modified_time" content="2026-06-17T18:13:03.869Z">
 <meta property="article:author" content="ORI2333">
-<meta property="article:tag" content="ISP">
-<meta property="article:tag" content="FPGA">
-<meta property="article:tag" content="图像处理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ori2333.github.io/images/posts/ODDR.webp">
+<meta name="twitter:image" content="https://ori2333.github.io/images/posts/test.webp">
   
   <!-- JSON-LD 结构化数据 -->
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"ODDR原语说明","description":"ODDR（Output Double Data Rate，双数据率输出）原语是 FPGA 内部（特别是 Xilinx FPGA 的 I&#x2F;O 模块中）一个非常重要的底层硬件资源。\n简单来说，它的核心功能是：在一个时钟周期内，利用时钟的上升沿和下降沿向外部引脚发送两次...","image":"https://ori2333.github.io/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/images/posts/ODDR.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-04-18T00:00:00.000Z","dateModified":"2026-06-17T18:13:03.869Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"新流程方法","description":"新流程测测试方法\n\n\n正常日常流程就按这个来：\n\n打开 GUI\n\n","image":"https://ori2333.github.io/2026/06/18/2026-06-18-%E6%96%B0%E6%B5%81%E7%A8%8B%E6%96%B9%E6%B3%95/images/posts/test.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-06-18T02:01:15.000Z","dateModified":"2026-06-17T18:13:03.869Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/06/18/2026-06-18-%E6%96%B0%E6%B5%81%E7%A8%8B%E6%96%B9%E6%B3%95/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -214,14 +211,14 @@
         
 
             <article itemscope itemtype="https://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://ori2333.github.io/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/">
+    <link itemprop="mainEntityOfPage" href="https://ori2333.github.io/2026/06/18/2026-06-18-%E6%96%B0%E6%B5%81%E7%A8%8B%E6%96%B9%E6%B3%95/">
     <div class="kratos-hentry kratos-page-inner clearfix">
         <header class="kratos-page-header">
             
-                <h1 class="kratos-page-title text-center" itemprop="name headline">ODDR原语说明</h1>
+                <h1 class="kratos-page-title text-center" itemprop="name headline">新流程方法</h1>
             
             <ul class="kratos-page-meta text-center">
-                <li><time datetime="2026-04-18T00:00:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-04-18</time></li>
+                <li><time datetime="2026-06-18T02:01:15.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-06-18</time></li>
                 <li itemprop="author" itemscope itemtype="https://schema.org/Person">
                     <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
                 </li>
@@ -230,7 +227,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~1.93K
+                            601
                         
                         字
                     </li>
@@ -244,40 +241,40 @@
             
             
             <hr />
-            <div itemprop="articleBody"><p>ODDR（Output Double Data Rate，双数据率输出）原语是 FPGA 内部（特别是 Xilinx FPGA 的 I&#x2F;O 模块中）一个非常重要的底层硬件资源。</p>
-<p>简单来说，它的核心功能是：在一个时钟周期内，利用时钟的上升沿和下降沿向外部引脚发送两次数据。</p>
-<p>以下是关于 ODDR 的详细使用说明和应用场景解析</p>
-<h2 id="ODDR-的基本原理与端口说明"><a href="#ODDR-的基本原理与端口说明" class="headerlink" title="ODDR 的基本原理与端口说明"></a>ODDR 的基本原理与端口说明</h2><p>普通触发器（Flip-Flop）只能在时钟的单边沿（通常是上升沿）更新数据。而 <code>ODDR</code> 是硬线逻辑，专门放置在 FPGA 芯片边缘的 IOB（输入&#x2F;输出块）中，紧挨着芯片引脚。</p>
-<h3 id="实例化代码模板（以-Xilinx-7-系列为例）"><a href="#实例化代码模板（以-Xilinx-7-系列为例）" class="headerlink" title="实例化代码模板（以 Xilinx 7 系列为例）"></a>实例化代码模板（以 Xilinx 7 系列为例）</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ODDR #(</span><br><span class="line">      <span class="variable">.DDR_CLK_EDGE</span>(<span class="string">&quot;SAME_EDGE&quot;</span>), <span class="comment">// 工作模式：&quot;OPPOSITE_EDGE&quot; 或 &quot;SAME_EDGE&quot; </span></span><br><span class="line">      <span class="variable">.INIT</span>(<span class="number">1&#x27;b0</span>),                <span class="comment">// Q 端初始值: 1&#x27;b0 或 1&#x27;b1</span></span><br><span class="line">      <span class="variable">.SRTYPE</span>(<span class="string">&quot;SYNC&quot;</span>)             <span class="comment">// 复位/置位类型: &quot;SYNC&quot; (同步) 或 &quot;ASYNC&quot; (异步)</span></span><br><span class="line">   ) ODDR_inst (</span><br><span class="line">      <span class="variable">.Q</span>  (Q_out),     <span class="comment">// 1-bit 输出信号（连接到外部引脚）</span></span><br><span class="line">      <span class="variable">.C</span>  (clk),       <span class="comment">// 1-bit 时钟输入</span></span><br><span class="line">      <span class="variable">.CE</span> (<span class="number">1&#x27;b1</span>),      <span class="comment">// 1-bit 时钟使能信号（高电平有效）</span></span><br><span class="line">      <span class="variable">.D1</span> (data_1),    <span class="comment">// 1-bit 数据 1（将在 C 的上升沿输出）</span></span><br><span class="line">      <span class="variable">.D2</span> (data_2),    <span class="comment">// 1-bit 数据 2（将在 C 的下降沿输出）</span></span><br><span class="line">      <span class="variable">.R</span>  (<span class="number">1&#x27;b0</span>),      <span class="comment">// 1-bit 复位信号</span></span><br><span class="line">      <span class="variable">.S</span>  (<span class="number">1&#x27;b0</span>)       <span class="comment">// 1-bit 置位信号</span></span><br><span class="line">   );</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>DDR_CLK_EDGE</code> (决定了 FPGA 内部逻辑如何将数据送给 <code>ODDR</code>)<ul>
-<li><strong><code>OPPOSITE_EDGE</code>（相反边沿）：</strong> 传统模式。内部逻辑必须在时钟上升沿准备好 <code>D1</code>，在下降沿准备好 <code>D2</code>。这在 FPGA 内部布线中很难满足时序要求，<strong>一般仅在时钟转发（D1&#x3D;1, D2&#x3D;0 常数）时使用</strong>。</li>
-<li><strong><code>SAME_EDGE</code>（相同时钟边沿）：</strong> 推荐模式。内部逻辑只需要在<strong>同一个时钟上升沿</strong>同时准备好 <code>D1</code> 和 <code>D2</code>。<code>ODDR</code> 内部会自动将 <code>D2</code> 缓存半个周期，然后准确地在下降沿输出。这极大地降低了内部时序收敛的难度。</li>
-</ul>
-</li>
-</ul>
-<h2 id="什么情况下使用-ODDR？"><a href="#什么情况下使用-ODDR？" class="headerlink" title="什么情况下使用 ODDR？"></a>什么情况下使用 ODDR？</h2><h3 id="时钟转发（Clock-Forwarding）"><a href="#时钟转发（Clock-Forwarding）" class="headerlink" title="时钟转发（Clock Forwarding）"></a>时钟转发（Clock Forwarding）</h3><p>当需要将 FPGA 内部的系统时钟输出给外部芯片（如显示屏驱动、摄像头、PHY 芯片）时。</p>
-<ul>
-<li><strong>配置方法：</strong> <code>D1 = 1</code>, <code>D2 = 0</code>，模式选 <code>OPPOSITE_EDGE</code>。</li>
-<li><strong>为什么不用普通的管脚输出？</strong> 全局时钟网络无法直接连接到普通输出引脚，必须经过 <code>ODDR</code>。这样输出的时钟质量最高，抖动（Jitter）最小，且与数据信号的延迟（Skew）能完美匹配。</li>
-</ul>
-<h3 id="高速双沿数据传输（True-DDR-Data）"><a href="#高速双沿数据传输（True-DDR-Data）" class="headerlink" title="高速双沿数据传输（True DDR Data）"></a>高速双沿数据传输（True DDR Data）</h3><p>外部接收芯片要求在时钟的上升沿和下降沿都接收数据，以提高带宽（时钟频率不变，数据吞吐量翻倍）。</p>
-<ul>
-<li><strong>典型协议：</strong><ul>
-<li>千兆以太网接口（RGMII）：TXD 信号线在上升沿发送低 4 位，在下降沿发送高 4 位。</li>
-<li>DDR 内存控制器：在 DQS 时钟的双沿发送数据。</li>
-<li>高速 ADC &#x2F; DAC 接口。</li>
-</ul>
-</li>
-<li><strong>配置方法：</strong> 将并行数据转换为双沿输出，模式选 <code>SAME_EDGE</code>。</li>
-</ul>
-<h3 id="源同步接口（Source-Synchronous）中的精确时序对齐"><a href="#源同步接口（Source-Synchronous）中的精确时序对齐" class="headerlink" title="源同步接口（Source-Synchronous）中的精确时序对齐"></a>源同步接口（Source-Synchronous）中的精确时序对齐</h3><p>在源同步设计中，FPGA 需要同时输出“时钟”和“数据”。 为了让外部芯片能稳定采样，时钟和数据到达引脚的物理延迟必须一致。</p>
-<ul>
-<li><strong>做法：</strong> 数据信号通过 <code>ODDR</code> 输出（哪怕外部只需单沿采样，也可以让 <code>D1=D2=数据</code>，或者让 D2 输出无效位）；时钟信号也通过旁边的 <code>ODDR</code> 输出。</li>
-<li><strong>效果：</strong> 两者都在 IOB 内部完成最后一步寄存，利用了物理位置完全相同的布线资源，最大程度消除了布线延迟差异，保证了完美的时序对齐。</li>
-</ul>
-<p>可以把 <code>ODDR</code> 想象成 FPGA 内部世界（单边沿、低速、宽总线）与外部世界（双边沿、高速、窄总线）之间的“高速收费站”。</p>
-</div>
+            <div itemprop="articleBody"><p>新流程测测试方法</p>
+<span id="more"></span>
+
+<p>正常日常流程就按这个来：</p>
+<ol>
+<li>打开 GUI</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd E:\blog\my-blog</span><br><span class="line">npm run blog</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>写新文章<br>点 <strong>新建草稿</strong>，输入标题。它会在 Obsidian 里创建：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D:\Program Files\Obsidian\Obsidian_store_GM12\Blog\Posts</span><br></pre></td></tr></table></figure>
+<p>新文章默认有：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">draft: true</span><br></pre></td></tr></table></figure>
+<p>这表示草稿，不会被同步发布。<br>3. 在 Obsidian 里写文章<br>正文写好后，如果准备发布，把 front matter 改成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">draft: false</span><br></pre></td></tr></table></figure>
+<p>或者删掉 <code>draft</code> 这一行。<br>4. 同步到博客仓库<br>回到 GUI，点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">同步到 Hexo</span><br></pre></td></tr></table></figure>
+<p>它会把 Obsidian 里的正式文章复制到：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\blog\my-blog\source\_posts</span><br></pre></td></tr></table></figure>
+<p><code>draft: true</code> 的文章会自动跳过。<br>5. 本地检查点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">构建检查</span><br></pre></td></tr></table></figure>
+<p>如果没报错，说明 Hexo 能正常生成。<br>想本地看页面就点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">本地预览</span><br></pre></td></tr></table></figure>
+<p>然后浏览器访问：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:4000/</span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>发布<br>确认没问题后点：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">发布</span><br></pre></td></tr></table></figure>
+<p>它会执行 <code>npm run push</code>，提交并推送 <code>source</code> 分支。GitHub Actions 会自动构建并部署到 <code>main</code> 分支。<br>更省事的方式是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一键完成</span><br></pre></td></tr></table></figure>
+<p>它会依次执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">同步到 Hexo -&gt; 构建检查 -&gt; 发布</span><br></pre></td></tr></table></figure></div>
         </div>
         
             <div class="kratos-copyright text-center clearfix">
@@ -300,7 +297,7 @@
             <div class="footer-tag clearfix">
                 <div class="pull-left">
                 <i class="fa fa-tags"></i>
-                    <a class="tag-none-link" href="/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/tags/ISP/" rel="tag">ISP</a>, <a class="tag-none-link" href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag">图像处理</a>
+                    
                 </div>
                 <div class="pull-date">
                     <time datetime="2026-06-17T18:13:03.869Z" itemprop="dateModified">最后编辑：2026-06-17</time>
@@ -312,13 +309,9 @@
         <nav class="navigation post-navigation clearfix" role="navigation">
             
             <div class="nav-previous clearfix">
-                <a title=" HDMI Display设计手册" href="/2026/04/18/hdmi_display设计手册/"><i class="fa fa-angle-left"></i> 上一篇</a>
+                <a title=" 博客工作流测试" href="/2026/06/18/2026-06-18-blog-workflow-test/"><i class="fa fa-angle-left"></i> 上一篇</a>
             </div>
             
-            
-            <div class="nav-next clearfix">
-                <a title=" Proteus仿真+STM32+云平台" href="/2026/04/29/Proteus仿真+STM32+云平台/">下一篇 <i class="fa fa-angle-right"></i></a>
-            </div>
             
         </nav>
     
