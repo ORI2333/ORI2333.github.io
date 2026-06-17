@@ -37,30 +37,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: main
-
-      - name: Check CloudBase secrets
-        id: tcb
-        shell: bash
-        run: |
-          if [ -n "$TCB_SECRET_ID" ] && [ -n "$TCB_SECRET_KEY" ] && [ -n "$TCB_ENV_ID" ]; then
-            echo "ready=true" >> $GITHUB_OUTPUT
-            echo "CloudBase deployment will proceed."
-          else
-            echo "ready=false" >> $GITHUB_OUTPUT
-            echo "CloudBase secrets not set, skipping."
-          fi
-        env:
-          TCB_SECRET_ID: ${{ secrets.TCB_SECRET_ID || secrets.QCLOUDAPIKEYID }}
-          TCB_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY || secrets.QCLOUDAPIKEY }}
-          TCB_ENV_ID: ${{ secrets.TCB_ENV_ID || secrets.QCLOUDENVID }}
-
-      - name: Deploy to Tencent CloudBase
-        if: steps.tcb.outputs.ready == 'true'
-        env:
-          TCB_SECRET_ID: ${{ secrets.TCB_SECRET_ID || secrets.QCLOUDAPIKEYID }}
-          TCB_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY || secrets.QCLOUDAPIKEY }}
-          TCB_ENV_ID: ${{ secrets.TCB_ENV_ID || secrets.QCLOUDENVID }}
-        run: |
-          npm install @cloudbase/cli --no-audit --no-fund --prefer-offline
-          npx tcb login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY"
-          npx tcb hosting deploy ./public / -e "$TCB_ENV_ID"
