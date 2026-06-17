@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ori2333.github.io/images/posts/test.webp">
 <meta property="article:published_time" content="2026-03-29T12:30:00.000Z">
-<meta property="article:modified_time" content="2026-05-15T17:04:23.617Z">
+<meta property="article:modified_time" content="2026-06-17T17:42:48.022Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="博客网站">
 <meta name="twitter:card" content="summary">
@@ -38,7 +38,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"博客运维指南","description":"这篇文章记录本博客当前的使用方式，包含：如何写文章、改文章、删文章、改主题配置、替换各位置图片、预览与部署。\n\n\n","image":"https://ori2333.github.io/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/images/posts/test.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-03-29T12:30:00.000Z","dateModified":"2026-05-15T17:04:23.617Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"博客运维指南","description":"这篇文章记录本博客当前的使用方式，包含：如何写文章、改文章、删文章、改主题配置、替换各位置图片、预览与部署。\n\n\n","image":"https://ori2333.github.io/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/images/posts/test.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-03-29T12:30:00.000Z","dateModified":"2026-06-17T17:42:48.022Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -228,7 +228,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~6.68K
+                            ~7.23K
                         
                         字
                     </li>
@@ -430,6 +430,27 @@
 <li>都用根路径 <code>/</code>，或</li>
 <li>都用子路径 <code>/blog/</code>（需要改 Hexo 配置）</li>
 </ul>
+<h2 id="9-Obsidian-菜单式日常流程"><a href="#9-Obsidian-菜单式日常流程" class="headerlink" title="9. Obsidian + 菜单式日常流程"></a>9. Obsidian + 菜单式日常流程</h2><p>现在仓库里加了一套更省心的日常入口：</p>
+<ul>
+<li><code>tools/blog/blog.config.json</code>：配置 Obsidian vault、文章目录和图片目录</li>
+<li><code>templates/blog-post.md</code>：新文章模板</li>
+<li><code>tools/blog/blog_gui.py</code>：图形化日常面板</li>
+<li><code>tools/blog/blog_cli.py</code>：命令行入口，方便自动化和 Codex 调用</li>
+<li><code>npm run blog</code>：启动图形界面</li>
+</ul>
+<p>推荐流程：</p>
+<ol>
+<li>在 Obsidian 的 <code>Blog/Posts</code> 里写文章</li>
+<li>图片放到 <code>Blog/Assets</code></li>
+<li>准备发布时，把文章 front matter 里的 <code>draft: true</code> 改成 <code>draft: false</code> 或删除这一行</li>
+<li>运行 <code>npm run blog</code></li>
+<li>在图形界面里点 <code>Sync</code> 或 <code>All</code></li>
+<li>需要预览就选 <code>Preview</code></li>
+<li>需要发布就选 <code>Publish</code></li>
+</ol>
+<p>首次使用时，可以先选 <code>Import</code>，把仓库现有文章和图片导入到 Obsidian。</p>
+<p>如果你要调整同步位置，只需要改 <code>tools/blog/blog.config.json</code>。</p>
+<p>迁移到新电脑或切换 Python 环境时，查看仓库里的 <code>docs/blog-workflow-migration.md</code>。</p>
 <h2 id="8-🎉-新部署架构说明（2026-年-4-月更新）"><a href="#8-🎉-新部署架构说明（2026-年-4-月更新）" class="headerlink" title="8. 🎉 新部署架构说明（2026 年 4 月更新）"></a>8. 🎉 新部署架构说明（2026 年 4 月更新）</h2><p>本仓库已进行重大架构升级，采用业界标准的”<strong>源码与产物分离</strong>“策略。这彻底解决了之前混合托管带来的问题。</p>
 <p>这部分就是原来独立的部署说明内容，现已并入本文，方便你只维护一篇文档。</p>
 <h3 id="主要改进"><a href="#主要改进" class="headerlink" title="主要改进"></a>主要改进</h3><h4 id="问题回顾"><a href="#问题回顾" class="headerlink" title="问题回顾"></a>问题回顾</h4><ul>
@@ -522,7 +543,7 @@
                     <a class="tag-none-link" href="/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" rel="tag">博客网站</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-05-15T17:04:23.617Z" itemprop="dateModified">最后编辑：2026-05-15</time>
+                    <time datetime="2026-06-17T17:42:48.022Z" itemprop="dateModified">最后编辑：2026-06-17</time>
                 </div>
             </div>
         </footer>
@@ -571,7 +592,7 @@
                 文章
             </span>
             <span class="count">
-                6
+                7
             </span>
         </a>
         <a class="meta-item" href="/categories/">
@@ -587,7 +608,7 @@
                 标签
             </span>
             <span class="count">
-                9
+                10
             </span>
         </a>
     </div>
@@ -598,7 +619,7 @@
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
     <h4 class="widget-title"><i class="fa fa-folder"></i>分类列表</h4>
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/docs/">docs</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/docs/">docs</a><span class="category-list-count">2</span></li></ul>
   </aside>
 
 
@@ -607,7 +628,7 @@
   <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
     <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
       <div class="tag-clouds">
-        <a href="/tags/FPGA/" style="font-size: 0.8em;">FPGA</a> <a href="/tags/ISP/" style="font-size: 0.8em;">ISP</a> <a href="/tags/MQTT/" style="font-size: 0.6em;">MQTT</a> <a href="/tags/STM32/" style="font-size: 0.6em;">STM32</a> <a href="/tags/proteus/" style="font-size: 0.6em;">proteus</a> <a href="/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/" style="font-size: 0.6em;">云平台</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" style="font-size: 0.6em;">博客网站</a> <a href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" style="font-size: 0.8em;">图像处理</a> <a href="/tags/%E6%8E%A5%E5%8D%95/" style="font-size: 0.6em;">接单</a>
+        <a href="/tags/FPGA/" style="font-size: 0.8em;">FPGA</a> <a href="/tags/ISP/" style="font-size: 0.8em;">ISP</a> <a href="/tags/MQTT/" style="font-size: 0.6em;">MQTT</a> <a href="/tags/STM32/" style="font-size: 0.6em;">STM32</a> <a href="/tags/proteus/" style="font-size: 0.6em;">proteus</a> <a href="/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/" style="font-size: 0.6em;">云平台</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" style="font-size: 0.7em;">博客网站</a> <a href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" style="font-size: 0.8em;">图像处理</a> <a href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" style="font-size: 0.6em;">工作流</a> <a href="/tags/%E6%8E%A5%E5%8D%95/" style="font-size: 0.6em;">接单</a>
       </div>
   </aside>
 
@@ -618,6 +639,12 @@
   <div class="tab-content">
       <ul class="list-group">
         
+        
+          
+          
+            <a class="list-group-item" href="/2026/06/18/2026-06-18-blog-workflow-test/"><i class="fa fa-book"></i> 博客工作流测试</a>
+            
+          
         
           
           
@@ -644,11 +671,7 @@
           
         
           
-          
-            <a class="list-group-item" href="/2026/03/29/%E5%8D%9A%E5%AE%A2%E4%B8%8E%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"><i class="fa fa-book"></i> 博客运维指南</a>
             
-          
-        
           
             
       </ul>
