@@ -10,5 +10,9 @@ public/
 # Dependencies
 node_modules/
 
+# Python cache
+__pycache__/
+*.py[cod]
+
 # Temp
 *.log
