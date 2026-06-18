@@ -6,6 +6,7 @@ Thumbs.db
 db.json
 public/
 .deploy*/
+_multiconfig.yml
 
 # Dependencies
 node_modules/

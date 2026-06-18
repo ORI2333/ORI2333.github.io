@@ -1,0 +1,25 @@
+{
+  "host": "45.192.104.98",
+  "port": 22,
+  "user": "root",
+  "remoteRoot": "/var/www/ori2333-blog",
+  "remoteTmp": "/tmp/ori2333-blog.tar.gz",
+  "publicUrl": "https://blog.orizhen.xyz/",
+  "hkBlogPath": "/blog/",
+  "edgeOneUrl": "https://myblog-ovffqon5.zh-cn.edgeone.cool/?eo_token=d48ab9ec107be1941455ce4d3e70ba16&eo_time=1781801300",
+  "githubPagesUrl": "https://ori2333.github.io/",
+  "nginxServerName": "blog.orizhen.xyz www.blog.orizhen.xyz",
+  "nginxListen": 80,
+  "enableHttps": true,
+  "certbotEmail": "",
+  "sshOptions": [
+    "-i",
+    "C:/Users/ORI2333/.ssh/ori2333_blog_hk_ed25519",
+    "-o",
+    "ServerAliveInterval=15",
+    "-o",
+    "ServerAliveCountMax=3",
+    "-o",
+    "StrictHostKeyChecking=accept-new"
+  ]
+}

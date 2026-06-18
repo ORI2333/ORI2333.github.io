@@ -92,6 +92,7 @@ npm run blog:sync
 npm run blog:build
 npm run blog:preview
 npm run blog:publish
+npm run blog:deploy-hk
 npm run blog:all
 ```
 
@@ -130,6 +131,11 @@ In the GUI:
 
 - `选择封面` copies a local image into the blog image folders and updates the latest Obsidian post.
 - `封面 URL` writes an `http://` or `https://` image URL into the latest Obsidian post.
+- You can also write an image URL directly in Obsidian front matter. Sync preserves it.
+
+## Delete Rule
+
+`删除文章` supports searching by title or file name and defaults to the most recently modified posts first. The confirmation shows the Obsidian source path, trash path, and Hexo path. It then moves the Obsidian Markdown file into `Blog/Trash`, removes the same file from Hexo `source/_posts`, and runs build and publish so the online page is removed.
 
 ## Troubleshooting
 
@@ -151,4 +157,18 @@ npm run build
 npm run push
 ```
 
-The normal publish path pushes the `source` branch. GitHub Actions builds and deploys the static site.
+The normal publish path pushes the `source` branch. GitHub Actions builds and deploys both GitHub Pages and the Hong Kong static host.
+
+## Hong Kong Deploy Secrets
+
+The Hong Kong deploy runs in GitHub Actions with these repository secrets:
+
+```text
+HK_HOST=45.192.104.98
+HK_PORT=22
+HK_USER=root
+HK_REMOTE_ROOT=/var/www/ori2333-blog
+HK_SSH_KEY=<private key that can SSH to the server>
+```
+
+`npm run blog:deploy-hk` is a local fallback only. Daily publishing should use `npm run blog` and click `发布全站` or `一键完成`.

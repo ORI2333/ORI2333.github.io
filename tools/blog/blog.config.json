@@ -2,6 +2,7 @@
   "obsidianVaultPath": "D:/Program Files/Obsidian/Obsidian_store_GM12",
   "obsidianPostsFolder": "Blog/Posts",
   "obsidianAssetsFolder": "Blog/Assets",
+  "obsidianTrashFolder": "Blog/Trash",
   "hexoPostsFolder": "source/_posts",
   "hexoImagesFolder": "source/images/posts",
   "postTemplateName": "blog-post.md",
@@ -11,5 +12,6 @@
   ],
   "preferredPreviewPort": 4000,
   "useOutGridView": true,
-  "publishCommand": "npm run push"
+  "publishCommand": "npm run push",
+  "hkDeployCommand": "npm run deploy:hk"
 }

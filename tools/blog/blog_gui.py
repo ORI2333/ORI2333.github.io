@@ -1,18 +1,21 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 try:
     from PySide6.QtCore import QObject, QProcess, QThread, Signal as pyqtSignal
     from PySide6.QtWidgets import (
-    QApplication,
-    QFileDialog,
-    QGridLayout,
-        QGroupBox,
+        QApplication,
+        QDialog,
+        QFileDialog,
+        QFrame,
+        QGridLayout,
         QHBoxLayout,
-    QInputDialog,
+        QInputDialog,
         QLabel,
         QLineEdit,
+        QListWidget,
         QMainWindow,
         QMessageBox,
         QPushButton,
@@ -25,12 +28,15 @@ except ModuleNotFoundError:
         from PyQt6.QtCore import QObject, QProcess, QThread, pyqtSignal
         from PyQt6.QtWidgets import (
             QApplication,
+            QDialog,
+            QFileDialog,
+            QFrame,
             QGridLayout,
-            QGroupBox,
             QHBoxLayout,
             QInputDialog,
             QLabel,
             QLineEdit,
+            QListWidget,
             QMainWindow,
             QMessageBox,
             QPushButton,
@@ -42,12 +48,15 @@ except ModuleNotFoundError:
         from PyQt5.QtCore import QObject, QProcess, QThread, pyqtSignal
         from PyQt5.QtWidgets import (
             QApplication,
+            QDialog,
+            QFileDialog,
+            QFrame,
             QGridLayout,
-            QGroupBox,
             QHBoxLayout,
             QInputDialog,
             QLabel,
             QLineEdit,
+            QListWidget,
             QMainWindow,
             QMessageBox,
             QPushButton,
@@ -59,15 +68,109 @@ except ModuleNotFoundError:
 from blog_core import BlogWorkflow, open_path
 
 
+STYLE = """
+QMainWindow {
+    background: #f5f7fb;
+}
+QWidget {
+    color: #172033;
+    font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+    font-size: 13px;
+}
+QFrame#Hero {
+    background: #182235;
+    border-radius: 8px;
+}
+QFrame#Card {
+    background: #ffffff;
+    border: 1px solid #dbe2ee;
+    border-radius: 8px;
+}
+QLabel#HeroTitle {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+}
+QLabel#HeroSub {
+    color: #cad5e6;
+    font-size: 13px;
+}
+QLabel#SectionTitle {
+    color: #172033;
+    font-size: 15px;
+    font-weight: 700;
+}
+QLabel#Muted {
+    color: #65748b;
+}
+QLineEdit {
+    min-height: 30px;
+    padding: 4px 9px;
+    border: 1px solid #d6dfec;
+    border-radius: 6px;
+    background: #f9fbff;
+}
+QPushButton {
+    min-height: 32px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid #cbd6e6;
+    background: #ffffff;
+    color: #172033;
+}
+QPushButton:hover {
+    background: #f0f5ff;
+    border-color: #9db7e8;
+}
+QPushButton[variant="primary"] {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+    font-weight: 700;
+}
+QPushButton[variant="primary"]:hover {
+    background: #1d4ed8;
+}
+QPushButton[variant="danger"] {
+    background: #fff7ed;
+    color: #9a3412;
+    border-color: #fed7aa;
+}
+QTextEdit {
+    background: #101827;
+    color: #d7e1f0;
+    border: 1px solid #1f2a3d;
+    border-radius: 8px;
+    padding: 10px;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 12px;
+}
+QListWidget {
+    border: 1px solid #d6dfec;
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 4px;
+}
+QListWidget::item {
+    min-height: 28px;
+    padding: 4px 6px;
+}
+QListWidget::item:selected {
+    background: #dbeafe;
+    color: #172033;
+}
+"""
+
+
 class Worker(QObject):
     log = pyqtSignal(str)
     done = pyqtSignal(str)
     failed = pyqtSignal(str)
 
-    def __init__(self, action: str, title: str | None = None):
+    def __init__(self, action: str, value: str | None = None):
         super().__init__()
         self.action = action
-        self.title = title
+        self.value = value
 
     def run(self) -> None:
         workflow = BlogWorkflow()
@@ -75,8 +178,8 @@ class Worker(QObject):
             if self.action == "status":
                 self.done.emit("\n".join(workflow.status_lines()))
             elif self.action == "new":
-                assert self.title is not None
-                path = workflow.create_post(self.title, open_after=True)
+                assert self.value is not None
+                path = workflow.create_post(self.value, open_after=True)
                 self.done.emit(f"已创建草稿：{path}")
             elif self.action == "import":
                 posts, assets = workflow.import_to_obsidian(self.log.emit)
@@ -88,24 +191,99 @@ class Worker(QObject):
                 workflow.build(self.log.emit)
                 self.done.emit("构建完成。")
             elif self.action == "publish":
-                workflow.publish(self.log.emit)
+                workflow.publish_all_targets(self.log.emit)
                 self.done.emit("发布完成。")
+            elif self.action == "deploy-hk":
+                workflow.deploy_hk(self.log.emit)
+                self.done.emit("香港站点部署完成。")
             elif self.action == "all":
                 posts, drafts, assets = workflow.all(self.log.emit)
                 self.done.emit(f"全部完成：同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源。")
             elif self.action == "open-vault":
                 open_path(workflow.require_vault())
-                self.done.emit("已打开 Obsidian vault。")
+                self.done.emit("已打开 Obsidian 库。")
             elif self.action == "cover-url":
-                assert self.title is not None
-                path = workflow.set_latest_cover_url(self.title)
+                assert self.value is not None
+                path = workflow.set_latest_cover_url(self.value)
                 self.done.emit(f"已设置最近文章封面链接：{path}")
             elif self.action == "cover-file":
-                assert self.title is not None
-                path, cover = workflow.set_latest_cover_file(self.title)
+                assert self.value is not None
+                path, cover = workflow.set_latest_cover_file(self.value)
                 self.done.emit(f"已设置最近文章封面：{path}\n封面路径：{cover}")
+            elif self.action == "delete-post":
+                assert self.value is not None
+                trash, removed = workflow.delete_post_and_publish(self.value, self.log.emit)
+                if removed:
+                    self.done.emit(f"删除并发布完成。\n已移动到回收站：{trash}\n已从 Hexo 删除：{removed}")
+                else:
+                    self.done.emit(f"删除并发布完成。\n已移动到回收站：{trash}\nHexo 中没有同名文章。")
         except Exception as exc:
             self.failed.emit(str(exc))
+
+
+class DeletePostDialog(QDialog):
+    def __init__(self, posts: list[Path], parent=None):
+        super().__init__(parent)
+        self.posts = sorted(posts, key=lambda path: path.stat().st_mtime, reverse=True)
+        self.filtered_posts = list(self.posts)
+        self.selected_name: str | None = None
+
+        self.setWindowTitle("删除文章")
+        self.resize(680, 460)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(14, 14, 14, 14)
+        layout.setSpacing(10)
+
+        title = QLabel("选择要删除的文章")
+        title.setObjectName("SectionTitle")
+        hint = QLabel("默认按最近修改排序。可以搜索标题或文件名。")
+        hint.setObjectName("Muted")
+
+        self.search = QLineEdit()
+        self.search.setPlaceholderText("搜索标题或文件名")
+        self.search.textChanged.connect(self.refresh_list)
+
+        self.list_widget = QListWidget()
+        self.list_widget.itemDoubleClicked.connect(lambda _: self.accept_selected())
+
+        buttons = QHBoxLayout()
+        buttons.addStretch(1)
+        cancel = QPushButton("取消")
+        delete = QPushButton("继续删除")
+        delete.setProperty("variant", "danger")
+        cancel.clicked.connect(self.reject)
+        delete.clicked.connect(self.accept_selected)
+        buttons.addWidget(cancel)
+        buttons.addWidget(delete)
+
+        layout.addWidget(title)
+        layout.addWidget(hint)
+        layout.addWidget(self.search)
+        layout.addWidget(self.list_widget, 1)
+        layout.addLayout(buttons)
+        self.refresh_list()
+
+    def refresh_list(self) -> None:
+        keyword = self.search.text().strip().lower()
+        self.list_widget.clear()
+        self.filtered_posts = []
+        for post in self.posts:
+            haystack = f"{post.name} {read_post_title(post)}".lower()
+            if keyword and keyword not in haystack:
+                continue
+            self.filtered_posts.append(post)
+            self.list_widget.addItem(f"{read_post_title(post)}    ({post.name})")
+        if self.filtered_posts:
+            self.list_widget.setCurrentRow(0)
+
+    def accept_selected(self) -> None:
+        row = self.list_widget.currentRow()
+        if row < 0 or row >= len(self.filtered_posts):
+            QMessageBox.information(self, "删除文章", "请先选择一篇文章。")
+            return
+        self.selected_name = self.filtered_posts[row].name
+        self.accept()
 
 
 class BlogWindow(QMainWindow):
@@ -117,57 +295,127 @@ class BlogWindow(QMainWindow):
         self.process: QProcess | None = None
 
         self.setWindowTitle("博客工作流")
-        self.resize(920, 620)
+        self.resize(1080, 720)
+        self.setStyleSheet(STYLE)
 
         root = QWidget()
-        layout = QVBoxLayout(root)
-        layout.addWidget(self.make_paths_box())
-        layout.addWidget(self.make_actions_box())
+        outer = QVBoxLayout(root)
+        outer.setContentsMargins(18, 18, 18, 18)
+        outer.setSpacing(12)
 
-        self.log = QTextEdit()
-        self.log.setReadOnly(True)
-        no_wrap = getattr(QTextEdit, "NoWrap", QTextEdit.LineWrapMode.NoWrap)
-        self.log.setLineWrapMode(no_wrap)
-        layout.addWidget(self.log, 1)
+        outer.addWidget(self.make_hero())
+        outer.addWidget(self.make_paths_card())
+        outer.addWidget(self.make_actions_card())
+        outer.addWidget(self.make_log_card(), 1)
 
         self.setCentralWidget(root)
         self.write_log("就绪。")
         self.write_log("\n".join(self.workflow.status_lines()))
 
-    def make_paths_box(self) -> QGroupBox:
-        box = QGroupBox("路径")
-        layout = QGridLayout(box)
-        self.repo_field = QLineEdit(str(self.workflow.repo_root))
-        self.vault_field = QLineEdit(str(self.workflow.config.obsidian_vault_path))
-        for field in (self.repo_field, self.vault_field):
-            field.setReadOnly(True)
-        layout.addWidget(QLabel("博客仓库"), 0, 0)
-        layout.addWidget(self.repo_field, 0, 1)
-        layout.addWidget(QLabel("Obsidian 库"), 1, 0)
-        layout.addWidget(self.vault_field, 1, 1)
-        return box
+    def make_hero(self) -> QFrame:
+        frame = QFrame()
+        frame.setObjectName("Hero")
+        layout = QVBoxLayout(frame)
+        layout.setContentsMargins(18, 14, 18, 14)
+        title = QLabel("博客工作流")
+        title.setObjectName("HeroTitle")
+        subtitle = QLabel("Obsidian 写作，Hexo 构建，一键同步与发布")
+        subtitle.setObjectName("HeroSub")
+        layout.addWidget(title)
+        layout.addWidget(subtitle)
+        return frame
 
-    def make_actions_box(self) -> QGroupBox:
-        box = QGroupBox("操作")
-        layout = QHBoxLayout(box)
-        actions = [
-            ("新建草稿", self.new_post),
-            ("选择封面", self.pick_cover_file),
-            ("封面 URL", self.set_cover_url),
-            ("导入到 Obsidian", lambda: self.run_worker("import")),
-            ("同步到 Hexo", lambda: self.run_worker("sync")),
-            ("构建检查", lambda: self.run_worker("build")),
-            ("本地预览", self.preview),
-            ("发布", lambda: self.run_worker("publish")),
-            ("一键完成", lambda: self.run_worker("all")),
-            ("打开 Obsidian", lambda: self.run_worker("open-vault")),
-            ("查看状态", lambda: self.run_worker("status")),
-        ]
-        for label, callback in actions:
-            button = QPushButton(label)
-            button.clicked.connect(callback)
-            layout.addWidget(button)
-        return box
+    def make_paths_card(self) -> QFrame:
+        frame = self.card()
+        layout = QGridLayout(frame)
+        layout.setContentsMargins(14, 12, 14, 12)
+        layout.setHorizontalSpacing(10)
+        layout.setVerticalSpacing(8)
+
+        title = QLabel("路径")
+        title.setObjectName("SectionTitle")
+        layout.addWidget(title, 0, 0, 1, 2)
+
+        self.repo_field = self.readonly_field(str(self.workflow.repo_root))
+        self.vault_field = self.readonly_field(str(self.workflow.config.obsidian_vault_path))
+        self.cover_field = self.readonly_field(self.workflow.config.default_cover)
+
+        layout.addWidget(self.muted("博客仓库"), 1, 0)
+        layout.addWidget(self.repo_field, 1, 1)
+        layout.addWidget(self.muted("Obsidian 库"), 2, 0)
+        layout.addWidget(self.vault_field, 2, 1)
+        layout.addWidget(self.muted("默认封面"), 3, 0)
+        layout.addWidget(self.cover_field, 3, 1)
+        return frame
+
+    def make_actions_card(self) -> QFrame:
+        frame = self.card()
+        layout = QVBoxLayout(frame)
+        layout.setContentsMargins(14, 12, 14, 12)
+        layout.setSpacing(10)
+
+        title = QLabel("操作")
+        title.setObjectName("SectionTitle")
+        layout.addWidget(title)
+
+        row1 = QHBoxLayout()
+        row1.setSpacing(8)
+        row1.addWidget(self.button("新建草稿", self.new_post, "primary"))
+        row1.addWidget(self.button("同步到 Hexo", lambda: self.run_worker("sync"), "primary"))
+        row1.addWidget(self.button("构建检查", lambda: self.run_worker("build")))
+        row1.addWidget(self.button("本地预览", self.preview))
+        row1.addWidget(self.button("发布全站", lambda: self.run_worker("publish"), "danger"))
+        row1.addWidget(self.button("部署香港", lambda: self.run_worker("deploy-hk")))
+        row1.addWidget(self.button("一键完成", lambda: self.run_worker("all"), "danger"))
+        layout.addLayout(row1)
+
+        row2 = QHBoxLayout()
+        row2.setSpacing(8)
+        row2.addWidget(self.button("选择封面", self.pick_cover_file))
+        row2.addWidget(self.button("封面 URL", self.set_cover_url))
+        row2.addWidget(self.button("删除文章", self.delete_post, "danger"))
+        row2.addWidget(self.button("导入到 Obsidian", lambda: self.run_worker("import")))
+        row2.addWidget(self.button("打开 Obsidian", lambda: self.run_worker("open-vault")))
+        row2.addWidget(self.button("查看状态", lambda: self.run_worker("status")))
+        row2.addStretch(1)
+        layout.addLayout(row2)
+        return frame
+
+    def make_log_card(self) -> QFrame:
+        frame = self.card()
+        layout = QVBoxLayout(frame)
+        layout.setContentsMargins(14, 12, 14, 14)
+        title = QLabel("日志")
+        title.setObjectName("SectionTitle")
+        self.log = QTextEdit()
+        self.log.setReadOnly(True)
+        no_wrap = getattr(QTextEdit, "NoWrap", QTextEdit.LineWrapMode.NoWrap)
+        self.log.setLineWrapMode(no_wrap)
+        layout.addWidget(title)
+        layout.addWidget(self.log, 1)
+        return frame
+
+    def card(self) -> QFrame:
+        frame = QFrame()
+        frame.setObjectName("Card")
+        return frame
+
+    def muted(self, text: str) -> QLabel:
+        label = QLabel(text)
+        label.setObjectName("Muted")
+        return label
+
+    def readonly_field(self, value: str) -> QLineEdit:
+        field = QLineEdit(value)
+        field.setReadOnly(True)
+        return field
+
+    def button(self, text: str, callback, variant: str | None = None) -> QPushButton:
+        btn = QPushButton(text)
+        if variant:
+            btn.setProperty("variant", variant)
+        btn.clicked.connect(callback)
+        return btn
 
     def new_post(self) -> None:
         title, ok = QInputDialog.getText(self, "新建草稿", "文章标题：")
@@ -189,13 +437,41 @@ class BlogWindow(QMainWindow):
         if ok and url.strip():
             self.run_worker("cover-url", url.strip())
 
-    def run_worker(self, action: str, title: str | None = None) -> None:
+    def delete_post(self) -> None:
+        posts = self.workflow.list_obsidian_posts()
+        if not posts:
+            QMessageBox.information(self, "删除文章", "Obsidian 文章目录里没有 Markdown 文件。")
+            return
+        dialog = DeletePostDialog(posts, self)
+        if run_dialog(dialog) != accepted_dialog_code():
+            return
+        name = dialog.selected_name
+        if not name:
+            return
+        source = self.workflow.obsidian_posts_path / name
+        trash = self.workflow.unique_trash_path(name)
+        hexo = self.workflow.hexo_posts_path / name
+        reply = QMessageBox.question(
+            self,
+            "确认删除并发布",
+            "请确认这次删除操作：\n\n"
+            f"文章：{name}\n\n"
+            f"Obsidian 原文：\n{source}\n\n"
+            f"移动到回收站：\n{trash}\n\n"
+            f"删除 Hexo 文件：\n{hexo}\n\n"
+            "随后会自动构建并发布，让线上页面同步下线。",
+        )
+        yes = QMessageBox.StandardButton.Yes if hasattr(QMessageBox, "StandardButton") else QMessageBox.Yes
+        if reply == yes:
+            self.run_worker("delete-post", name)
+
+    def run_worker(self, action: str, value: str | None = None) -> None:
         if self.thread is not None:
             QMessageBox.information(self, "正在处理", "已有任务正在运行。")
             return
         self.write_log(f"\n> {action}")
         self.thread = QThread()
-        self.worker = Worker(action, title)
+        self.worker = Worker(action, value)
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.run)
         self.worker.log.connect(self.write_log)
@@ -264,6 +540,36 @@ def main() -> int:
     if hasattr(app, "exec"):
         return app.exec()
     return app.exec_()
+
+
+def run_dialog(dialog: QDialog):
+    if hasattr(dialog, "exec"):
+        return dialog.exec()
+    return dialog.exec_()
+
+
+def accepted_dialog_code():
+    if hasattr(QDialog, "DialogCode"):
+        return QDialog.DialogCode.Accepted
+    return QDialog.Accepted
+
+
+def read_post_title(path: Path) -> str:
+    try:
+        content = path.read_text(encoding="utf-8-sig")
+    except OSError:
+        return path.stem
+    match = re_search_title(content)
+    return match or path.stem
+
+
+def re_search_title(content: str) -> str | None:
+    import re
+
+    match = re.search(r"(?im)^title\s*:\s*(.*?)\s*$", content)
+    if not match:
+        return None
+    return match.group(1).strip().strip("'\"") or None
 
 
 if __name__ == "__main__":

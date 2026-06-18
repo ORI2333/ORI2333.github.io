@@ -1,0 +1,556 @@
+from __future__ import annotations
+
+import json
+import os
+import html
+import shutil
+import subprocess
+import sys
+import tarfile
+import tempfile
+from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+CONFIG_PATH = Path(__file__).with_name("hk_deploy.config.json")
+HEXO_HK_CONFIG_PATH = Path(__file__).with_name("_config.hk.yml")
+
+
+def main() -> int:
+    cfg = json.loads(CONFIG_PATH.read_text(encoding="utf-8-sig"))
+    apply_env_overrides(cfg)
+    validate_config(cfg)
+    public_dir = REPO_ROOT / "public"
+
+    npm = npm_executable()
+    run([npm, "run", "clean"])
+    run([hexo_executable(), "--config", f"_config.yml,{relative_to_repo(HEXO_HK_CONFIG_PATH)}", "generate"])
+    rewrite_hk_asset_paths(public_dir, str(cfg.get("hkBlogPath", "/blog/")))
+    write_gateway_page(cfg, public_dir)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        archive = Path(tmp) / "ori2333-blog.tar.gz"
+        make_archive(public_dir, archive)
+        remote = remote_target(cfg)
+
+        ssh_base = ssh_command(cfg)
+        scp_base = scp_command(cfg)
+
+        run([*ssh_base, remote, remote_prepare_script(cfg)])
+        run([*scp_base, str(archive), f"{remote}:{cfg['remoteTmp']}"])
+        run([*ssh_base, remote, remote_extract_script(cfg)])
+
+    print(f"Deployed to {public_url(cfg)}")
+    return 0
+
+
+def validate_config(cfg: dict) -> None:
+    server_name = str(cfg.get("nginxServerName", "")).strip()
+    public_url_value = str(cfg.get("publicUrl", "")).strip()
+    if not server_name or "REPLACE_WITH_YOUR_DOMAIN" in server_name or server_name == "_":
+        raise RuntimeError("请先把 tools/hk_deploy/hk_deploy.config.json 里的 nginxServerName 改成真实域名。")
+    if "REPLACE_WITH_YOUR_DOMAIN" in public_url_value:
+        raise RuntimeError("请先把 tools/hk_deploy/hk_deploy.config.json 里的 publicUrl 改成真实访问地址。")
+
+
+def apply_env_overrides(cfg: dict) -> None:
+    env_map = {
+        "HK_HOST": "host",
+        "HK_PORT": "port",
+        "HK_USER": "user",
+        "HK_REMOTE_ROOT": "remoteRoot",
+        "HK_REMOTE_TMP": "remoteTmp",
+        "HK_PUBLIC_URL": "publicUrl",
+        "HK_BLOG_PATH": "hkBlogPath",
+    }
+    for env_name, key in env_map.items():
+        value = os.environ.get(env_name)
+        if value:
+            cfg[key] = int(value) if key == "port" else value
+
+    key_path = os.environ.get("HK_SSH_KEY_PATH")
+    if key_path:
+        key_path = str(Path(key_path).expanduser())
+        cfg["sshOptions"] = [
+            "-i",
+            key_path,
+            "-o",
+            "ServerAliveInterval=15",
+            "-o",
+            "ServerAliveCountMax=3",
+            "-o",
+            "StrictHostKeyChecking=accept-new",
+        ]
+
+
+def public_url(cfg: dict) -> str:
+    value = str(cfg.get("publicUrl", "")).strip()
+    if value:
+        return value
+    scheme = "http"
+    port = int(cfg.get("nginxListen", 80))
+    suffix = "" if port in (80, 443) else f":{port}"
+    return f"{scheme}://{cfg['nginxServerName']}{suffix}/"
+
+
+def run(command: list[str]) -> None:
+    print("$ " + " ".join(command))
+    subprocess.run(command, cwd=REPO_ROOT, check=True)
+
+
+def npm_executable() -> str:
+    found = shutil.which("npm.cmd") or shutil.which("npm")
+    if found:
+        return found
+
+    candidates = [
+        Path(os.environ.get("ProgramFiles", "")) / "nodejs" / "npm.cmd",
+        Path(os.environ.get("ProgramFiles(x86)", "")) / "nodejs" / "npm.cmd",
+        Path("E:/Program Files/nodejs/npm.cmd"),
+        Path("D:/Program Files/nodejs/npm.cmd"),
+        Path("C:/Program Files/nodejs/npm.cmd"),
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+
+    raise RuntimeError("找不到 npm。请确认 Node.js 已安装，或把 npm.cmd 加入 PATH。")
+
+
+def hexo_executable() -> str:
+    suffix = ".cmd" if sys.platform.startswith("win") else ""
+    candidate = REPO_ROOT / "node_modules" / ".bin" / f"hexo{suffix}"
+    if candidate.exists():
+        return str(candidate)
+    found = shutil.which(f"hexo{suffix}") or shutil.which("hexo")
+    if found:
+        return found
+    raise RuntimeError("找不到 Hexo。请先运行 npm install。")
+
+
+def relative_to_repo(path: Path) -> str:
+    return path.resolve().relative_to(REPO_ROOT).as_posix()
+
+
+def write_gateway_page(cfg: dict, public_dir: Path) -> None:
+    public_dir.mkdir(parents=True, exist_ok=True)
+    index_path = public_dir / "index.html"
+    public_url_value = str(cfg.get("publicUrl", "https://blog.orizhen.xyz/")).rstrip("/") + "/"
+    hk_blog_path = normalized_path(str(cfg.get("hkBlogPath", "/blog/")))
+    hk_blog_url = public_url_value.rstrip("/") + hk_blog_path
+    edge_url = str(cfg["edgeOneUrl"])
+    github_url = str(cfg["githubPagesUrl"])
+    index_path.write_text(
+        gateway_html(
+            edge_url=edge_url,
+            hk_url=hk_blog_url,
+            github_url=github_url,
+            hk_blog_path=hk_blog_path,
+        ),
+        encoding="utf-8",
+    )
+
+
+def normalized_path(value: str) -> str:
+    value = "/" + value.strip("/")
+    return value + "/"
+
+
+def rewrite_hk_asset_paths(public_dir: Path, blog_path: str) -> None:
+    blog_path = normalized_path(blog_path).rstrip("/")
+    blog_public_dir = public_dir / blog_path.strip("/")
+    if not blog_public_dir.exists():
+        raise RuntimeError(f"Missing HK blog output: {blog_public_dir}")
+
+    replacements = {
+        'href="/images/': f'href="{blog_path}/images/',
+        'src="/images/': f'src="{blog_path}/images/',
+        'url(/images/': f'url({blog_path}/images/',
+        "url('/images/": f"url('{blog_path}/images/",
+        'url("/images/': f'url("{blog_path}/images/',
+        'href="/icons/': f'href="{blog_path}/icons/',
+        'src="/icons/': f'src="{blog_path}/icons/',
+        'url(/icons/': f'url({blog_path}/icons/',
+        "url('/icons/": f"url('{blog_path}/icons/",
+        'url("/icons/': f'url("{blog_path}/icons/',
+    }
+    for path in blog_public_dir.rglob("*"):
+        if not path.is_file():
+            continue
+        if path.suffix.lower() not in {".html", ".css", ".js", ".json"}:
+            continue
+        content = path.read_text(encoding="utf-8", errors="ignore")
+        updated = content
+        for old, new in replacements.items():
+            updated = updated.replace(old, new)
+        if updated != content:
+            path.write_text(updated, encoding="utf-8")
+
+
+def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str) -> str:
+    avatar_path = f"{hk_blog_path}images/theme/头像.jpg"
+    dark_bg_path = f"{hk_blog_path}images/theme/bg-dark.webp"
+    light_bg_path = f"{hk_blog_path}images/theme/bg-light.webp"
+    cards = [
+        {
+            "title": "香港站点",
+            "label": "同时支持国内外访问",
+            "desc": "当前服务器托管版本，国内外网络都可访问，适合作为日常默认入口。",
+            "href": hk_url,
+            "meta": "blog.orizhen.xyz/blog/",
+            "accent": "#35cd4b",
+        },
+        {
+            "title": "中国大陆加速访问",
+            "label": "腾讯云 EdgeOne",
+            "desc": "优先推荐给中国大陆网络，静态资源通过 EdgeOne 加速。",
+            "href": edge_url,
+            "meta": "edgeone.cool",
+            "accent": "#51aded",
+        },
+        {
+            "title": "GitHub Pages",
+            "label": "GitHub Mirror",
+            "desc": "源站镜像，适合作为长期稳定的备用入口。",
+            "href": github_url,
+            "meta": "ori2333.github.io",
+            "accent": "#fdbc40",
+        },
+    ]
+    card_html = "\n".join(gateway_card(card) for card in cards)
+    return f"""<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ORI2333's Blog access gateway">
+  <title>ORI2333's Blog - 选择访问站点</title>
+  <link rel="icon" href="{html.escape(avatar_path, quote=True)}">
+  <style>
+    :root {{
+      color-scheme: dark light;
+      --text: #f6f8fb;
+      --muted: #b9c3d1;
+      --line: rgba(255, 255, 255, .18);
+      --panel: rgba(14, 22, 34, .72);
+      --panel-strong: rgba(18, 28, 44, .9);
+      --page-bg: #101827;
+      --page-image: url("{html.escape(dark_bg_path, quote=True)}");
+      --veil-a: rgba(8, 13, 24, .94);
+      --veil-b: rgba(16, 24, 39, .74);
+      --veil-c: rgba(14, 30, 44, .9);
+      --glow: rgba(81, 173, 237, .22);
+      --arrow-text: #07111e;
+      --blue: #51aded;
+      --green: #35cd4b;
+      --amber: #fdbc40;
+    }}
+    :root[data-theme="light"] {{
+      color-scheme: light;
+      --text: #172033;
+      --muted: #516173;
+      --line: rgba(23, 32, 51, .15);
+      --panel: rgba(255, 255, 255, .76);
+      --panel-strong: rgba(255, 255, 255, .94);
+      --page-bg: #f5f7fb;
+      --page-image: url("{html.escape(light_bg_path, quote=True)}");
+      --veil-a: rgba(245, 247, 251, .92);
+      --veil-b: rgba(241, 246, 252, .76);
+      --veil-c: rgba(234, 241, 247, .88);
+      --glow: rgba(81, 173, 237, .2);
+      --arrow-text: #07111e;
+    }}
+    * {{ box-sizing: border-box; }}
+    html, body {{ min-height: 100%; }}
+    body {{
+      margin: 0;
+      font-family: "Microsoft YaHei UI", "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      background: var(--page-bg) var(--page-image) center / cover fixed no-repeat;
+    }}
+    body::before {{
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(120deg, var(--veil-a), var(--veil-b) 48%, var(--veil-c)),
+        radial-gradient(circle at 78% 20%, var(--glow), transparent 32%);
+      pointer-events: none;
+    }}
+    main {{
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      padding: 42px 22px;
+    }}
+    .shell {{
+      width: min(1080px, 100%);
+      margin: 0 auto;
+    }}
+    .brand {{
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }}
+    .topbar {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 32px;
+    }}
+    .brand img {{
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, .78);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .26);
+      object-fit: cover;
+    }}
+    .brand span {{
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+    }}
+    .theme-toggle {{
+      flex: 0 0 auto;
+      min-width: 44px;
+      height: 38px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      background: var(--panel);
+      cursor: pointer;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .18);
+    }}
+    .theme-toggle:hover {{
+      background: var(--panel-strong);
+    }}
+    h1 {{
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.16;
+      font-weight: 700;
+      letter-spacing: 0;
+    }}
+    .intro {{
+      width: min(760px, 100%);
+      margin-bottom: 30px;
+    }}
+    .intro p {{
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.8;
+    }}
+    .grid {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }}
+    .card {{
+      position: relative;
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, .28);
+      overflow: hidden;
+    }}
+    .card::before {{
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: var(--accent);
+    }}
+    .card:hover {{
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, .32);
+      background: var(--panel-strong);
+    }}
+    .card, .card:hover {{
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }}
+    .card h2 {{
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.3;
+      font-weight: 700;
+      letter-spacing: 0;
+    }}
+    .label {{
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 16px;
+      padding: 4px 9px;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgba(255, 255, 255, .06);
+      font-size: 12px;
+    }}
+    .card p {{
+      margin: 12px 0 18px;
+      color: var(--muted);
+      line-height: 1.72;
+      font-size: 14px;
+    }}
+    .open {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }}
+    .open strong {{
+      overflow-wrap: anywhere;
+      font-weight: 500;
+      color: var(--text);
+    }}
+    .arrow {{
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--arrow-text);
+      font-weight: 700;
+    }}
+    .note {{
+      margin-top: 22px;
+      color: rgba(246, 248, 251, .68);
+      font-size: 13px;
+    }}
+    @media (max-width: 820px) {{
+      main {{ align-items: start; padding-top: 34px; }}
+      .topbar {{ align-items: flex-start; }}
+      .grid {{ grid-template-columns: 1fr; }}
+      h1 {{ font-size: 29px; }}
+      .card {{ min-height: 190px; }}
+    }}
+  </style>
+</head>
+<body>
+  <main>
+    <section class="shell" aria-labelledby="page-title">
+      <div class="topbar">
+        <div class="brand">
+          <img src="{html.escape(avatar_path, quote=True)}" alt="ORI2333">
+          <div>
+            <h1 id="page-title">ORI2333's Blog</h1>
+            <span>选择一个适合当前网络环境的访问入口</span>
+          </div>
+        </div>
+        <button class="theme-toggle" type="button" aria-label="切换黑白主题" title="切换黑白主题">☾</button>
+      </div>
+      <div class="intro">
+        <p>同一份博客内容会同步到不同线路。中国大陆网络优先选择 EdgeOne；如果需要直连香港服务器或备用镜像，也可以从这里进入。</p>
+      </div>
+      <div class="grid">
+        {card_html}
+      </div>
+      <p class="note">提示：如果某个入口加载慢，切换到另一个线路即可。</p>
+    </section>
+  </main>
+  <script>
+    (function () {{
+      var root = document.documentElement;
+      var key = "ori_blog_gateway_theme";
+      var button = document.querySelector(".theme-toggle");
+      function apply(theme) {{
+        root.dataset.theme = theme;
+        if (button) button.textContent = theme === "light" ? "☀" : "☾";
+      }}
+      var saved = localStorage.getItem(key);
+      var initial = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      apply(initial);
+      if (button) {{
+        button.addEventListener("click", function () {{
+          var next = root.dataset.theme === "light" ? "dark" : "light";
+          localStorage.setItem(key, next);
+          apply(next);
+        }});
+      }}
+    }})();
+  </script>
+</body>
+</html>
+"""
+
+
+def gateway_card(card: dict[str, str]) -> str:
+    return f"""<article class="card" style="--accent: {card['accent']}">
+          <div>
+            <span class="label">{html.escape(card['label'])}</span>
+            <h2>{html.escape(card['title'])}</h2>
+            <p>{html.escape(card['desc'])}</p>
+          </div>
+          <a class="open" href="{html.escape(card['href'], quote=True)}">
+            <strong>{html.escape(card['meta'])}</strong>
+            <span class="arrow">→</span>
+          </a>
+        </article>"""
+
+
+def make_archive(public_dir: Path, archive: Path) -> None:
+    if not public_dir.exists():
+        raise RuntimeError(f"Missing build output: {public_dir}")
+    with tarfile.open(archive, "w:gz") as tar:
+        for path in public_dir.rglob("*"):
+            tar.add(path, arcname=path.relative_to(public_dir))
+
+
+def ssh_command(cfg: dict) -> list[str]:
+    return ["ssh", "-p", str(cfg["port"]), *cfg.get("sshOptions", [])]
+
+
+def scp_command(cfg: dict) -> list[str]:
+    return ["scp", "-P", str(cfg["port"]), *cfg.get("sshOptions", [])]
+
+
+def remote_target(cfg: dict) -> str:
+    return f"{cfg['user']}@{cfg['host']}"
+
+
+def remote_prepare_script(cfg: dict) -> str:
+    remote_root = shell_quote(cfg["remoteRoot"])
+    remote_tmp = shell_quote(cfg["remoteTmp"])
+    return (
+        "set -e; "
+        f"mkdir -p {remote_root}; "
+        f"rm -f {remote_tmp}; "
+        "command -v tar >/dev/null"
+    )
+
+
+def remote_extract_script(cfg: dict) -> str:
+    remote_root = shell_quote(cfg["remoteRoot"])
+    remote_tmp = shell_quote(cfg["remoteTmp"])
+    return (
+        "set -e; "
+        f"find {remote_root} -mindepth 1 -maxdepth 1 -exec rm -rf {{}} +; "
+        f"tar -xzf {remote_tmp} -C {remote_root}; "
+        f"rm -f {remote_tmp}"
+    )
+
+
+def shell_quote(value: str) -> str:
+    return "'" + value.replace("'", "'\"'\"'") + "'"
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

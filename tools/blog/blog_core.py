@@ -20,6 +20,7 @@ class BlogConfig:
     obsidian_vault_path: Path
     obsidian_posts_folder: str
     obsidian_assets_folder: str
+    obsidian_trash_folder: str
     hexo_posts_folder: str
     hexo_images_folder: str
     post_template_name: str
@@ -27,6 +28,7 @@ class BlogConfig:
     default_categories: list[str]
     preferred_preview_port: int
     publish_command: str
+    hk_deploy_command: str
 
 
 class BlogWorkflow:
@@ -43,6 +45,7 @@ class BlogWorkflow:
             obsidian_vault_path=Path(vault) if vault else Path(),
             obsidian_posts_folder=raw.get("obsidianPostsFolder", "Blog/Posts"),
             obsidian_assets_folder=raw.get("obsidianAssetsFolder", "Blog/Assets"),
+            obsidian_trash_folder=raw.get("obsidianTrashFolder", "Blog/Trash"),
             hexo_posts_folder=raw.get("hexoPostsFolder", "source/_posts"),
             hexo_images_folder=raw.get("hexoImagesFolder", "source/images/posts"),
             post_template_name=raw.get("postTemplateName", "blog-post.md"),
@@ -50,6 +53,7 @@ class BlogWorkflow:
             default_categories=list(raw.get("defaultCategories", ["docs"])),
             preferred_preview_port=int(raw.get("preferredPreviewPort", 4000)),
             publish_command=raw.get("publishCommand", "npm run push"),
+            hk_deploy_command=raw.get("hkDeployCommand", "npm run deploy:hk"),
         )
 
     @property
@@ -63,6 +67,10 @@ class BlogWorkflow:
     @property
     def obsidian_assets_path(self) -> Path:
         return self.require_vault() / self.config.obsidian_assets_folder
+
+    @property
+    def obsidian_trash_path(self) -> Path:
+        return self.require_vault() / self.config.obsidian_trash_folder
 
     @property
     def hexo_posts_path(self) -> Path:
@@ -90,6 +98,7 @@ class BlogWorkflow:
             f"Vault: {vault}",
             f"Obsidian posts: {self.config.obsidian_posts_folder}",
             f"Obsidian assets: {self.config.obsidian_assets_folder}",
+            f"Obsidian trash: {self.config.obsidian_trash_folder}",
             f"Hexo posts: {self.config.hexo_posts_folder}",
             f"Hexo images: {self.config.hexo_images_folder}",
             f"Default cover: {self.config.default_cover}",
@@ -169,6 +178,52 @@ class BlogWorkflow:
         updated = set_front_matter_field(content, "cover", cover_value)
         post.write_text(updated, encoding="utf-8")
 
+    def list_obsidian_posts(self) -> list[Path]:
+        if not self.obsidian_posts_path.exists():
+            return []
+        return sorted(
+            [post for post in self.obsidian_posts_path.glob("*.md") if post.is_file()],
+            key=lambda path: path.name.lower(),
+        )
+
+    def delete_post(self, file_name: str) -> tuple[Path, Path | None]:
+        source = self.obsidian_posts_path / file_name
+        if not source.exists() or not source.is_file():
+            raise FileNotFoundError(f"Obsidian post not found: {source}")
+        if source.suffix.lower() != ".md":
+            raise ValueError(f"Only Markdown posts can be deleted: {source}")
+
+        self.obsidian_trash_path.mkdir(parents=True, exist_ok=True)
+        trash_target = self.unique_trash_path(source.name)
+        shutil.move(str(source), str(trash_target))
+
+        hexo_target = self.hexo_posts_path / source.name
+        removed_hexo: Path | None = None
+        if hexo_target.exists() and hexo_target.is_file():
+            hexo_target.unlink()
+            removed_hexo = hexo_target
+        return trash_target, removed_hexo
+
+    def delete_post_and_publish(self, file_name: str, log: LogFn | None = None) -> tuple[Path, Path | None]:
+        trash_target, removed_hexo = self.delete_post(file_name)
+        if log:
+            log(f"已移动到回收站：{trash_target}")
+            if removed_hexo:
+                log(f"已从 Hexo 删除：{removed_hexo}")
+            else:
+                log("Hexo 中没有同名文章。")
+        self.build(log)
+        self.publish_all_targets(log)
+        return trash_target, removed_hexo
+
+    def unique_trash_path(self, file_name: str) -> Path:
+        target = self.obsidian_trash_path / file_name
+        if not target.exists():
+            return target
+        stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        path = Path(file_name)
+        return self.obsidian_trash_path / f"{path.stem}-{stamp}{path.suffix}"
+
     def import_to_obsidian(self, log: LogFn | None = None) -> tuple[int, int]:
         post_count = copy_folder(self.hexo_posts_path, self.obsidian_posts_path, "*.md", log)
         asset_count = copy_folder(self.hexo_images_path, self.obsidian_assets_path, "*", log)
@@ -203,10 +258,19 @@ class BlogWorkflow:
         command = self.resolve_command(self.config.publish_command)
         self.stream_command(command, log)
 
+    def deploy_hk(self, log: LogFn | None = None) -> None:
+        command = self.resolve_command(self.config.hk_deploy_command)
+        self.stream_command(command, log)
+
+    def publish_all_targets(self, log: LogFn | None = None) -> None:
+        if log:
+            log("发布源码，GitHub Actions 会自动部署 GitHub Pages 和香港站点。")
+        self.publish(log)
+
     def all(self, log: LogFn | None = None) -> tuple[int, int, int]:
         result = self.sync_to_hexo(log)
         self.build(log)
-        self.publish(log)
+        self.publish_all_targets(log)
         return result
 
     def run(self, command: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:

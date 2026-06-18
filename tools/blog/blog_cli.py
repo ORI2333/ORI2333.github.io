@@ -10,7 +10,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Hexo blog workflow helper")
     parser.add_argument(
         "action",
-        choices=["status", "new", "import", "sync", "build", "preview", "publish", "all", "open-vault"],
+        choices=["status", "new", "import", "sync", "build", "preview", "publish", "deploy-hk", "all", "open-vault"],
     )
     parser.add_argument("--title", help="Post title for the new action")
     args = parser.parse_args()
@@ -35,7 +35,9 @@ def main() -> int:
         elif args.action == "preview":
             workflow.stream_command(["npm", "run", "server", "--", "-p", str(workflow.config.preferred_preview_port)], print)
         elif args.action == "publish":
-            workflow.publish(print)
+            workflow.publish_all_targets(print)
+        elif args.action == "deploy-hk":
+            workflow.deploy_hk(print)
         elif args.action == "all":
             posts, drafts, assets = workflow.all(print)
             print(f"Synced {posts} post(s), skipped {drafts} draft(s), copied {assets} asset(s).")

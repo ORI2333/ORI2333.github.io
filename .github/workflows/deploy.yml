@@ -12,6 +12,8 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      HK_DEPLOY_ENABLED: ${{ secrets.HK_SSH_KEY != '' && secrets.HK_HOST != '' }}
 
     steps:
       - name: Checkout source branch
@@ -37,3 +39,20 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: main
+
+      - name: Install HK SSH key
+        if: ${{ env.HK_DEPLOY_ENABLED == 'true' }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.HK_SSH_KEY }}" > ~/.ssh/hk_deploy_key
+          chmod 600 ~/.ssh/hk_deploy_key
+
+      - name: Deploy to Hong Kong static host
+        if: ${{ env.HK_DEPLOY_ENABLED == 'true' }}
+        env:
+          HK_HOST: ${{ secrets.HK_HOST }}
+          HK_PORT: ${{ secrets.HK_PORT }}
+          HK_USER: ${{ secrets.HK_USER }}
+          HK_REMOTE_ROOT: ${{ secrets.HK_REMOTE_ROOT }}
+          HK_SSH_KEY_PATH: ~/.ssh/hk_deploy_key
+        run: npm run deploy:hk
