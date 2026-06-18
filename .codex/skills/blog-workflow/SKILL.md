@@ -25,6 +25,8 @@ Use `tools/blog/blog_gui.py` as the primary human-facing entry point and `tools/
 - Read `templates/blog-post.md` for the canonical front matter shape.
 - Read `docs/blog-workflow-migration.md` when the user asks about moving to a new computer, switching environments, or debugging missing Qt/Python dependencies.
 - Treat `draft: true` as a private Obsidian draft. Sync skips those posts.
+- Treat `cover` as optional. Empty or placeholder covers should fall back to `defaultCover` from `tools/blog/blog.config.json`.
+- Support both local cover paths such as `/images/posts/x.webp` and remote cover URLs such as `https://...`.
 - Prefer `npm run blog` for the GUI and `npm run blog:sync` style commands for direct automation.
 
 ## Reference

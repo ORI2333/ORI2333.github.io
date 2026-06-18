@@ -5,11 +5,12 @@ import sys
 try:
     from PySide6.QtCore import QObject, QProcess, QThread, Signal as pyqtSignal
     from PySide6.QtWidgets import (
-        QApplication,
-        QGridLayout,
+    QApplication,
+    QFileDialog,
+    QGridLayout,
         QGroupBox,
         QHBoxLayout,
-        QInputDialog,
+    QInputDialog,
         QLabel,
         QLineEdit,
         QMainWindow,
@@ -95,6 +96,14 @@ class Worker(QObject):
             elif self.action == "open-vault":
                 open_path(workflow.require_vault())
                 self.done.emit("已打开 Obsidian vault。")
+            elif self.action == "cover-url":
+                assert self.title is not None
+                path = workflow.set_latest_cover_url(self.title)
+                self.done.emit(f"已设置最近文章封面链接：{path}")
+            elif self.action == "cover-file":
+                assert self.title is not None
+                path, cover = workflow.set_latest_cover_file(self.title)
+                self.done.emit(f"已设置最近文章封面：{path}\n封面路径：{cover}")
         except Exception as exc:
             self.failed.emit(str(exc))
 
@@ -143,6 +152,8 @@ class BlogWindow(QMainWindow):
         layout = QHBoxLayout(box)
         actions = [
             ("新建草稿", self.new_post),
+            ("选择封面", self.pick_cover_file),
+            ("封面 URL", self.set_cover_url),
             ("导入到 Obsidian", lambda: self.run_worker("import")),
             ("同步到 Hexo", lambda: self.run_worker("sync")),
             ("构建检查", lambda: self.run_worker("build")),
@@ -162,6 +173,21 @@ class BlogWindow(QMainWindow):
         title, ok = QInputDialog.getText(self, "新建草稿", "文章标题：")
         if ok and title.strip():
             self.run_worker("new", title.strip())
+
+    def pick_cover_file(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(
+            self,
+            "选择最近文章封面",
+            "",
+            "图片文件 (*.png *.jpg *.jpeg *.webp *.gif);;所有文件 (*.*)",
+        )
+        if path:
+            self.run_worker("cover-file", path)
+
+    def set_cover_url(self) -> None:
+        url, ok = QInputDialog.getText(self, "设置最近文章封面 URL", "图片链接：")
+        if ok and url.strip():
+            self.run_worker("cover-url", url.strip())
 
     def run_worker(self, action: str, title: str | None = None) -> None:
         if self.thread is not None:

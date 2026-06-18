@@ -6,7 +6,7 @@ tags:
   - 工作流
 categories:
   - docs
-cover: /images/posts/test.webp
+cover: https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260618105146950.png?imageSlim
 draft: false
 ---
 
@@ -15,6 +15,7 @@ draft: false
 <!-- more -->
 
 如果你能在博客里看到这篇文章，说明新的 Python + Qt 图形化博客工作流已经可以正常完成日常发布链路。
+
 
 ## 测试项
 

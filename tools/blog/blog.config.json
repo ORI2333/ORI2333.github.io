@@ -5,6 +5,7 @@
   "hexoPostsFolder": "source/_posts",
   "hexoImagesFolder": "source/images/posts",
   "postTemplateName": "blog-post.md",
+  "defaultCover": "/images/theme/default-cover.webp",
   "defaultCategories": [
     "docs"
   ],

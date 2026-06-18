@@ -111,6 +111,26 @@ draft: false
 
 or remove the `draft` line.
 
+## Cover Rule
+
+`cover` supports local blog paths and image URLs:
+
+```yaml
+cover: /images/posts/example-cover.webp
+cover: https://example.com/example-cover.webp
+```
+
+If `cover` is empty or still uses the placeholder path, sync writes the configured default cover:
+
+```yaml
+cover: /images/theme/default-cover.webp
+```
+
+In the GUI:
+
+- `选择封面` copies a local image into the blog image folders and updates the latest Obsidian post.
+- `封面 URL` writes an `http://` or `https://` image URL into the latest Obsidian post.
+
 ## Troubleshooting
 
 If `npm run blog` says `No module named PyQt5`, run:

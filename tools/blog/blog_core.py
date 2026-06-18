@@ -23,6 +23,7 @@ class BlogConfig:
     hexo_posts_folder: str
     hexo_images_folder: str
     post_template_name: str
+    default_cover: str
     default_categories: list[str]
     preferred_preview_port: int
     publish_command: str
@@ -45,6 +46,7 @@ class BlogWorkflow:
             hexo_posts_folder=raw.get("hexoPostsFolder", "source/_posts"),
             hexo_images_folder=raw.get("hexoImagesFolder", "source/images/posts"),
             post_template_name=raw.get("postTemplateName", "blog-post.md"),
+            default_cover=raw.get("defaultCover", "/images/theme/default-cover.webp"),
             default_categories=list(raw.get("defaultCategories", ["docs"])),
             preferred_preview_port=int(raw.get("preferredPreviewPort", 4000)),
             publish_command=raw.get("publishCommand", "npm run push"),
@@ -90,6 +92,7 @@ class BlogWorkflow:
             f"Obsidian assets: {self.config.obsidian_assets_folder}",
             f"Hexo posts: {self.config.hexo_posts_folder}",
             f"Hexo images: {self.config.hexo_images_folder}",
+            f"Default cover: {self.config.default_cover}",
             f"npm: {self.npm_executable()}",
         ]
         proc = self.run(["git", "status", "--short"], check=False)
@@ -124,6 +127,48 @@ class BlogWorkflow:
             open_path(target)
         return target
 
+    def latest_obsidian_post(self) -> Path:
+        posts = [p for p in self.obsidian_posts_path.glob("*.md") if p.is_file()]
+        if not posts:
+            raise RuntimeError(f"Obsidian posts folder has no Markdown files: {self.obsidian_posts_path}")
+        return max(posts, key=lambda path: path.stat().st_mtime)
+
+    def set_latest_cover_url(self, cover_url: str) -> Path:
+        cover_url = cover_url.strip()
+        if not cover_url:
+            raise ValueError("Cover URL is required.")
+        if not re.match(r"^https?://", cover_url, re.IGNORECASE):
+            raise ValueError("Cover URL must start with http:// or https://.")
+        post = self.latest_obsidian_post()
+        self.set_post_cover(post, cover_url)
+        return post
+
+    def set_latest_cover_file(self, image_path: Path) -> tuple[Path, str]:
+        image_path = Path(image_path)
+        if not image_path.exists():
+            raise FileNotFoundError(f"Cover image not found: {image_path}")
+        post = self.latest_obsidian_post()
+        cover_path = self.copy_cover_image(image_path, post)
+        self.set_post_cover(post, cover_path)
+        return post, cover_path
+
+    def copy_cover_image(self, image_path: Path, post: Path) -> str:
+        self.obsidian_assets_path.mkdir(parents=True, exist_ok=True)
+        self.hexo_images_path.mkdir(parents=True, exist_ok=True)
+        stem = safe_file_name(post.stem)
+        suffix = image_path.suffix.lower() or ".webp"
+        file_name = f"{stem}-cover{suffix}"
+        obsidian_target = self.obsidian_assets_path / file_name
+        hexo_target = self.hexo_images_path / file_name
+        shutil.copy2(image_path, obsidian_target)
+        shutil.copy2(image_path, hexo_target)
+        return f"/images/posts/{file_name}"
+
+    def set_post_cover(self, post: Path, cover_value: str) -> None:
+        content = post.read_text(encoding="utf-8-sig")
+        updated = set_front_matter_field(content, "cover", cover_value)
+        post.write_text(updated, encoding="utf-8")
+
     def import_to_obsidian(self, log: LogFn | None = None) -> tuple[int, int]:
         post_count = copy_folder(self.hexo_posts_path, self.obsidian_posts_path, "*.md", log)
         asset_count = copy_folder(self.hexo_images_path, self.obsidian_assets_path, "*", log)
@@ -140,7 +185,8 @@ class BlogWorkflow:
                 if is_draft_post(post):
                     draft_count += 1
                     continue
-                shutil.copy2(post, self.hexo_posts_path / post.name)
+                content = normalize_cover(post.read_text(encoding="utf-8-sig"), self.config.default_cover)
+                (self.hexo_posts_path / post.name).write_text(content, encoding="utf-8")
                 post_count += 1
         elif log:
             log(f"Missing posts folder: {self.obsidian_posts_path}")
@@ -243,6 +289,34 @@ def is_draft_post(path: Path) -> bool:
     if not match:
         return False
     return re.search(r"(?im)^\s*draft\s*:\s*true\s*$", match.group(1)) is not None
+
+
+def normalize_cover(content: str, default_cover: str) -> str:
+    match = re.match(r"(?s)^(---\s*\r?\n)(.*?)(\r?\n---)(.*)$", content)
+    if not match:
+        return content
+    front_matter = match.group(2)
+    cover_match = re.search(r"(?im)^cover\s*:\s*(.*?)\s*$", front_matter)
+    if cover_match:
+        value = cover_match.group(1).strip().strip("'\"")
+        if value and value != "/images/posts/replace-this-cover.webp":
+            return content
+    return set_front_matter_field(content, "cover", default_cover)
+
+
+def set_front_matter_field(content: str, field: str, value: str) -> str:
+    match = re.match(r"(?s)^(---\s*\r?\n)(.*?)(\r?\n---)(.*)$", content)
+    if not match:
+        return f"---\n{field}: {value}\n---\n\n{content}"
+
+    prefix, front_matter, suffix, body = match.groups()
+    line = f"{field}: {value}"
+    pattern = rf"(?im)^{re.escape(field)}\s*:.*$"
+    if re.search(pattern, front_matter):
+        front_matter = re.sub(pattern, line, front_matter, count=1)
+    else:
+        front_matter = f"{front_matter.rstrip()}\n{line}"
+    return f"{prefix}{front_matter}{suffix}{body}"
 
 
 def copy_folder(source: Path, destination: Path, pattern: str, log: LogFn | None = None) -> int:

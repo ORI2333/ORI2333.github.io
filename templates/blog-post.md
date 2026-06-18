@@ -5,7 +5,7 @@ tags:
   - 
 categories:
   - docs
-cover: /images/posts/replace-this-cover.webp
+cover: /images/theme/default-cover.webp
 draft: true
 ---
 

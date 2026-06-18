@@ -29,3 +29,5 @@
 - Keep attachments in the configured assets folder, usually `Blog/Assets`.
 - Use `npm run blog` for the GUI or `npm run blog:sync` and friends for direct actions.
 - New posts start with `draft: true`; remove it or change it to `draft: false` before syncing a post for publication.
+- Covers are optional. Sync falls back to `defaultCover` when `cover` is blank or still uses the placeholder.
+- The GUI can set the latest Obsidian post cover from a local image or an `http(s)` image URL.
