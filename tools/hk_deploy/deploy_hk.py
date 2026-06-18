@@ -193,7 +193,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
     light_bg_path = f"{hk_blog_path}images/theme/bg-light.webp"
     cards = [
         {
-            "title": "香港站点",
+            "title": "HK站点（服务器托管版）",
             "label": "同时支持国内外访问",
             "desc": "当前服务器托管版本，国内外网络都可访问，适合作为日常默认入口。",
             "href": hk_url,
@@ -209,9 +209,9 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
             "accent": "#51aded",
         },
         {
-            "title": "GitHub Pages",
+            "title": "源站",
             "label": "GitHub Mirror",
-            "desc": "源站镜像，适合作为长期稳定的备用入口。",
+            "desc": "GitHub Pages 源站，适合作为长期稳定的备用入口。",
             "href": github_url,
             "meta": "ori2333.github.io",
             "accent": "#fdbc40",
