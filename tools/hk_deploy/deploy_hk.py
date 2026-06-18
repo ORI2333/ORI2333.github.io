@@ -193,25 +193,25 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
     light_bg_path = f"{hk_blog_path}images/theme/bg-light.webp"
     cards = [
         {
-            "title": "HK站点（服务器托管版）",
-            "label": "同时支持国内外访问",
-            "desc": "当前服务器托管版本，国内外网络都可访问，适合作为日常默认入口。",
+            "title": "稳定访问",
+            "label": "推荐入口",
+            "desc": "由独立服务器提供访问，兼顾国内外网络环境，适合作为日常阅读入口。",
             "href": hk_url,
             "meta": "blog.orizhen.xyz/blog/",
             "accent": "#35cd4b",
         },
         {
-            "title": "中国大陆加速访问",
-            "label": "腾讯云 EdgeOne",
-            "desc": "优先推荐给中国大陆网络，静态资源通过 EdgeOne 加速。",
+            "title": "大陆优化线路",
+            "label": "EdgeOne 加速",
+            "desc": "面向中国大陆网络优化，适合在直连较慢时切换使用。",
             "href": edge_url,
             "meta": "edgeone.cool",
             "accent": "#51aded",
         },
         {
-            "title": "源站",
-            "label": "GitHub Mirror",
-            "desc": "GitHub Pages 源站，适合作为长期稳定的备用入口。",
+            "title": "备用镜像",
+            "label": "GitHub Pages",
+            "desc": "托管在 GitHub Pages 的公开镜像，适合作为备用阅读入口。",
             "href": github_url,
             "meta": "ori2333.github.io",
             "accent": "#fdbc40",
@@ -452,13 +452,13 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           <img src="{html.escape(avatar_path, quote=True)}" alt="ORI2333">
           <div>
             <h1 id="page-title">ORI2333's Blog</h1>
-            <span>选择一个适合当前网络环境的访问入口</span>
+            <span>选择一条适合当前网络环境的阅读线路</span>
           </div>
         </div>
         <button class="theme-toggle" type="button" aria-label="切换黑白主题" title="切换黑白主题">☾</button>
       </div>
       <div class="intro">
-        <p>同一份博客内容会同步到不同线路。中国大陆网络优先选择 EdgeOne；如果需要直连香港服务器或备用镜像，也可以从这里进入。</p>
+        <p>这里提供同一份博客内容的多个访问线路。如果当前网络加载较慢，可以切换到另一条线路继续阅读。</p>
       </div>
       <div class="grid">
         {card_html}
