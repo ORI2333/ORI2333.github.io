@@ -135,7 +135,7 @@ def relative_to_repo(path: Path) -> str:
 def write_gateway_page(cfg: dict, public_dir: Path) -> None:
     public_dir.mkdir(parents=True, exist_ok=True)
     index_path = public_dir / "index.html"
-    public_url_value = str(cfg.get("publicUrl", "https://blog.orizhen.xyz/")).rstrip("/") + "/"
+    public_url_value = str(cfg.get("publicUrl", "https://blog.orixx.xyz/")).rstrip("/") + "/"
     hk_blog_path = normalized_path(str(cfg.get("hkBlogPath", "/blog/")))
     hk_blog_url = public_url_value.rstrip("/") + hk_blog_path
     edge_url = str(cfg["edgeOneUrl"])
@@ -201,7 +201,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
             "desc_zh": "由香港服务器托管，兼顾国内外网络环境，适合作为日常阅读入口。",
             "desc_en": "Hosted on the Hong Kong server and suitable for steady everyday reading from most networks.",
             "href": hk_url,
-            "meta": "blog.orizhen.xyz/blog/",
+            "meta": "blog.orixx.xyz/blog/",
             "accent": "#35cd4b",
         },
         {

@@ -7,15 +7,15 @@
 - 服务器：`45.192.104.98`
 - SSH 端口：`22`
 - 远程目录：`/var/www/ori2333-blog`
-- 域名：`blog.orizhen.xyz`、`www.blog.orizhen.xyz`
+- 域名：`blog.orixx.xyz`、`www.blog.orixx.xyz`
 - 访问方式：真实域名，不使用临时端口
 
 首次使用：
 
 1. 把域名解析到 `45.192.104.98`。
 2. 修改 `tools/hk_deploy/hk_deploy.config.json`：
-   - `nginxServerName`：你的真实域名，例如 `blog.orizhen.xyz www.blog.orizhen.xyz`
-   - `publicUrl`：公开访问地址，例如 `https://blog.orizhen.xyz/`
+   - `nginxServerName`：你的真实域名，例如 `blog.orixx.xyz www.blog.orixx.xyz`
+   - `publicUrl`：公开访问地址，例如 `https://blog.orixx.xyz/`
 3. 把部署公钥加入服务器的 `/root/.ssh/authorized_keys`：
 
 ```text
@@ -36,9 +36,9 @@ npm run deploy:hk
 
 当前状态：
 
-- `https://blog.orizhen.xyz/` 是站点选择页，支持黑白主题切换、中英文切换和自动推荐访问线路。
-- `https://blog.orizhen.xyz/blog/` 是香港服务器上的博客本体。
-- `https://blog.orizhen.xyz/admin/` 是私有访问统计后台，需要账号密码登录。
+- `https://blog.orixx.xyz/` 是站点选择页，支持黑白主题切换、中英文切换和自动推荐访问线路。
+- `https://blog.orixx.xyz/blog/` 是香港服务器上的博客本体。
+- `https://blog.orixx.xyz/admin/` 是私有访问统计后台，需要账号密码登录。
 - 旧的 `/hk/` 路径会重定向到 `/blog/`。
 - 选择页的三个入口在 `tools/hk_deploy/hk_deploy.config.json` 中维护：`edgeOneUrl`、`hkBlogPath`、`githubPagesUrl`。
 - HTTPS 使用 Let's Encrypt。证书有效期 90 天，服务器上需要保持 `certbot.timer` 或等效 cron 续签任务启用。
