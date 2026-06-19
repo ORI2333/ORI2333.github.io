@@ -193,25 +193,37 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
     light_bg_path = f"{hk_blog_path}images/theme/bg-light.webp"
     cards = [
         {
-            "title": "稳定访问",
-            "label": "推荐入口",
-            "desc": "由独立服务器提供访问，兼顾国内外网络环境，适合作为日常阅读入口。",
+            "key": "hk",
+            "title_zh": "稳定访问（香港站点）",
+            "title_en": "Stable Access (Hong Kong)",
+            "label_zh": "推荐入口",
+            "label_en": "Recommended",
+            "desc_zh": "由香港服务器托管，兼顾国内外网络环境，适合作为日常阅读入口。",
+            "desc_en": "Hosted on the Hong Kong server and suitable for steady everyday reading from most networks.",
             "href": hk_url,
             "meta": "blog.orizhen.xyz/blog/",
             "accent": "#35cd4b",
         },
         {
-            "title": "大陆优化线路",
-            "label": "EdgeOne 加速",
-            "desc": "面向中国大陆网络优化，适合在直连较慢时切换使用。",
+            "key": "edge",
+            "title_zh": "大陆优化线路",
+            "title_en": "Mainland Optimized",
+            "label_zh": "腾讯云 CDN 加速",
+            "label_en": "Tencent Cloud CDN",
+            "desc_zh": "接入腾讯云 EdgeOne/CDN 加速，适合中国大陆网络下直连较慢时切换使用。",
+            "desc_en": "Accelerated through Tencent Cloud EdgeOne/CDN for smoother access from mainland China.",
             "href": edge_url,
             "meta": "edgeone.cool",
             "accent": "#51aded",
         },
         {
-            "title": "备用镜像",
-            "label": "GitHub Pages",
-            "desc": "托管在 GitHub Pages 的公开镜像，适合作为备用阅读入口。",
+            "key": "github",
+            "title_zh": "备用镜像",
+            "title_en": "Backup Mirror",
+            "label_zh": "GitHub Pages",
+            "label_en": "GitHub Pages",
+            "desc_zh": "适合国际网络访问，同时作为公开备份镜像，方便在其他线路不可用时继续阅读。",
+            "desc_en": "A public GitHub Pages mirror for international access and a backup when other routes are unavailable.",
             "href": github_url,
             "meta": "ori2333.github.io",
             "accent": "#fdbc40",
@@ -301,6 +313,11 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       gap: 18px;
       margin-bottom: 32px;
     }}
+    .controls {{
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }}
     .brand img {{
       width: 58px;
       height: 58px;
@@ -314,7 +331,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       color: var(--muted);
       font-size: 14px;
     }}
-    .theme-toggle {{
+    .theme-toggle,
+    .lang-toggle {{
       flex: 0 0 auto;
       min-width: 44px;
       height: 38px;
@@ -327,7 +345,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       cursor: pointer;
       box-shadow: 0 12px 28px rgba(0, 0, 0, .18);
     }}
-    .theme-toggle:hover {{
+    .theme-toggle:hover,
+    .lang-toggle:hover {{
       background: var(--panel-strong);
     }}
     h1 {{
@@ -346,6 +365,31 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       color: var(--muted);
       font-size: 16px;
       line-height: 1.8;
+    }}
+    .actions {{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0 30px;
+    }}
+    .recommend {{
+      min-height: 40px;
+      padding: 0 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      background: var(--panel);
+      cursor: pointer;
+      font: inherit;
+    }}
+    .recommend:hover {{
+      background: var(--panel-strong);
+    }}
+    .recommend-result {{
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
     }}
     .grid {{
       display: grid;
@@ -377,6 +421,10 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       transform: translateY(-2px);
       border-color: rgba(255, 255, 255, .32);
       background: var(--panel-strong);
+    }}
+    .card.recommended {{
+      border-color: var(--accent);
+      box-shadow: 0 24px 58px rgba(0, 0, 0, .32), 0 0 0 1px var(--accent) inset;
     }}
     .card, .card:hover {{
       transition: transform .2s ease, border-color .2s ease, background .2s ease;
@@ -438,6 +486,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
     @media (max-width: 820px) {{
       main {{ align-items: start; padding-top: 34px; }}
       .topbar {{ align-items: flex-start; }}
+      .controls {{ margin-top: 2px; }}
       .grid {{ grid-template-columns: 1fr; }}
       h1 {{ font-size: 29px; }}
       .card {{ min-height: 190px; }}
@@ -452,18 +501,25 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           <img src="{html.escape(avatar_path, quote=True)}" alt="ORI2333">
           <div>
             <h1 id="page-title">ORI2333's Blog</h1>
-            <span>选择一条适合当前网络环境的阅读线路</span>
+            <span data-i18n="subtitle">选择一条适合当前网络环境的阅读线路</span>
           </div>
         </div>
-        <button class="theme-toggle" type="button" aria-label="切换黑白主题" title="切换黑白主题">☾</button>
+        <div class="controls" aria-label="页面设置">
+          <button class="lang-toggle" type="button" aria-label="Switch language" title="Switch language">EN</button>
+          <button class="theme-toggle" type="button" aria-label="切换黑白主题" title="切换黑白主题">☾</button>
+        </div>
       </div>
       <div class="intro">
-        <p>这里提供同一份博客内容的多个访问线路。如果当前网络加载较慢，可以切换到另一条线路继续阅读。</p>
+        <p data-i18n="intro">这里提供同一份博客内容的多个访问线路。如果当前网络加载较慢，可以切换到另一条线路继续阅读。</p>
+      </div>
+      <div class="actions">
+        <button class="recommend" type="button" data-i18n="recommend">自动推荐线路</button>
+        <span class="recommend-result" data-i18n="recommendHint">根据当前网络自动判断更适合的访问入口。</span>
       </div>
       <div class="grid">
         {card_html}
       </div>
-      <p class="note">提示：如果某个入口加载慢，切换到另一个线路即可。</p>
+      <p class="note" data-i18n="note">提示：如果某个入口加载慢，切换到另一个线路即可。</p>
     </section>
   </main>
   <script>
@@ -486,6 +542,99 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
         }});
       }}
     }})();
+    (function () {{
+      var root = document.documentElement;
+      var langKey = "ori_blog_gateway_lang";
+      var langButton = document.querySelector(".lang-toggle");
+      var recommendButton = document.querySelector(".recommend");
+      var recommendResult = document.querySelector(".recommend-result");
+      var cards = Array.prototype.slice.call(document.querySelectorAll(".card"));
+      var text = {{
+        zh: {{
+          subtitle: "选择一条适合当前网络环境的阅读线路",
+          intro: "这里提供同一份博客内容的多个访问线路。如果当前网络加载较慢，可以切换到另一条线路继续阅读。",
+          recommend: "自动推荐线路",
+          recommendHint: "根据当前网络自动判断更适合的访问入口。",
+          checking: "正在检测当前网络...",
+          recommended: "推荐：",
+          fallbackEdge: "检测服务暂不可用，已根据浏览器语言和时区给出保守建议。",
+          fallbackHk: "检测服务暂不可用，建议先使用香港站点；如果加载慢再切换线路。",
+          error: "暂时无法完成自动检测，请手动选择访问线路。",
+          note: "提示：如果某个入口加载慢，切换到另一个线路即可。"
+        }},
+        en: {{
+          subtitle: "Choose the best route for your current network",
+          intro: "This page offers multiple routes to the same blog. If one route loads slowly, switch to another and keep reading.",
+          recommend: "Recommend route",
+          recommendHint: "Automatically choose a route based on your current network.",
+          checking: "Checking your network...",
+          recommended: "Recommended: ",
+          fallbackEdge: "The detection service is unavailable, so this is a conservative suggestion based on language and timezone.",
+          fallbackHk: "The detection service is unavailable. Try the Hong Kong route first, then switch if it is slow.",
+          error: "Automatic detection is unavailable right now. Please choose a route manually.",
+          note: "Tip: if one route is slow, switch to another route."
+        }}
+      }};
+      function currentLang() {{
+        return root.dataset.lang === "en" ? "en" : "zh";
+      }}
+      function applyLang(lang) {{
+        root.dataset.lang = lang;
+        if (langButton) langButton.textContent = lang === "zh" ? "EN" : "中";
+        document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+        document.querySelectorAll("[data-i18n]").forEach(function (node) {{
+          var key = node.getAttribute("data-i18n");
+          if (text[lang][key]) node.textContent = text[lang][key];
+        }});
+        cards.forEach(function (card) {{
+          card.querySelector("[data-title]").textContent = card.getAttribute("data-title-" + lang);
+          card.querySelector("[data-label]").textContent = card.getAttribute("data-label-" + lang);
+          card.querySelector("[data-desc]").textContent = card.getAttribute("data-desc-" + lang);
+        }});
+      }}
+      function setRecommended(target, reason) {{
+        var lang = currentLang();
+        cards.forEach(function (card) {{
+          card.classList.toggle("recommended", card.dataset.route === target);
+        }});
+        var card = cards.find(function (item) {{ return item.dataset.route === target; }});
+        if (recommendResult && card) {{
+          recommendResult.textContent = text[lang].recommended + card.getAttribute("data-title-" + lang) + (reason ? "，" + reason : "");
+        }}
+      }}
+      function fallbackRecommend() {{
+        var lang = currentLang();
+        var timezone = "";
+        try {{ timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; }} catch (error) {{}}
+        var browserLang = (navigator.language || "").toLowerCase();
+        var mainlandLike = timezone === "Asia/Shanghai" || browserLang === "zh-cn";
+        setRecommended(mainlandLike ? "edge" : "hk", mainlandLike ? text[lang].fallbackEdge : text[lang].fallbackHk);
+      }}
+      var savedLang = localStorage.getItem(langKey) || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en");
+      applyLang(savedLang);
+      if (langButton) {{
+        langButton.addEventListener("click", function () {{
+          var next = currentLang() === "zh" ? "en" : "zh";
+          localStorage.setItem(langKey, next);
+          applyLang(next);
+        }});
+      }}
+      if (recommendButton) {{
+        recommendButton.addEventListener("click", function () {{
+          var lang = currentLang();
+          if (recommendResult) recommendResult.textContent = text[lang].checking;
+          fetch("/api/recommend", {{ cache: "no-store" }})
+            .then(function (res) {{ if (!res.ok) throw new Error("bad status"); return res.json(); }})
+            .then(function (data) {{
+              var reason = currentLang() === "en" ? (data.reason_en || data.reason || "") : (data.reason_zh || data.reason || "");
+              setRecommended(data.target || "hk", reason);
+            }})
+            .catch(function () {{
+              fallbackRecommend();
+            }});
+        }});
+      }}
+    }})();
   </script>
 </body>
 </html>
@@ -493,11 +642,11 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
 
 
 def gateway_card(card: dict[str, str]) -> str:
-    return f"""<article class="card" style="--accent: {card['accent']}">
+    return f"""<article class="card" data-route="{html.escape(card['key'], quote=True)}" data-title-zh="{html.escape(card['title_zh'], quote=True)}" data-title-en="{html.escape(card['title_en'], quote=True)}" data-label-zh="{html.escape(card['label_zh'], quote=True)}" data-label-en="{html.escape(card['label_en'], quote=True)}" data-desc-zh="{html.escape(card['desc_zh'], quote=True)}" data-desc-en="{html.escape(card['desc_en'], quote=True)}" style="--accent: {card['accent']}">
           <div>
-            <span class="label">{html.escape(card['label'])}</span>
-            <h2>{html.escape(card['title'])}</h2>
-            <p>{html.escape(card['desc'])}</p>
+            <span class="label" data-label>{html.escape(card['label_zh'])}</span>
+            <h2 data-title>{html.escape(card['title_zh'])}</h2>
+            <p data-desc>{html.escape(card['desc_zh'])}</p>
           </div>
           <a class="open" href="{html.escape(card['href'], quote=True)}">
             <strong>{html.escape(card['meta'])}</strong>

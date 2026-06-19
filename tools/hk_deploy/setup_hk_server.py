@@ -64,6 +64,10 @@ def remote_enable_nginx_script(cfg: dict) -> str:
     site_file = shell_quote(site_file_name(cfg))
     return (
         "set -e; "
+        "cat > /etc/nginx/conf.d/00-ori-blog-log-format.conf <<'EOF'\n"
+        "log_format ori_blog_main '$remote_addr - $remote_user [$time_local] \"$request\" '\n"
+        "                         '$status $body_bytes_sent \"$http_referer\" \"$http_user_agent\"';\n"
+        "EOF\n"
         "if [ -d /etc/nginx/conf.d ]; then "
         f"mv /tmp/ori2333-blog.conf /etc/nginx/conf.d/{site_file}; "
         "elif [ -d /etc/nginx/sites-available ]; then "
