@@ -10,6 +10,32 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 TOOL_ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = TOOL_ROOT / "hk_deploy.config.json"
 NGINX_CONF_PATH = TOOL_ROOT / "nginx-ori2333-blog.conf"
+CF_IPV4_RANGES = [
+    "173.245.48.0/20",
+    "103.21.244.0/22",
+    "103.22.200.0/22",
+    "103.31.4.0/22",
+    "141.101.64.0/18",
+    "108.162.192.0/18",
+    "190.93.240.0/20",
+    "188.114.96.0/20",
+    "197.234.240.0/22",
+    "198.41.128.0/17",
+    "162.158.0.0/15",
+    "104.16.0.0/13",
+    "104.24.0.0/14",
+    "172.64.0.0/13",
+    "131.0.72.0/22",
+]
+CF_IPV6_RANGES = [
+    "2400:cb00::/32",
+    "2606:4700::/32",
+    "2803:f800::/32",
+    "2405:b500::/32",
+    "2405:8100::/32",
+    "2a06:98c0::/29",
+    "2c0f:f248::/32",
+]
 
 
 def main() -> int:
@@ -62,9 +88,15 @@ def remote_setup_script(cfg: dict) -> str:
 
 def remote_enable_nginx_script(cfg: dict) -> str:
     site_file = shell_quote(site_file_name(cfg))
+    real_ip_conf = "\n".join(
+        [*(f"set_real_ip_from {cidr};" for cidr in CF_IPV4_RANGES), *(f"set_real_ip_from {cidr};" for cidr in CF_IPV6_RANGES)],
+    )
     return (
         "set -e; "
         "cat > /etc/nginx/conf.d/00-ori-blog-log-format.conf <<'EOF'\n"
+        f"{real_ip_conf}\n"
+        "real_ip_header CF-Connecting-IP;\n"
+        "real_ip_recursive on;\n"
         "log_format ori_blog_main '$remote_addr - $remote_user [$time_local] \"$request\" '\n"
         "                         '$status $body_bytes_sent \"$http_referer\" \"$http_user_agent\"';\n"
         "EOF\n"
@@ -90,6 +122,8 @@ def remote_https_script(cfg: dict) -> str:
         for domain in str(cfg["nginxServerName"]).split()
         if domain and domain != "_"
     ]
+    primary = domains[0]
+    primary_quoted = shell_quote(primary)
     domain_args = " ".join(f"-d {shell_quote(domain)}" for domain in domains)
     email = str(cfg.get("certbotEmail", "")).strip()
     email_args = f"--email {shell_quote(email)}" if email else "--register-unsafely-without-email"
@@ -97,12 +131,34 @@ def remote_https_script(cfg: dict) -> str:
         "if ! command -v certbot >/dev/null 2>&1; then "
         "echo 'certbot is not installed; HTTPS was not configured' >&2; exit 1; "
         "fi; "
+        f"if [ -f /etc/letsencrypt/live/{primary_quoted}/fullchain.pem ] "
+        f"&& [ -f /etc/letsencrypt/live/{primary_quoted}/privkey.pem ]; then "
+        f"python3 - <<'PY'\n{nginx_ssl_patch_script(primary)}\nPY\n"
+        "else "
         "certbot --nginx --non-interactive --agree-tos "
         f"{email_args} {domain_args} --redirect --expand; "
+        "fi; "
         "nginx -t; "
         "if command -v systemctl >/dev/null 2>&1; then systemctl reload nginx || systemctl restart nginx; "
         "else nginx -s reload || nginx; fi"
     )
+
+
+def nginx_ssl_patch_script(primary_domain: str) -> str:
+    conf_path = f"/etc/nginx/conf.d/{primary_domain}.conf"
+    cert_path = f"/etc/letsencrypt/live/{primary_domain}/fullchain.pem"
+    key_path = f"/etc/letsencrypt/live/{primary_domain}/privkey.pem"
+    return f"""from pathlib import Path
+path = Path({conf_path!r})
+text = path.read_text(encoding="utf-8")
+if "listen 443 ssl" not in text:
+    text = text.replace("listen 80;", "listen 80;\\n    listen 443 ssl http2;", 1)
+if "ssl_certificate " not in text:
+    marker = "\\n\\n    root "
+    ssl = "\\n    ssl_certificate {cert_path};\\n    ssl_certificate_key {key_path};\\n    include /etc/letsencrypt/options-ssl-nginx.conf;\\n    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;\\n"
+    text = text.replace(marker, ssl + marker, 1)
+path.write_text(text, encoding="utf-8")
+"""
 
 
 def site_file_name(cfg: dict) -> str:

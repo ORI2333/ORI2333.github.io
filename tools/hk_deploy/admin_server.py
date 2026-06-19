@@ -48,6 +48,21 @@ STATIC_EXTENSIONS = {
     ".xml",
     ".txt",
 }
+IGNORED_UA_KEYWORDS = {
+    "bot",
+    "spider",
+    "crawler",
+    "slurp",
+    "curl/",
+    "wget/",
+    "python-requests",
+    "go-http-client",
+    "httpclient",
+    "headlesschrome",
+    "itdog",
+    "uptime",
+    "monitor",
+}
 
 
 LOG_RE = re.compile(
@@ -380,7 +395,7 @@ def parse_access_log(include_address: bool = True) -> list[dict[str, str]]:
         except ValueError:
             continue
         row["path"] = urllib.parse.unquote(parsed.path or "/")
-        if should_ignore_path(row["path"]):
+        if should_ignore_visit(row):
             continue
         row["address"] = address_for_ip(row["ip"]) if include_address else ""
         rows.append(row)
@@ -390,6 +405,20 @@ def parse_access_log(include_address: bool = True) -> list[dict[str, str]]:
 def tail_lines(path: Path, max_lines: int) -> list[str]:
     data = path.read_bytes()[-2_500_000:]
     return data.decode("utf-8", errors="replace").splitlines()[-max_lines:]
+
+
+def should_ignore_visit(row: dict[str, str]) -> bool:
+    if row.get("method") != "GET":
+        return True
+    try:
+        if int(row.get("status", "0")) >= 400:
+            return True
+    except ValueError:
+        return True
+    if should_ignore_path(row["path"]):
+        return True
+    ua = row.get("ua", "").lower()
+    return any(keyword in ua for keyword in IGNORED_UA_KEYWORDS)
 
 
 def should_ignore_path(path: str) -> bool:
