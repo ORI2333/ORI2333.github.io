@@ -365,7 +365,7 @@ def cn_networks() -> list[ipaddress._BaseNetwork]:
     return networks
 
 
-def parse_access_log() -> list[dict[str, str]]:
+def parse_access_log(include_address: bool = True) -> list[dict[str, str]]:
     if not ACCESS_LOG_PATH.exists():
         return []
     lines = tail_lines(ACCESS_LOG_PATH, 8000)
@@ -382,7 +382,7 @@ def parse_access_log() -> list[dict[str, str]]:
         row["path"] = urllib.parse.unquote(parsed.path or "/")
         if should_ignore_path(row["path"]):
             continue
-        row["address"] = address_for_ip(row["ip"])
+        row["address"] = address_for_ip(row["ip"]) if include_address else ""
         rows.append(row)
     return rows
 
@@ -442,13 +442,15 @@ def lookup_ip_address(ip: str) -> str:
 
 
 def dashboard_page() -> str:
-    rows = parse_access_log()
+    rows = parse_access_log(include_address=False)
     total = len(rows)
     unique_ips = len({row["ip"] for row in rows})
     gateway = [row for row in rows if is_gateway_path(row["path"])]
     articles = [row for row in rows if is_article_path(row["path"])]
     article_stats = summarize_articles(articles)
     recent = list(reversed(rows[-120:]))
+    for row in recent:
+        row["address"] = address_for_ip(row["ip"])
     return layout(
         "访问统计",
         f"""
@@ -502,8 +504,14 @@ def normalize_article_path(path: str) -> str:
 
 
 def article_page(article: str) -> str:
-    rows = [row for row in parse_access_log() if normalize_article_path(row["path"]) == normalize_article_path(article)]
+    rows = [
+        row
+        for row in parse_access_log(include_address=False)
+        if normalize_article_path(row["path"]) == normalize_article_path(article)
+    ]
     recent = list(reversed(rows[-200:]))
+    for row in recent:
+        row["address"] = address_for_ip(row["ip"])
     return layout(
         "文章访问详情",
         f"""
