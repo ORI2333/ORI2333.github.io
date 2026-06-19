@@ -7,7 +7,7 @@
     <link rel="icon" href="/images/theme/头像.jpg?v=20260329">
   
   
-  <title>个人博客维护手册 | ORI2333&#39;s Blog</title>
+  <title>这个博客是怎样写作、发布和加速的 | ORI2333&#39;s Blog</title>
   <link rel="canonical" href="https://ori2333.github.io/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/">
   <meta name="author" content="ORI2333" />
   <meta http-equiv="Cache-Control" content="no-transform" />
@@ -19,16 +19,16 @@
   
     <meta name="keywords" content="博客网站, 工作流, 自动部署" />
   
-  <meta name="description" content="这篇文章记录当前博客的日常维护方式和技术结构。它不是面向读者的功能介绍，而是一份给以后自己的运行手册：写文章应该从哪里开始，发布链路经过哪些地方，访问入口为什么有多个，换电脑或排查问题时又该看哪些文件。">
+  <meta name="description" content="这篇文章整理一下本站现在的写作和发布方式。它既是一篇面向读者的技术说明，也是一份公开的维护记录：内容如何从 Obsidian 进入博客，页面如何发布到 GitHub Pages，为什么还会准备独立服务器线路和 EdgeOne 加速入口。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="个人博客维护手册">
+<meta property="og:title" content="这个博客是怎样写作、发布和加速的">
 <meta property="og:url" content="https://ori2333.github.io/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/index.html">
 <meta property="og:site_name" content="ORI2333&#39;s Blog">
-<meta property="og:description" content="这篇文章记录当前博客的日常维护方式和技术结构。它不是面向读者的功能介绍，而是一份给以后自己的运行手册：写文章应该从哪里开始，发布链路经过哪些地方，访问入口为什么有多个，换电脑或排查问题时又该看哪些文件。">
+<meta property="og:description" content="这篇文章整理一下本站现在的写作和发布方式。它既是一篇面向读者的技术说明，也是一份公开的维护记录：内容如何从 Obsidian 进入博客，页面如何发布到 GitHub Pages，为什么还会准备独立服务器线路和 EdgeOne 加速入口。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ori2333.github.io/images/theme/default-cover.webp">
 <meta property="article:published_time" content="2026-06-19T02:30:00.000Z">
-<meta property="article:modified_time" content="2026-06-18T18:22:14.072Z">
+<meta property="article:modified_time" content="2026-06-19T03:55:45.565Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="博客网站">
 <meta property="article:tag" content="工作流">
@@ -40,7 +40,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"个人博客维护手册","description":"这篇文章记录当前博客的日常维护方式和技术结构。它不是面向读者的功能介绍，而是一份给以后自己的运行手册：写文章应该从哪里开始，发布链路经过哪些地方，访问入口为什么有多个，换电脑或排查问题时又该看哪些文件。\n\n\n","image":"https://ori2333.github.io/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/images/theme/default-cover.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-06-19T02:30:00.000Z","dateModified":"2026-06-18T18:22:14.072Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"这个博客是怎样写作、发布和加速的","description":"这篇文章整理一下本站现在的写作和发布方式。它既是一篇面向读者的技术说明，也是一份公开的维护记录：内容如何从 Obsidian 进入博客，页面如何发布到 GitHub Pages，为什么还会准备独立服务器线路和 EdgeOne 加速入口。\n","image":"https://ori2333.github.io/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/images/theme/default-cover.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-06-19T02:30:00.000Z","dateModified":"2026-06-19T03:55:45.565Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -218,7 +218,7 @@
     <div class="kratos-hentry kratos-page-inner clearfix">
         <header class="kratos-page-header">
             
-                <h1 class="kratos-page-title text-center" itemprop="name headline">个人博客维护手册</h1>
+                <h1 class="kratos-page-title text-center" itemprop="name headline">这个博客是怎样写作、发布和加速的</h1>
             
             <ul class="kratos-page-meta text-center">
                 <li><time datetime="2026-06-19T02:30:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-06-19</time></li>
@@ -230,7 +230,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~4.08K
+                            ~3.90K
                         
                         字
                     </li>
@@ -244,131 +244,139 @@
             
             
             <hr />
-            <div itemprop="articleBody"><p>这篇文章记录当前博客的日常维护方式和技术结构。它不是面向读者的功能介绍，而是一份给以后自己的运行手册：写文章应该从哪里开始，发布链路经过哪些地方，访问入口为什么有多个，换电脑或排查问题时又该看哪些文件。</p>
+            <div itemprop="articleBody"><p>这篇文章整理一下本站现在的写作和发布方式。它既是一篇面向读者的技术说明，也是一份公开的维护记录：内容如何从 Obsidian 进入博客，页面如何发布到 GitHub Pages，为什么还会准备独立服务器线路和 EdgeOne 加速入口。</p>
 <span id="more"></span>
 
-<h2 id="当前维护目标"><a href="#当前维护目标" class="headerlink" title="当前维护目标"></a>当前维护目标</h2><p>这个博客现在被拆成两件事：内容维护和访问分发。</p>
-<p>内容维护尽量放在本地完成。我在 Obsidian 里写文章，通过本地的图形化工具同步到 Hexo 仓库；构建检查通过后，只需要把 <code>source</code> 分支推到 GitHub。真正的静态页面生成、GitHub Pages 发布，以及服务器托管版本的同步，都交给 GitHub Actions 处理。</p>
-<p>访问分发则提供多个入口。主入口是 <code>https://blog.orizhen.xyz/</code>，它不是文章列表，而是一个选择页面。这里会根据网络环境引导到服务器托管版本、腾讯云 EdgeOne 加速版本，以及 GitHub Pages 版本。这样做的好处是：写作和部署保持统一，访问体验可以按线路分流。</p>
-<h2 id="日常写作流程"><a href="#日常写作流程" class="headerlink" title="日常写作流程"></a>日常写作流程</h2><p>日常维护优先使用图形界面：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run blog</span><br></pre></td></tr></table></figure>
-
-<p>图形界面会自动寻找带 Qt 的 Python 环境。当前机器上使用的是 Anaconda 里的 PyQt 环境；如果以后换电脑，只要 <code>npm run blog:check</code> 能显示 Python 路径和 Qt binding，就说明 GUI 可以启动。</p>
-<p>正常写文章的流程是：</p>
-<ol>
-<li>在 Obsidian 的 <code>Blog/Posts</code> 目录写 Markdown。</li>
-<li>确认文章 front matter 里 <code>draft: false</code>，否则同步时会被当作草稿跳过。</li>
-<li>使用 GUI 的 <code>同步到 Hexo</code>，把 Obsidian 文章复制到仓库的 <code>source/_posts</code>。</li>
-<li>使用 <code>构建检查</code>，确认 Hexo 可以生成静态页面。</li>
-<li>使用 <code>发布全站</code> 或 <code>一键完成</code>，推送 <code>source</code> 分支，让 GitHub Actions 接管后续部署。</li>
-</ol>
-<p>命令行也可以完成同样的事情：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm run blog:<span class="built_in">sync</span></span><br><span class="line">npm run blog:build</span><br><span class="line">npm run blog:publish</span><br></pre></td></tr></table></figure>
-
-<p>其中 <code>blog:publish</code> 的本质是推送源码分支。它不会在本机直接上传每个线上站点，线上部署由 GitHub Actions 统一执行。</p>
-<h2 id="文章和图片"><a href="#文章和图片" class="headerlink" title="文章和图片"></a>文章和图片</h2><p>文章源文件以 Hexo 的 <code>source/_posts</code> 为准，Obsidian 是更舒服的写作入口。同步脚本会把 Obsidian 中的文章复制到 Hexo 目录。</p>
-<p>封面字段可以写本地站内路径，也可以写图床链接：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cover:</span> <span class="string">/images/posts/example.webp</span></span><br><span class="line"><span class="attr">cover:</span> <span class="string">https://example.com/example.webp</span></span><br></pre></td></tr></table></figure>
-
-<p>如果封面为空，或者仍然是占位路径，同步时会自动使用默认封面：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cover:</span> <span class="string">/images/theme/default-cover.webp</span></span><br></pre></td></tr></table></figure>
-
-<p>GUI 里也有两个辅助操作：</p>
-<ul>
-<li><code>选择封面</code>：把本地图片复制到博客图片目录，并写入最近修改文章的 <code>cover</code>。</li>
-<li><code>封面 URL</code>：直接把图床链接写入最近修改文章的 <code>cover</code>。</li>
-</ul>
-<p>如果图片已经放在图床上，直接在 Obsidian front matter 里写 URL 就可以，不需要额外处理。</p>
-<h2 id="删除文章"><a href="#删除文章" class="headerlink" title="删除文章"></a>删除文章</h2><p>删除文章不要只删仓库里的 Markdown。推荐用 GUI 的 <code>删除文章</code>：</p>
-<ul>
-<li>可以按标题或文件名搜索。</li>
-<li>默认优先显示最近修改的文章。</li>
-<li>删除前会显示 Obsidian 原文路径、回收站路径和 Hexo 文件路径。</li>
-<li>确认后会把 Obsidian 原文移动到 <code>Blog/Trash</code>，同时删除 <code>source/_posts</code> 里的同名文件。</li>
-<li>随后构建并发布，让线上页面同步下线。</li>
-</ul>
-<p>这个流程的目的不是复杂化删除，而是避免“本地删了，线上还在”的情况。</p>
-<h2 id="发布链路"><a href="#发布链路" class="headerlink" title="发布链路"></a>发布链路</h2><p>当前仓库使用 <code>source</code> 分支维护博客源码。推送到 <code>source</code> 后，GitHub Actions 会运行 <code>.github/workflows/deploy.yml</code>。</p>
-<p>Actions 做三件事：</p>
-<ol>
-<li>安装 Node.js 依赖。</li>
-<li>使用 Hexo 构建 GitHub Pages 版本，并发布到 <code>main</code> 分支。</li>
-<li>使用单独的 HK 配置构建服务器托管版本，并通过 SSH 同步到服务器目录。</li>
-</ol>
-<p>GitHub Pages 是公开静态源站，访问地址是：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://ori2333.github.io/</span><br></pre></td></tr></table></figure>
-
-<p>服务器托管版本部署在：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://blog.orizhen.xyz/blog/</span><br></pre></td></tr></table></figure>
-
-<p>入口页面部署在：</p>
+<h2 id="为什么要做多线路访问"><a href="#为什么要做多线路访问" class="headerlink" title="为什么要做多线路访问"></a>为什么要做多线路访问</h2><p>这个博客本质上是一套静态网站。静态博客的好处是简单、稳定、容易备份；问题是不同网络环境下，访问 GitHub Pages、境外服务器或国内加速线路的体验可能不一样。</p>
+<p>所以本站现在提供一个访问选择页：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://blog.orizhen.xyz/</span><br></pre></td></tr></table></figure>
 
-<p>入口页展示三条线路：服务器托管版本、中国大陆加速访问、GitHub Pages 源站。这个顺序是有意安排的：默认入口优先给自有服务器版本，再给大陆 CDN 加速版本，最后保留 GitHub Pages 作为稳定备用。</p>
-<h2 id="服务器托管版本"><a href="#服务器托管版本" class="headerlink" title="服务器托管版本"></a>服务器托管版本</h2><p>服务器托管相关脚本在：</p>
+<p>这个页面不是另一套内容，而是同一份博客的入口导航。读者可以按自己的网络环境选择更顺畅的线路：</p>
+<ul>
+<li>稳定访问：由独立服务器提供，作为日常推荐入口。</li>
+<li>大陆优化线路：通过腾讯云 EdgeOne 做访问加速。</li>
+<li>备用镜像：GitHub Pages 上的公开镜像。</li>
+</ul>
+<p>这样做的目标很朴素：文章只维护一份，但访问方式可以更灵活。</p>
+<h2 id="写作入口：Obsidian"><a href="#写作入口：Obsidian" class="headerlink" title="写作入口：Obsidian"></a>写作入口：Obsidian</h2><p>文章最初写在 Obsidian 里。它适合做长期笔记，也适合写 Markdown，所以博客草稿和正式文章都放在同一个写作环境中维护。</p>
+<p>当前约定是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Blog/Posts   # 博客文章</span><br><span class="line">Blog/Assets  # 博客素材</span><br><span class="line">Blog/Trash   # 删除文章时的回收目录</span><br></pre></td></tr></table></figure>
+
+<p>每篇文章使用 Hexo 兼容的 front matter，例如：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">示例文章</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2026-06-19 12:00:00</span></span><br><span class="line"><span class="attr">tags:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">博客网站</span></span><br><span class="line"><span class="attr">categories:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">docs</span></span><br><span class="line"><span class="attr">cover:</span> <span class="string">/images/theme/default-cover.webp</span></span><br><span class="line"><span class="attr">draft:</span> <span class="literal">false</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>draft: true</code> 表示私有草稿，不会同步到博客源码目录；改成 <code>draft: false</code> 后才会进入发布流程。</p>
+<h2 id="本地图形化工具"><a href="#本地图形化工具" class="headerlink" title="本地图形化工具"></a>本地图形化工具</h2><p>为了减少重复命令，仓库里放了一个本地 GUI：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run blog</span><br></pre></td></tr></table></figure>
+
+<p>它用 Python + Qt 写成。启动脚本会自动寻找可用的 Qt 环境，例如 PySide6、PyQt6 或 PyQt5。当前机器使用的是 Anaconda 环境里的 PyQt。</p>
+<p>GUI 主要做几件事：</p>
+<ul>
+<li>新建草稿。</li>
+<li>把 Obsidian 文章同步到 Hexo。</li>
+<li>执行本地构建检查。</li>
+<li>设置本地封面或图床封面。</li>
+<li>删除文章并同步下线。</li>
+<li>推送源码分支，让 GitHub Actions 自动部署。</li>
+</ul>
+<p>如果不打开 GUI，也可以用命令行完成同样的流程：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm run blog:<span class="built_in">sync</span></span><br><span class="line">npm run blog:build</span><br><span class="line">npm run blog:publish</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>blog:publish</code> 不直接上传所有站点，它只推送博客源码分支。真正的线上部署由 GitHub Actions 统一处理。</p>
+<h2 id="图片和封面"><a href="#图片和封面" class="headerlink" title="图片和封面"></a>图片和封面</h2><p>文章封面可以使用站内图片，也可以使用外部图床链接：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cover:</span> <span class="string">/images/posts/example.webp</span></span><br><span class="line"><span class="attr">cover:</span> <span class="string">https://example.com/example.webp</span></span><br></pre></td></tr></table></figure>
+
+<p>如果不想为每篇文章单独维护封面，可以保留默认值：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cover:</span> <span class="string">/images/theme/default-cover.webp</span></span><br></pre></td></tr></table></figure>
+
+<p>GUI 里有两个辅助按钮：</p>
+<ul>
+<li><code>选择封面</code>：选择本地图片，自动复制到博客图片目录。</li>
+<li><code>封面 URL</code>：把图床链接写入最近修改的文章。</li>
+</ul>
+<p>如果图片已经在 Obsidian 中直接写成 URL，也可以保持原样。同步脚本会保留这种写法。</p>
+<h2 id="从源码到线上页面"><a href="#从源码到线上页面" class="headerlink" title="从源码到线上页面"></a>从源码到线上页面</h2><p>这个博客仓库使用 <code>source</code> 分支维护源码。文章、图片、脚本、主题配置都在这个分支里。推送后，GitHub Actions 会运行：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+
+<p>发布流程大致是：</p>
+<ol>
+<li>安装 Node.js 和 npm 依赖。</li>
+<li>执行 Hexo 构建。</li>
+<li>把 GitHub Pages 版本发布到 <code>main</code> 分支。</li>
+<li>使用独立配置再构建一份适合 <code>/blog/</code> 路径的版本。</li>
+<li>通过 SSH 同步到独立服务器目录。</li>
+</ol>
+<p>这样，本地电脑不需要分别登录每个发布平台；只要源码进入 GitHub，后续部署就由自动化流程接管。</p>
+<h2 id="GitHub-Pages"><a href="#GitHub-Pages" class="headerlink" title="GitHub Pages"></a>GitHub Pages</h2><p>GitHub Pages 是本站的公开镜像之一：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://ori2333.github.io/</span><br></pre></td></tr></table></figure>
+
+<p>它的优点是稳定、透明、和源码仓库绑定紧密。GitHub Actions 会把 Hexo 生成的静态文件发布到 <code>main</code> 分支，因此 <code>source</code> 分支负责维护源码，<code>main</code> 分支负责承载静态页面。</p>
+<h2 id="独立服务器线路"><a href="#独立服务器线路" class="headerlink" title="独立服务器线路"></a>独立服务器线路</h2><p>除了 GitHub Pages，本站还部署了一份服务器托管版本：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://blog.orizhen.xyz/blog/</span><br></pre></td></tr></table></figure>
+
+<p>入口页则是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://blog.orizhen.xyz/</span><br></pre></td></tr></table></figure>
+
+<p>服务器部署脚本在：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tools/hk_deploy/</span><br></pre></td></tr></table></figure>
 
-<p>关键文件包括：</p>
+<p>几个关键文件分别负责：</p>
 <ul>
-<li><code>deploy_hk.py</code>：构建并上传服务器托管版本，同时生成入口页面。</li>
-<li><code>_config.hk.yml</code>：覆盖 Hexo 的 <code>url</code>、<code>root</code>、<code>public_dir</code>，让博客在 <code>/blog/</code> 下正常工作。</li>
-<li><code>hk_deploy.config.json</code>：记录服务器、域名、远程目录、入口链接等配置。</li>
-<li><code>nginx-ori2333-blog.conf</code>：Nginx 站点配置模板。</li>
-<li><code>setup_hk_server.py</code>：初始化服务器 Nginx 和 HTTPS 的辅助脚本。</li>
+<li><code>deploy_hk.py</code>：构建服务器版本、生成访问选择页、打包并上传。</li>
+<li><code>_config.hk.yml</code>：覆盖 Hexo 的 <code>url</code>、<code>root</code> 和 <code>public_dir</code>。</li>
+<li><code>hk_deploy.config.json</code>：保存域名、远程目录和入口链接配置。</li>
+<li><code>nginx-ori2333-blog.conf</code>：Nginx 配置模板。</li>
+<li><code>setup_hk_server.py</code>：初始化服务器站点配置和 HTTPS。</li>
 </ul>
-<p>线上目录固定为：</p>
+<p>服务器上的目录固定为：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/var/www/ori2333-blog</span><br></pre></td></tr></table></figure>
 
-<p>脚本只清理和同步这个目录，不碰服务器上已有的其他服务。旧的 <code>/hk/</code> 路径会重定向到 <code>/blog/</code>，这是为了兼容早期测试阶段留下的地址。</p>
-<p>HTTPS 使用 Let’s Encrypt。证书有效期 90 天，服务器上需要保持自动续签任务开启。当前设计依赖 <code>certbot.timer</code> 或等效的定时任务，不应该手动等到证书过期后再处理。</p>
-<h2 id="EdgeOne-加速入口"><a href="#EdgeOne-加速入口" class="headerlink" title="EdgeOne 加速入口"></a>EdgeOne 加速入口</h2><p>腾讯云 EdgeOne 作为中国大陆访问加速线路。它不是独立写作源，也不是另一套博客内容，而是访问分发层的一条加速入口。</p>
-<p>入口页中的大陆加速访问指向 EdgeOne 地址。日常维护时不需要单独为 EdgeOne 写文章或手动同步内容；只要 GitHub Pages 和服务器托管版本部署正常，EdgeOne 侧按它的源站和缓存策略更新即可。</p>
-<p>如果发现 EdgeOne 看到的内容落后，优先检查：</p>
+<p>部署脚本只同步这个目录，不会接管服务器上的其他服务。旧的 <code>/hk/</code> 路径会跳转到 <code>/blog/</code>，用于兼容早期测试阶段的地址。</p>
+<p>HTTPS 使用 Let’s Encrypt。证书有效期为 90 天，需要服务器保持自动续签任务开启。</p>
+<h2 id="EdgeOne-加速线路"><a href="#EdgeOne-加速线路" class="headerlink" title="EdgeOne 加速线路"></a>EdgeOne 加速线路</h2><p>为了改善中国大陆网络访问体验，本站还准备了腾讯云 EdgeOne 入口。它不是另一套博客，也不是另一份文章源，而是一条访问加速线路。</p>
+<p>日常写作不需要为 EdgeOne 单独做任何操作。文章发布后，GitHub Pages 和服务器版本先更新；EdgeOne 再按照它的源站和缓存策略提供加速访问。</p>
+<p>如果某次访问发现 EdgeOne 内容延迟，通常优先检查：</p>
 <ul>
 <li>GitHub Actions 是否部署成功。</li>
-<li>EdgeOne 配置的源站是否正常。</li>
-<li>是否命中旧缓存。</li>
-<li>页面 URL 是否带了旧的临时 token 或过期参数。</li>
+<li>加速线路的源站是否可访问。</li>
+<li>是否命中了旧缓存。</li>
+<li>当前访问 URL 是否带着过期参数。</li>
 </ul>
-<h2 id="仓库结构"><a href="#仓库结构" class="headerlink" title="仓库结构"></a>仓库结构</h2><p>常用目录可以按下面理解：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">source/_posts/              # Hexo 文章源文件</span><br><span class="line">source/images/posts/        # 文章图片</span><br><span class="line">source/images/theme/        # 主题图片、头像、背景、默认封面</span><br><span class="line">tools/blog/                 # 本地 GUI 和同步脚本</span><br><span class="line">tools/hk_deploy/            # 服务器托管版本部署脚本</span><br><span class="line">templates/blog-post.md      # 新文章模板</span><br><span class="line">docs/blog-workflow-migration.md  # 换电脑和环境迁移说明</span><br><span class="line">.github/workflows/deploy.yml     # GitHub Actions 部署流程</span><br></pre></td></tr></table></figure>
+<h2 id="仓库结构"><a href="#仓库结构" class="headerlink" title="仓库结构"></a>仓库结构</h2><p>仓库里最常用的目录是这些：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">source/_posts/                   # Hexo 文章源文件</span><br><span class="line">source/images/posts/             # 文章配图</span><br><span class="line">source/images/theme/             # 主题图片、头像、背景、默认封面</span><br><span class="line">tools/blog/                      # 本地 GUI 和同步工具</span><br><span class="line">tools/hk_deploy/                 # 独立服务器部署工具</span><br><span class="line">templates/blog-post.md           # 新文章模板</span><br><span class="line">docs/blog-workflow-migration.md  # 换电脑和环境迁移说明</span><br><span class="line">.github/workflows/deploy.yml     # 自动部署流程</span><br></pre></td></tr></table></figure>
 
-<p>不要手动维护 <code>public/</code>。它是构建产物，会被 <code>hexo clean</code> 和 <code>hexo generate</code> 重建。真正应该提交的是源码、文章、图片、脚本和配置。</p>
-<h2 id="换电脑时要恢复什么"><a href="#换电脑时要恢复什么" class="headerlink" title="换电脑时要恢复什么"></a>换电脑时要恢复什么</h2><p>换电脑时，重点不是复制 <code>public/</code>，而是恢复这几类东西：</p>
+<p><code>public/</code> 是 Hexo 构建产物，不需要手动维护，也不应该作为主要修改对象。真正值得维护的是文章、图片、配置和脚本。</p>
+<h2 id="删除和下线"><a href="#删除和下线" class="headerlink" title="删除和下线"></a>删除和下线</h2><p>删除文章时，最好不要只在一个目录里删文件。GUI 的 <code>删除文章</code> 会同时处理 Obsidian 和 Hexo 源文件：</p>
+<ul>
+<li>原文移动到 <code>Blog/Trash</code>。</li>
+<li><code>source/_posts</code> 中的同名文章被删除。</li>
+<li>构建和发布流程会让线上页面同步下线。</li>
+</ul>
+<p>这可以避免“本地删掉了，线上还看得到”的情况。</p>
+<h2 id="换电脑时需要恢复什么"><a href="#换电脑时需要恢复什么" class="headerlink" title="换电脑时需要恢复什么"></a>换电脑时需要恢复什么</h2><p>如果以后换电脑，重点是恢复写作和发布环境：</p>
 <ol>
-<li>Node.js 和 npm。</li>
-<li>仓库依赖：<code>npm ci</code>。</li>
-<li>一个带 Qt 的 Python 环境，例如 Anaconda 里的 PyQt。</li>
-<li>Obsidian 库路径，并在 <code>tools/blog/blog.config.json</code> 里配置正确。</li>
-<li>GitHub 访问权限，可以推送 <code>source</code> 分支。</li>
-<li>如需本地手动部署服务器版本，恢复 SSH key。</li>
+<li>安装 Node.js，并在仓库里运行 <code>npm ci</code>。</li>
+<li>准备一个带 Qt 的 Python 环境。</li>
+<li>配置 Obsidian 库路径。</li>
+<li>确认可以推送 GitHub 的 <code>source</code> 分支。</li>
+<li>如果需要本地手动部署服务器版本，再恢复 SSH key。</li>
 </ol>
-<p>GitHub Actions 的服务器部署密钥在仓库的 Actions Secrets 里维护，主要包括：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HK_HOST</span><br><span class="line">HK_PORT</span><br><span class="line">HK_USER</span><br><span class="line">HK_REMOTE_ROOT</span><br><span class="line">HK_SSH_KEY</span><br></pre></td></tr></table></figure>
-
-<p>这些 secret 不应该写进仓库。仓库里只保留脚本和配置模板。</p>
-<h2 id="常见排查路径"><a href="#常见排查路径" class="headerlink" title="常见排查路径"></a>常见排查路径</h2><p>如果 GUI 打不开，先运行：</p>
+<p>可以先用这条命令检查 GUI 环境：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run blog:check</span><br></pre></td></tr></table></figure>
 
-<p>如果同步后文章没有出现，检查：</p>
-<ul>
-<li>Obsidian 文章是否在 <code>Blog/Posts</code>。</li>
-<li>front matter 是否还写着 <code>draft: true</code>。</li>
-<li><code>tools/blog/blog.config.json</code> 里的 Obsidian 路径是否正确。</li>
-</ul>
-<p>如果本地构建失败，运行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run blog:build</span><br></pre></td></tr></table></figure>
+<p>它会同时检查 Python&#x2F;Qt、Git、Node.js、npm、Hexo 依赖、Obsidian 路径和 Git 状态。换电脑后如果缺少 Git 或 Node.js，报告里会给出对应的处理建议。</p>
+<p>服务器自动部署所需的密钥放在 GitHub Actions Secrets 中，不写进仓库。相关名称包括：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HK_HOST</span><br><span class="line">HK_PORT</span><br><span class="line">HK_USER</span><br><span class="line">HK_REMOTE_ROOT</span><br><span class="line">HK_SSH_KEY</span><br></pre></td></tr></table></figure>
 
-<p>如果线上没有更新，按顺序看：</p>
-<ol>
-<li>本地是否已经推送 <code>source</code> 分支。</li>
-<li>GitHub Actions 是否成功。</li>
-<li>GitHub Pages 是否更新。</li>
-<li>服务器托管版本是否更新。</li>
-<li>EdgeOne 是否仍然命中缓存。</li>
-</ol>
-<h2 id="维护原则"><a href="#维护原则" class="headerlink" title="维护原则"></a>维护原则</h2><p>这个博客系统现在的核心原则是：写作入口简单，部署链路自动，访问线路可替换。</p>
-<p>Obsidian 负责写作体验，GUI 负责减少重复操作，Hexo 负责生成静态站点，GitHub Actions 负责编排部署，服务器和 EdgeOne 负责访问体验。只要这个边界不乱，后续换主题、换域名、换服务器，成本都会比较低。</p>
+<h2 id="这套流程的取舍"><a href="#这套流程的取舍" class="headerlink" title="这套流程的取舍"></a>这套流程的取舍</h2><p>这套系统的重点不是追求复杂，而是把容易出错的部分拆开：</p>
+<ul>
+<li>Obsidian 负责写作体验。</li>
+<li>GUI 负责减少重复操作。</li>
+<li>Hexo 负责生成静态页面。</li>
+<li>GitHub Actions 负责自动部署。</li>
+<li>独立服务器和 EdgeOne 负责改善访问体验。</li>
+</ul>
+<p>从读者视角看，只需要选择一条顺畅的访问线路；从维护视角看，只需要维护一份文章源。这个边界清楚以后，后续更换域名、迁移服务器或调整加速线路，都不会影响写作本身。</p>
 </div>
         </div>
         
@@ -395,7 +403,7 @@
                     <a class="tag-none-link" href="/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" rel="tag">博客网站</a>, <a class="tag-none-link" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" rel="tag">工作流</a>, <a class="tag-none-link" href="/tags/%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/" rel="tag">自动部署</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-06-18T18:22:14.072Z" itemprop="dateModified">最后编辑：2026-06-18</time>
+                    <time datetime="2026-06-19T03:55:45.565Z" itemprop="dateModified">最后编辑：2026-06-19</time>
                 </div>
             </div>
         </footer>
@@ -490,7 +498,7 @@
         
           
           
-            <a class="list-group-item" href="/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/"><i class="fa fa-book"></i> 个人博客维护手册</a>
+            <a class="list-group-item" href="/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/"><i class="fa fa-book"></i> 这个博客是怎样写作、发布和加速的</a>
             
           
         
