@@ -169,13 +169,13 @@ cover: /images/theme/default-cover.webp
 
 In the GUI:
 
-- `选择封面` copies a local image into the blog image folders and updates the latest Obsidian post.
-- `封面 URL` writes an `http://` or `https://` image URL into the latest Obsidian post.
+- `选择封面` first asks which article to update, then copies a local image into the blog image folders.
+- `封面 URL` first asks which article to update, then writes an `http://` or `https://` image URL.
 - You can also write an image URL directly in Obsidian front matter. Sync preserves it.
 
 ## Delete Rule
 
-`删除文章` supports searching by title or file name and defaults to the most recently modified posts first. The confirmation shows the Obsidian source path, trash path, and Hexo path. It then moves the Obsidian Markdown file into `Blog/Trash`, removes the same file from Hexo `source/_posts`, and runs build and publish so the online page is removed.
+`删除文章` supports searching by title or file name and defaults to the most recently modified posts first. The confirmation shows the Obsidian source path, trash path, and Hexo path. You can either remove only the Hexo copy while keeping the Obsidian source, or move the Obsidian Markdown file into `Blog/Trash`. Both modes remove the same file from Hexo `source/_posts` and run build and publish so the online page is removed.
 
 ## Troubleshooting
 

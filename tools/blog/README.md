@@ -20,10 +20,10 @@ npm run blog:build-exe
 
 图形界面支持：
 
-- `选择封面`：为最近修改的 Obsidian 文章选择本地图片，自动复制到博客图片目录。
-- `封面 URL`：为最近修改的 Obsidian 文章写入图床链接。
+- `选择封面`：先选择文章，再选择本地图片，自动复制到博客图片目录。
+- `封面 URL`：先选择文章，再为该文章写入图床链接。
 - 也可以直接在 Obsidian 的 front matter 里写 `https://...`，同步时会原样保留。
-- `删除文章`：支持搜索标题/文件名，默认按最近修改排序；确认时显示 Obsidian 原文、回收站目标和 Hexo 文件路径，然后移动原文到 `Blog/Trash`，删除 Hexo 同名文章，并自动构建发布。
+- `删除文章`：支持搜索标题/文件名，默认按最近修改排序；确认时显示 Obsidian 原文、回收站目标和 Hexo 文件路径。可以选择仅下线网页并保留 Obsidian，也可以移动原文到 `Blog/Trash`，两种方式都会删除 Hexo 同名文章并自动构建发布。
 - `路径` 区域可以选择 Obsidian 库、`git.exe` 和 `npm.cmd`，换电脑后不需要手改 JSON。
 - `环境检查` 会检查 Python/Qt、Git、Node.js、npm、Hexo 依赖、仓库、Obsidian 路径和 Git 状态；缺少环境时会给出下载或处理建议。
 

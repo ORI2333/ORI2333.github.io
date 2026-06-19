@@ -1,0 +1,64 @@
+name: Release Blog GUI
+
+on:
+  push:
+    tags:
+      - "blog-gui-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release-gui:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install packaging dependencies
+        run: python -m pip install --upgrade pip pyinstaller PyQt5
+
+      - name: Build GUI executable
+        run: python tools/blog/build_exe.py
+
+      - name: Package GUI release asset
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path dist/blog-gui -Recurse -Filter ORI-Blog-Workflow.exe |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+          if (-not $exe) {
+            throw "ORI-Blog-Workflow.exe was not generated."
+          }
+
+          $assetName = "ORI-Blog-Workflow-$env:GITHUB_REF_NAME-windows.zip"
+          $assetPath = Join-Path $PWD $assetName
+          Compress-Archive -Path (Join-Path $exe.Directory.FullName "*") -DestinationPath $assetPath -Force
+          "GUI_ASSET=$assetPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Create or update GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $title = "ORI Blog Workflow $tag"
+          $notes = @"
+          ORI 博客本地工作台 Windows 版。
+
+          使用前请先 clone 博客仓库，并确保 Git、Node.js、npm 已安装。启动后点击“环境检查”确认 Obsidian、Git、Node 和 Hexo 环境。
+          "@
+
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag $env:GUI_ASSET --repo $env:GITHUB_REPOSITORY --clobber
+          } else {
+            gh release create $tag $env:GUI_ASSET --repo $env:GITHUB_REPOSITORY --title $title --notes $notes
+          }

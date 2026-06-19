@@ -317,23 +317,40 @@ class BlogWorkflow:
         return max(posts, key=lambda path: path.stat().st_mtime)
 
     def set_latest_cover_url(self, cover_url: str) -> Path:
+        post = self.latest_obsidian_post()
+        self.set_post_cover_url(post.name, cover_url)
+        return post
+
+    def set_post_cover_url(self, file_name: str, cover_url: str) -> Path:
         cover_url = cover_url.strip()
         if not cover_url:
             raise ValueError("Cover URL is required.")
         if not re.match(r"^https?://", cover_url, re.IGNORECASE):
             raise ValueError("Cover URL must start with http:// or https://.")
-        post = self.latest_obsidian_post()
+        post = self.obsidian_post(file_name)
         self.set_post_cover(post, cover_url)
         return post
 
     def set_latest_cover_file(self, image_path: Path) -> tuple[Path, str]:
+        post = self.latest_obsidian_post()
+        return self.set_post_cover_file(post.name, image_path)
+
+    def set_post_cover_file(self, file_name: str, image_path: Path) -> tuple[Path, str]:
         image_path = Path(image_path)
         if not image_path.exists():
             raise FileNotFoundError(f"Cover image not found: {image_path}")
-        post = self.latest_obsidian_post()
+        post = self.obsidian_post(file_name)
         cover_path = self.copy_cover_image(image_path, post)
         self.set_post_cover(post, cover_path)
         return post, cover_path
+
+    def obsidian_post(self, file_name: str) -> Path:
+        post = self.obsidian_posts_path / file_name
+        if not post.exists() or not post.is_file():
+            raise FileNotFoundError(f"Obsidian post not found: {post}")
+        if post.suffix.lower() != ".md":
+            raise ValueError(f"Only Markdown posts are supported: {post}")
+        return post
 
     def copy_cover_image(self, image_path: Path, post: Path) -> str:
         self.obsidian_assets_path.mkdir(parents=True, exist_ok=True)
@@ -360,16 +377,18 @@ class BlogWorkflow:
             key=lambda path: path.name.lower(),
         )
 
-    def delete_post(self, file_name: str) -> tuple[Path, Path | None]:
+    def delete_post(self, file_name: str, keep_obsidian: bool = False) -> tuple[Path | None, Path | None]:
         source = self.obsidian_posts_path / file_name
-        if not source.exists() or not source.is_file():
-            raise FileNotFoundError(f"Obsidian post not found: {source}")
-        if source.suffix.lower() != ".md":
-            raise ValueError(f"Only Markdown posts can be deleted: {source}")
+        trash_target: Path | None = None
+        if not keep_obsidian:
+            if not source.exists() or not source.is_file():
+                raise FileNotFoundError(f"Obsidian post not found: {source}")
+            if source.suffix.lower() != ".md":
+                raise ValueError(f"Only Markdown posts can be deleted: {source}")
 
-        self.obsidian_trash_path.mkdir(parents=True, exist_ok=True)
-        trash_target = self.unique_trash_path(source.name)
-        shutil.move(str(source), str(trash_target))
+            self.obsidian_trash_path.mkdir(parents=True, exist_ok=True)
+            trash_target = self.unique_trash_path(source.name)
+            shutil.move(str(source), str(trash_target))
 
         hexo_target = self.hexo_posts_path / source.name
         removed_hexo: Path | None = None
@@ -378,10 +397,18 @@ class BlogWorkflow:
             removed_hexo = hexo_target
         return trash_target, removed_hexo
 
-    def delete_post_and_publish(self, file_name: str, log: LogFn | None = None) -> tuple[Path, Path | None]:
-        trash_target, removed_hexo = self.delete_post(file_name)
+    def delete_post_and_publish(
+        self,
+        file_name: str,
+        log: LogFn | None = None,
+        keep_obsidian: bool = False,
+    ) -> tuple[Path | None, Path | None]:
+        trash_target, removed_hexo = self.delete_post(file_name, keep_obsidian=keep_obsidian)
         if log:
-            log(f"已移动到回收站：{trash_target}")
+            if keep_obsidian:
+                log(f"已保留 Obsidian 原文：{self.obsidian_posts_path / file_name}")
+            elif trash_target:
+                log(f"已移动到回收站：{trash_target}")
             if removed_hexo:
                 log(f"已从 Hexo 删除：{removed_hexo}")
             else:

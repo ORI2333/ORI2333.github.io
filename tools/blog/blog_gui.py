@@ -68,6 +68,10 @@ except ModuleNotFoundError:
 from blog_core import BlogWorkflow, open_path
 
 
+DELETE_KEEP_OBSIDIAN = "keep-obsidian"
+DELETE_TRASH_OBSIDIAN = "trash-obsidian"
+
+
 STYLE = """
 QMainWindow {
     background: #f3f6f8;
@@ -204,42 +208,52 @@ class Worker(QObject):
                 self.done.emit("已打开 Obsidian 库。")
             elif self.action == "cover-url":
                 assert self.value is not None
-                path = workflow.set_latest_cover_url(self.value)
-                self.done.emit(f"已设置最近文章封面链接：{path}")
+                file_name, cover_url = self.value.split("\n", 1)
+                path = workflow.set_post_cover_url(file_name, cover_url)
+                self.done.emit(f"已设置文章封面链接：{path}")
             elif self.action == "cover-file":
                 assert self.value is not None
-                path, cover = workflow.set_latest_cover_file(self.value)
-                self.done.emit(f"已设置最近文章封面：{path}\n封面路径：{cover}")
+                file_name, image_path = self.value.split("\n", 1)
+                path, cover = workflow.set_post_cover_file(file_name, image_path)
+                self.done.emit(f"已设置文章封面：{path}\n封面路径：{cover}")
             elif self.action == "delete-post":
                 assert self.value is not None
-                trash, removed = workflow.delete_post_and_publish(self.value, self.log.emit)
+                mode, file_name = self.value.split("\n", 1)
+                keep_obsidian = mode == DELETE_KEEP_OBSIDIAN
+                trash, removed = workflow.delete_post_and_publish(file_name, self.log.emit, keep_obsidian=keep_obsidian)
                 if removed:
-                    self.done.emit(f"删除并发布完成。\n已移动到回收站：{trash}\n已从 Hexo 删除：{removed}")
+                    if keep_obsidian:
+                        self.done.emit(f"下线并发布完成。\n已保留 Obsidian 原文。\n已从 Hexo 删除：{removed}")
+                    else:
+                        self.done.emit(f"删除并发布完成。\n已移动到回收站：{trash}\n已从 Hexo 删除：{removed}")
                 else:
-                    self.done.emit(f"删除并发布完成。\n已移动到回收站：{trash}\nHexo 中没有同名文章。")
+                    if keep_obsidian:
+                        self.done.emit("下线并发布完成。\n已保留 Obsidian 原文。\nHexo 中没有同名文章。")
+                    else:
+                        self.done.emit(f"删除并发布完成。\n已移动到回收站：{trash}\nHexo 中没有同名文章。")
             elif self.action == "check-env":
                 self.done.emit("\n".join(workflow.environment_report()))
         except Exception as exc:
             self.failed.emit(str(exc))
 
 
-class DeletePostDialog(QDialog):
-    def __init__(self, posts: list[Path], parent=None):
+class PostPickerDialog(QDialog):
+    def __init__(self, posts: list[Path], title_text: str, hint_text: str, action_text: str, parent=None):
         super().__init__(parent)
         self.posts = sorted(posts, key=lambda path: path.stat().st_mtime, reverse=True)
         self.filtered_posts = list(self.posts)
         self.selected_name: str | None = None
 
-        self.setWindowTitle("删除文章")
+        self.setWindowTitle(title_text)
         self.resize(680, 460)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(14, 14, 14, 14)
         layout.setSpacing(10)
 
-        title = QLabel("选择要删除的文章")
+        title = QLabel(title_text)
         title.setObjectName("SectionTitle")
-        hint = QLabel("默认按最近修改排序。可以搜索标题或文件名。")
+        hint = QLabel(hint_text)
         hint.setObjectName("Muted")
 
         self.search = QLineEdit()
@@ -252,12 +266,11 @@ class DeletePostDialog(QDialog):
         buttons = QHBoxLayout()
         buttons.addStretch(1)
         cancel = QPushButton("取消")
-        delete = QPushButton("继续删除")
-        delete.setProperty("variant", "danger")
+        action = QPushButton(action_text)
         cancel.clicked.connect(self.reject)
-        delete.clicked.connect(self.accept_selected)
+        action.clicked.connect(self.accept_selected)
         buttons.addWidget(cancel)
-        buttons.addWidget(delete)
+        buttons.addWidget(action)
 
         layout.addWidget(title)
         layout.addWidget(hint)
@@ -286,6 +299,17 @@ class DeletePostDialog(QDialog):
             return
         self.selected_name = self.filtered_posts[row].name
         self.accept()
+
+
+class DeletePostDialog(PostPickerDialog):
+    def __init__(self, posts: list[Path], parent=None):
+        super().__init__(
+            posts,
+            "删除文章",
+            "默认按最近修改排序。可以搜索标题或文件名。",
+            "继续删除",
+            parent,
+        )
 
 
 class BlogWindow(QMainWindow):
@@ -439,19 +463,35 @@ class BlogWindow(QMainWindow):
             self.run_worker("new", title.strip())
 
     def pick_cover_file(self) -> None:
+        name = self.choose_post("选择要更换封面的文章", "先选择文章，再选择本地封面图片。", "选择文章")
+        if not name:
+            return
         path, _ = QFileDialog.getOpenFileName(
             self,
-            "选择最近文章封面",
+            "选择文章封面",
             "",
             "图片文件 (*.png *.jpg *.jpeg *.webp *.gif);;所有文件 (*.*)",
         )
         if path:
-            self.run_worker("cover-file", path)
+            self.run_worker("cover-file", f"{name}\n{path}")
 
     def set_cover_url(self) -> None:
-        url, ok = QInputDialog.getText(self, "设置最近文章封面 URL", "图片链接：")
+        name = self.choose_post("选择要更换封面的文章", "先选择文章，再填写图床或远程图片链接。", "选择文章")
+        if not name:
+            return
+        url, ok = QInputDialog.getText(self, "设置文章封面 URL", "图片链接：")
         if ok and url.strip():
-            self.run_worker("cover-url", url.strip())
+            self.run_worker("cover-url", f"{name}\n{url.strip()}")
+
+    def choose_post(self, title: str, hint: str, action: str) -> str | None:
+        posts = self.workflow.list_obsidian_posts()
+        if not posts:
+            QMessageBox.information(self, title, "Obsidian 文章目录里没有 Markdown 文件。")
+            return None
+        dialog = PostPickerDialog(posts, title, hint, action, self)
+        if run_dialog(dialog) != accepted_dialog_code():
+            return None
+        return dialog.selected_name
 
     def choose_vault(self) -> None:
         path = QFileDialog.getExistingDirectory(
@@ -511,19 +551,25 @@ class BlogWindow(QMainWindow):
         source = self.workflow.obsidian_posts_path / name
         trash = self.workflow.unique_trash_path(name)
         hexo = self.workflow.hexo_posts_path / name
-        reply = QMessageBox.question(
-            self,
-            "确认删除并发布",
-            "请确认这次删除操作：\n\n"
+        box = QMessageBox(self)
+        box.setWindowTitle("确认下线并发布")
+        box.setText(
+            "请选择这次下线方式：\n\n"
             f"文章：{name}\n\n"
             f"Obsidian 原文：\n{source}\n\n"
-            f"移动到回收站：\n{trash}\n\n"
-            f"删除 Hexo 文件：\n{hexo}\n\n"
-            "随后会自动构建并发布，让线上页面同步下线。",
+            f"可移动到回收站：\n{trash}\n\n"
+            f"将删除 Hexo 文件：\n{hexo}\n\n"
+            "两个选项都会自动构建并发布，让线上页面同步下线。"
         )
-        yes = QMessageBox.StandardButton.Yes if hasattr(QMessageBox, "StandardButton") else QMessageBox.Yes
-        if reply == yes:
-            self.run_worker("delete-post", name)
+        keep_button = box.addButton("仅下线网页，保留 Obsidian", message_box_role("AcceptRole"))
+        trash_button = box.addButton("下线并移入 Obsidian 回收站", message_box_role("DestructiveRole"))
+        box.addButton("取消", message_box_role("RejectRole"))
+        box.exec() if hasattr(box, "exec") else box.exec_()
+        clicked = box.clickedButton()
+        if clicked == keep_button:
+            self.run_worker("delete-post", f"{DELETE_KEEP_OBSIDIAN}\n{name}")
+        elif clicked == trash_button:
+            self.run_worker("delete-post", f"{DELETE_TRASH_OBSIDIAN}\n{name}")
 
     def run_worker(self, action: str, value: str | None = None) -> None:
         if self.thread is not None:
@@ -612,6 +658,12 @@ def accepted_dialog_code():
     if hasattr(QDialog, "DialogCode"):
         return QDialog.DialogCode.Accepted
     return QDialog.Accepted
+
+
+def message_box_role(name: str):
+    if hasattr(QMessageBox, "ButtonRole"):
+        return getattr(QMessageBox.ButtonRole, name)
+    return getattr(QMessageBox, name)
 
 
 def read_post_title(path: Path) -> str:
