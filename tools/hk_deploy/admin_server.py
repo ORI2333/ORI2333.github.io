@@ -379,7 +379,7 @@ def parse_access_log() -> list[dict[str, str]]:
             parsed = urllib.parse.urlparse(row["target"])
         except ValueError:
             continue
-        row["path"] = parsed.path or "/"
+        row["path"] = urllib.parse.unquote(parsed.path or "/")
         if should_ignore_path(row["path"]):
             continue
         row["address"] = address_for_ip(row["ip"])
@@ -616,7 +616,7 @@ def base_page(title: str, body: str) -> str:
 
 def article_row(row: dict[str, object]) -> str:
     path = str(row["path"])
-    link = "/admin/article?path=" + urllib.parse.quote(path)
+    link = "/admin/article?path=" + urllib.parse.quote(path, safe="")
     return (
         "<tr>"
         f'<td class="path"><a href="{escape(link)}">{escape(path)}</a></td>'
