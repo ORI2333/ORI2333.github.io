@@ -70,20 +70,20 @@ from blog_core import BlogWorkflow, open_path
 
 STYLE = """
 QMainWindow {
-    background: #f5f7fb;
+    background: #f3f6f8;
 }
 QWidget {
-    color: #172033;
+    color: #17212f;
     font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
     font-size: 13px;
 }
 QFrame#Hero {
-    background: #182235;
+    background: #15202b;
     border-radius: 8px;
 }
 QFrame#Card {
     background: #ffffff;
-    border: 1px solid #dbe2ee;
+    border: 1px solid #d8e0ea;
     border-radius: 8px;
 }
 QLabel#HeroTitle {
@@ -92,54 +92,54 @@ QLabel#HeroTitle {
     font-weight: 700;
 }
 QLabel#HeroSub {
-    color: #cad5e6;
+    color: #c8d4df;
     font-size: 13px;
 }
 QLabel#SectionTitle {
-    color: #172033;
+    color: #17212f;
     font-size: 15px;
     font-weight: 700;
 }
 QLabel#Muted {
-    color: #65748b;
+    color: #647386;
 }
 QLineEdit {
     min-height: 30px;
     padding: 4px 9px;
-    border: 1px solid #d6dfec;
+    border: 1px solid #d4dde8;
     border-radius: 6px;
-    background: #f9fbff;
+    background: #f8fafc;
 }
 QPushButton {
     min-height: 32px;
     padding: 5px 12px;
     border-radius: 6px;
-    border: 1px solid #cbd6e6;
+    border: 1px solid #c9d4df;
     background: #ffffff;
-    color: #172033;
+    color: #17212f;
 }
 QPushButton:hover {
-    background: #f0f5ff;
-    border-color: #9db7e8;
+    background: #eef6f5;
+    border-color: #8fbdb8;
 }
 QPushButton[variant="primary"] {
-    background: #2563eb;
+    background: #176b66;
     color: white;
-    border-color: #2563eb;
+    border-color: #176b66;
     font-weight: 700;
 }
 QPushButton[variant="primary"]:hover {
-    background: #1d4ed8;
+    background: #125753;
 }
 QPushButton[variant="danger"] {
-    background: #fff7ed;
-    color: #9a3412;
-    border-color: #fed7aa;
+    background: #fff5ec;
+    color: #95430d;
+    border-color: #f5c99d;
 }
 QTextEdit {
-    background: #101827;
-    color: #d7e1f0;
-    border: 1px solid #1f2a3d;
+    background: #101820;
+    color: #d5e3df;
+    border: 1px solid #22303a;
     border-radius: 8px;
     padding: 10px;
     font-family: "Cascadia Mono", Consolas, monospace;
@@ -156,8 +156,8 @@ QListWidget::item {
     padding: 4px 6px;
 }
 QListWidget::item:selected {
-    background: #dbeafe;
-    color: #172033;
+    background: #d9eeea;
+    color: #17212f;
 }
 """
 
@@ -217,6 +217,8 @@ class Worker(QObject):
                     self.done.emit(f"删除并发布完成。\n已移动到回收站：{trash}\n已从 Hexo 删除：{removed}")
                 else:
                     self.done.emit(f"删除并发布完成。\n已移动到回收站：{trash}\nHexo 中没有同名文章。")
+            elif self.action == "check-env":
+                self.done.emit("\n".join(workflow.environment_report()))
         except Exception as exc:
             self.failed.emit(str(exc))
 
@@ -294,7 +296,7 @@ class BlogWindow(QMainWindow):
         self.worker: Worker | None = None
         self.process: QProcess | None = None
 
-        self.setWindowTitle("博客工作流")
+        self.setWindowTitle("ORI 博客工作台")
         self.resize(1080, 720)
         self.setStyleSheet(STYLE)
 
@@ -309,17 +311,16 @@ class BlogWindow(QMainWindow):
         outer.addWidget(self.make_log_card(), 1)
 
         self.setCentralWidget(root)
-        self.write_log("就绪。")
-        self.write_log("\n".join(self.workflow.status_lines()))
+        self.write_log("就绪。建议先点“环境检查”，确认 Git、Node、Obsidian 和仓库状态。")
 
     def make_hero(self) -> QFrame:
         frame = QFrame()
         frame.setObjectName("Hero")
         layout = QVBoxLayout(frame)
         layout.setContentsMargins(18, 14, 18, 14)
-        title = QLabel("博客工作流")
+        title = QLabel("ORI 博客工作台")
         title.setObjectName("HeroTitle")
-        subtitle = QLabel("Obsidian 写作，Hexo 构建，一键同步与发布")
+        subtitle = QLabel("Obsidian 写作，Hexo 构建，GitHub Actions 自动发布到多线路站点")
         subtitle.setObjectName("HeroSub")
         layout.addWidget(title)
         layout.addWidget(subtitle)
@@ -338,14 +339,29 @@ class BlogWindow(QMainWindow):
 
         self.repo_field = self.readonly_field(str(self.workflow.repo_root))
         self.vault_field = self.readonly_field(str(self.workflow.config.obsidian_vault_path))
+        self.git_field = self.readonly_field(self.workflow.config.git_executable)
+        self.npm_field = self.readonly_field(self.workflow.config.npm_executable_path or "自动检测")
         self.cover_field = self.readonly_field(self.workflow.config.default_cover)
 
         layout.addWidget(self.muted("博客仓库"), 1, 0)
         layout.addWidget(self.repo_field, 1, 1)
         layout.addWidget(self.muted("Obsidian 库"), 2, 0)
-        layout.addWidget(self.vault_field, 2, 1)
-        layout.addWidget(self.muted("默认封面"), 3, 0)
-        layout.addWidget(self.cover_field, 3, 1)
+        vault_row = QHBoxLayout()
+        vault_row.addWidget(self.vault_field, 1)
+        vault_row.addWidget(self.button("选择", self.choose_vault))
+        layout.addLayout(vault_row, 2, 1)
+        layout.addWidget(self.muted("Git"), 3, 0)
+        git_row = QHBoxLayout()
+        git_row.addWidget(self.git_field, 1)
+        git_row.addWidget(self.button("选择", self.choose_git))
+        layout.addLayout(git_row, 3, 1)
+        layout.addWidget(self.muted("npm"), 4, 0)
+        npm_row = QHBoxLayout()
+        npm_row.addWidget(self.npm_field, 1)
+        npm_row.addWidget(self.button("选择", self.choose_npm))
+        layout.addLayout(npm_row, 4, 1)
+        layout.addWidget(self.muted("默认封面"), 5, 0)
+        layout.addWidget(self.cover_field, 5, 1)
         return frame
 
     def make_actions_card(self) -> QFrame:
@@ -365,7 +381,6 @@ class BlogWindow(QMainWindow):
         row1.addWidget(self.button("构建检查", lambda: self.run_worker("build")))
         row1.addWidget(self.button("本地预览", self.preview))
         row1.addWidget(self.button("发布全站", lambda: self.run_worker("publish"), "danger"))
-        row1.addWidget(self.button("部署香港", lambda: self.run_worker("deploy-hk")))
         row1.addWidget(self.button("一键完成", lambda: self.run_worker("all"), "danger"))
         layout.addLayout(row1)
 
@@ -376,6 +391,7 @@ class BlogWindow(QMainWindow):
         row2.addWidget(self.button("删除文章", self.delete_post, "danger"))
         row2.addWidget(self.button("导入到 Obsidian", lambda: self.run_worker("import")))
         row2.addWidget(self.button("打开 Obsidian", lambda: self.run_worker("open-vault")))
+        row2.addWidget(self.button("环境检查", lambda: self.run_worker("check-env")))
         row2.addWidget(self.button("查看状态", lambda: self.run_worker("status")))
         row2.addStretch(1)
         layout.addLayout(row2)
@@ -436,6 +452,50 @@ class BlogWindow(QMainWindow):
         url, ok = QInputDialog.getText(self, "设置最近文章封面 URL", "图片链接：")
         if ok and url.strip():
             self.run_worker("cover-url", url.strip())
+
+    def choose_vault(self) -> None:
+        path = QFileDialog.getExistingDirectory(
+            self,
+            "选择 Obsidian 库",
+            str(self.workflow.config.obsidian_vault_path) if str(self.workflow.config.obsidian_vault_path) else "",
+        )
+        if not path:
+            return
+        self.workflow.update_config(obsidianVaultPath=path.replace("\\", "/"))
+        self.refresh_config_fields()
+        self.write_log(f"已更新 Obsidian 库：{path}")
+
+    def choose_git(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(
+            self,
+            "选择 git.exe",
+            "",
+            "Git 可执行文件 (git.exe);;所有文件 (*.*)",
+        )
+        if not path:
+            return
+        self.workflow.update_config(gitExecutable=path.replace("\\", "/"))
+        self.refresh_config_fields()
+        self.write_log(f"已更新 Git：{path}")
+
+    def choose_npm(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(
+            self,
+            "选择 npm.cmd",
+            "",
+            "npm 可执行文件 (npm.cmd npm);;所有文件 (*.*)",
+        )
+        if not path:
+            return
+        self.workflow.update_config(npmExecutable=path.replace("\\", "/"))
+        self.refresh_config_fields()
+        self.write_log(f"已更新 npm：{path}")
+
+    def refresh_config_fields(self) -> None:
+        self.vault_field.setText(str(self.workflow.config.obsidian_vault_path))
+        self.git_field.setText(self.workflow.config.git_executable)
+        self.npm_field.setText(self.workflow.config.npm_executable_path or "自动检测")
+        self.cover_field.setText(self.workflow.config.default_cover)
 
     def delete_post(self) -> None:
         posts = self.workflow.list_obsidian_posts()

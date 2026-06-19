@@ -17,6 +17,7 @@ This note explains how to restore the local blog workflow on a new computer or a
 - `tools/blog/blog_cli.py` - command line actions.
 - `tools/blog/blog_core.py` - shared sync/build/publish logic.
 - `tools/blog/blog.config.json` - local path and workflow config.
+- `tools/blog/build_exe.py` - optional PyInstaller packaging script.
 - `templates/blog-post.md` - post template.
 - `.codex/skills/blog-workflow/SKILL.md` - Codex workflow instructions.
 
@@ -57,26 +58,29 @@ Blog/
   Templates/
 ```
 
-4. Update the vault path in `tools/blog/blog.config.json`, or set:
+4. Launch the GUI and choose the Obsidian vault path in the `路径` section, or update `tools/blog/blog.config.json` directly. You can also set:
 
 ```powershell
 $env:BLOG_OBSIDIAN_VAULT="D:\path\to\your\vault"
 ```
 
-5. Verify the GUI environment:
+5. If Git or npm is not on `PATH`, choose `git.exe` and `npm.cmd` in the GUI `路径` section. The settings are saved as `gitExecutable` and `npmExecutable` in `tools/blog/blog.config.json`.
+
+6. Verify the full workflow environment:
 
 ```bash
 npm run blog:check
 ```
 
-Expected output includes a Python path and a Qt binding, for example:
+Expected output includes Python/Qt, Git, Node.js, npm, Hexo, Obsidian path, and Git status. If something is missing, the report includes a suggested fix.
+
+To only check which Python/Qt runtime will launch the GUI, run:
 
 ```text
-Python: E:\Program Files\Anaconda\python.exe
-Qt binding: PyQt5
+python tools/blog/run_blog.py --check
 ```
 
-6. Launch the GUI:
+7. Launch the GUI:
 
 ```bash
 npm run blog
@@ -92,9 +96,45 @@ npm run blog:sync
 npm run blog:build
 npm run blog:preview
 npm run blog:publish
-npm run blog:deploy-hk
+npm run blog:build-exe
 npm run blog:all
 ```
+
+## Optional EXE Packaging
+
+The GUI can be packaged with PyInstaller:
+
+```bash
+pip install pyinstaller
+npm run blog:build-exe
+```
+
+The generated executable is a convenience wrapper for the Python GUI. It does not bundle the blog repository, Node.js, npm, Git, or SSH keys. On a new computer you still need:
+
+- the cloned repository,
+- `npm ci`,
+- Git,
+- Node.js,
+- an Obsidian vault path configured in the GUI,
+- GitHub authentication for pushing the `source` branch if you publish from that computer.
+
+This keeps the executable small and avoids hiding the actual publish chain inside a black box.
+
+Build artifacts are written under a timestamped folder:
+
+```text
+dist/blog-gui/YYYYMMDD-HHMMSS/ORI-Blog-Workflow/ORI-Blog-Workflow.exe
+```
+
+Timestamped output avoids Windows file-lock problems when a previously packaged exe or DLL is still open.
+
+Recommended usage for the packaged executable:
+
+1. Clone this repository.
+2. Put or keep the executable under the repository folder, or start it from the repository root.
+3. Click `环境检查`.
+4. Use the `路径` panel to choose Obsidian, Git, and npm when the report says they are missing.
+5. Run `npm ci` once if the report says `node_modules` or Hexo dependencies are missing.
 
 ## Draft Rule
 
@@ -145,7 +185,7 @@ If `npm run blog` says `No module named PyQt5`, run:
 npm run blog:check
 ```
 
-If no Qt binding is found, install `PyQt5`, `PyQt6`, or `PySide6` in the Python environment used by the terminal.
+If no Qt binding is found, install `PyQt5`, `PyQt6`, or `PySide6` in the Python environment used by the terminal. The packaged exe does not need the external Qt package at runtime because the Qt binding is bundled during packaging.
 
 If Obsidian sync fails, check `tools/blog/blog.config.json` and make sure `obsidianVaultPath` points to an existing vault.
 
@@ -171,4 +211,4 @@ HK_REMOTE_ROOT=/var/www/ori2333-blog
 HK_SSH_KEY=<private key that can SSH to the server>
 ```
 
-`npm run blog:deploy-hk` is a local fallback only. Daily publishing should use `npm run blog` and click `发布全站` or `一键完成`.
+Daily publishing should use `npm run blog` and click `发布全站` or `一键完成`. `npm run blog:deploy-hk` remains available as a local fallback for troubleshooting GitHub Actions or server sync issues.

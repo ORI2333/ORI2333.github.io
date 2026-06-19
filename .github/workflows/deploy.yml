@@ -17,12 +17,12 @@ jobs:
 
     steps:
       - name: Checkout source branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: source
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -34,11 +34,25 @@ jobs:
         run: npm run clean && npm run build
 
       - name: Deploy to main branch (GitHub Pages)
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf /tmp/ori-blog-pages
+          git clone --depth 1 --branch main "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/ori-blog-pages
+          find /tmp/ori-blog-pages -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a public/. /tmp/ori-blog-pages/
+          cd /tmp/ori-blog-pages
+          touch .nojekyll
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No GitHub Pages changes to deploy."
+          else
+            git commit -m "deploy: update pages"
+            git push origin main
+          fi
 
       - name: Install HK SSH key
         if: ${{ env.HK_DEPLOY_ENABLED == 'true' }}

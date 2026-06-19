@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import json
+import importlib.util
 import os
 import re
 import shutil
 import shlex
 import subprocess
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -15,12 +17,32 @@ from typing import Callable, Iterable
 LogFn = Callable[[str], None]
 
 
+DEFAULT_CONFIG = {
+    "obsidianVaultPath": "",
+    "obsidianPostsFolder": "Blog/Posts",
+    "obsidianAssetsFolder": "Blog/Assets",
+    "obsidianTrashFolder": "Blog/Trash",
+    "gitExecutable": "git",
+    "npmExecutable": "",
+    "hexoPostsFolder": "source/_posts",
+    "hexoImagesFolder": "source/images/posts",
+    "postTemplateName": "blog-post.md",
+    "defaultCover": "/images/theme/default-cover.webp",
+    "defaultCategories": ["docs"],
+    "preferredPreviewPort": 4000,
+    "publishCommand": "npm run push",
+    "hkDeployCommand": "npm run deploy:hk",
+}
+
+
 @dataclass
 class BlogConfig:
     obsidian_vault_path: Path
     obsidian_posts_folder: str
     obsidian_assets_folder: str
     obsidian_trash_folder: str
+    git_executable: str
+    npm_executable_path: str
     hexo_posts_folder: str
     hexo_images_folder: str
     post_template_name: str
@@ -33,19 +55,23 @@ class BlogConfig:
 
 class BlogWorkflow:
     def __init__(self, repo_root: Path | None = None, config_path: Path | None = None):
-        self.repo_root = repo_root or Path(__file__).resolve().parents[2]
-        self.tool_root = Path(__file__).resolve().parent
+        self.repo_root = repo_root or discover_repo_root()
+        self.tool_root = self.repo_root / "tools" / "blog"
         self.config_path = config_path or self.tool_root / "blog.config.json"
         self.config = self.load_config()
 
     def load_config(self) -> BlogConfig:
-        raw = json.loads(self.config_path.read_text(encoding="utf-8-sig"))
+        raw = dict(DEFAULT_CONFIG)
+        if self.config_path.exists():
+            raw.update(json.loads(self.config_path.read_text(encoding="utf-8-sig")))
         vault = os.environ.get("BLOG_OBSIDIAN_VAULT") or raw.get("obsidianVaultPath", "")
         return BlogConfig(
             obsidian_vault_path=Path(vault) if vault else Path(),
             obsidian_posts_folder=raw.get("obsidianPostsFolder", "Blog/Posts"),
             obsidian_assets_folder=raw.get("obsidianAssetsFolder", "Blog/Assets"),
             obsidian_trash_folder=raw.get("obsidianTrashFolder", "Blog/Trash"),
+            git_executable=raw.get("gitExecutable", "git"),
+            npm_executable_path=raw.get("npmExecutable", ""),
             hexo_posts_folder=raw.get("hexoPostsFolder", "source/_posts"),
             hexo_images_folder=raw.get("hexoImagesFolder", "source/images/posts"),
             post_template_name=raw.get("postTemplateName", "blog-post.md"),
@@ -55,6 +81,15 @@ class BlogWorkflow:
             publish_command=raw.get("publishCommand", "npm run push"),
             hk_deploy_command=raw.get("hkDeployCommand", "npm run deploy:hk"),
         )
+
+    def update_config(self, **updates: str) -> None:
+        raw = dict(DEFAULT_CONFIG)
+        if self.config_path.exists():
+            raw.update(json.loads(self.config_path.read_text(encoding="utf-8-sig")))
+        raw.update(updates)
+        self.config_path.parent.mkdir(parents=True, exist_ok=True)
+        self.config_path.write_text(json.dumps(raw, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        self.config = self.load_config()
 
     @property
     def template_path(self) -> Path:
@@ -103,14 +138,153 @@ class BlogWorkflow:
             f"Hexo images: {self.config.hexo_images_folder}",
             f"Default cover: {self.config.default_cover}",
             f"npm: {self.npm_executable()}",
+            f"git: {self.git_executable()}",
         ]
-        proc = self.run(["git", "status", "--short"], check=False)
+        for label, command in (
+            ("git version", [self.git_executable(), "--version"]),
+            ("npm version", [self.npm_executable(), "--version"]),
+        ):
+            version_proc = self.run(command, check=False)
+            value = (version_proc.stdout or version_proc.stderr).strip()
+            if value:
+                lines.append(f"{label}: {value}")
+        proc = self.run([self.git_executable(), "status", "--short"], check=False)
         if proc.stdout.strip():
             lines.append("")
             lines.extend(proc.stdout.rstrip().splitlines())
         if proc.stderr.strip():
             lines.append("")
             lines.extend(proc.stderr.rstrip().splitlines())
+        return lines
+
+    def environment_report(self) -> list[str]:
+        lines = [
+            "博客工作流环境检查",
+            f"检查时间：{datetime.now():%Y-%m-%d %H:%M:%S}",
+            "",
+        ]
+        vault = self.config.obsidian_vault_path
+        obsidian_posts = vault / self.config.obsidian_posts_folder if str(vault) else Path()
+        obsidian_assets = vault / self.config.obsidian_assets_folder if str(vault) else Path()
+        checks = [
+            self.check_python(),
+            self.check_qt(),
+            self.check_path("博客仓库", self.repo_root, "请把 exe 放在仓库内运行，或从仓库根目录启动。"),
+            self.check_path("package.json", self.repo_root / "package.json", "当前目录不像 Hexo 博客仓库。"),
+            self.check_path(".git", self.repo_root / ".git", "请先 clone 博客源码仓库。"),
+            self.check_path("Obsidian 库", vault, "在 GUI 的“路径”区域选择 Obsidian 库。"),
+            self.check_path(
+                "Obsidian 文章目录",
+                obsidian_posts,
+                "首次使用可在 Obsidian 库内创建 Blog/Posts，或点击“导入到 Obsidian”。",
+            ),
+            self.check_path(
+                "Obsidian 资源目录",
+                obsidian_assets,
+                "首次使用可在 Obsidian 库内创建 Blog/Assets。",
+            ),
+            self.check_path("Hexo 文章目录", self.hexo_posts_path, "请确认仓库完整，或运行 npm ci 后重试。"),
+            self.check_path("Node 依赖", self.repo_root / "node_modules", "请在仓库根目录运行 npm ci。"),
+            self.check_command("Git", lambda: [self.git_executable(), "--version"], "安装 Git for Windows：https://git-scm.com/download/win，或在 GUI 里选择 git.exe。"),
+            self.check_command("Node.js", lambda: [self.node_executable(), "--version"], "安装 Node.js LTS：https://nodejs.org/。"),
+            self.check_command("npm", lambda: [self.npm_executable(), "--version"], "Node.js 安装后应自带 npm；如未找到，请检查 PATH 或在配置里填写 npmExecutable。"),
+            self.check_command("Hexo", lambda: [self.npm_executable(), "exec", "hexo", "--", "version"], "请先运行 npm ci 安装博客依赖。"),
+        ]
+
+        ok_count = sum(1 for check in checks if check[0] == "OK")
+        warn_count = sum(1 for check in checks if check[0] == "WARN")
+        missing_count = sum(1 for check in checks if check[0] == "MISS")
+        lines.append(f"摘要：正常 {ok_count} 项，提醒 {warn_count} 项，缺失 {missing_count} 项")
+        lines.append("")
+        for status, label, detail, guidance in checks:
+            mark = {"OK": "[正常]", "WARN": "[提醒]", "MISS": "[缺失]"}.get(status, "[信息]")
+            lines.append(f"{mark} {label}：{detail}")
+            if guidance:
+                lines.append(f"  处理建议：{guidance}")
+
+        lines.extend(["", "Git 状态："])
+        git_status = self.git_status_summary()
+        lines.extend(f"  {line}" for line in git_status)
+        return lines
+
+    def check_path(self, label: str, path: Path, guidance: str) -> tuple[str, str, str, str]:
+        if not str(path):
+            return ("MISS", label, "未配置", guidance)
+        if path.exists():
+            return ("OK", label, str(path), "")
+        return ("MISS", label, f"不存在：{path}", guidance)
+
+    def check_python(self) -> tuple[str, str, str, str]:
+        detail = f"{sys.version.split()[0]} ({sys.executable})"
+        if getattr(sys, "frozen", False):
+            detail = f"exe 内置运行时 ({sys.executable})"
+        return ("OK", "Python/GUI 运行时", detail, "")
+
+    def check_qt(self) -> tuple[str, str, str, str]:
+        for name in ("PySide6", "PyQt6", "PyQt5"):
+            if importlib.util.find_spec(name) is not None:
+                return ("OK", "Qt 图形界面", name, "")
+        return (
+            "MISS",
+            "Qt 图形界面",
+            "未找到 PySide6 / PyQt6 / PyQt5",
+            "如果不用 exe，请在当前 Python 环境安装 PySide6、PyQt6 或 PyQt5；Anaconda 可用 conda install pyqt。",
+        )
+
+    def check_command(
+        self,
+        label: str,
+        command_factory: Callable[[], list[str]],
+        guidance: str,
+    ) -> tuple[str, str, str, str]:
+        try:
+            command = command_factory()
+            proc = subprocess.run(
+                command,
+                cwd=self.repo_root,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                capture_output=True,
+                timeout=20,
+                shell=False,
+                check=False,
+            )
+        except Exception as exc:
+            return ("MISS", label, str(exc), guidance)
+        output = strip_ansi((proc.stdout or proc.stderr).strip())
+        output_lines = [line.strip() for line in output.splitlines() if line.strip()]
+        useful_lines = [line for line in output_lines if not line.startswith("INFO ")]
+        first_line = (useful_lines or output_lines or [f"退出码 {proc.returncode}"])[0]
+        if proc.returncode == 0:
+            return ("OK", label, first_line, "")
+        return ("WARN", label, first_line, guidance)
+
+    def git_status_summary(self) -> list[str]:
+        try:
+            branch_proc = self.run([self.git_executable(), "branch", "--show-current"], check=False)
+            status_proc = self.run([self.git_executable(), "status", "--short"], check=False)
+            remote_proc = self.run([self.git_executable(), "remote", "-v"], check=False)
+        except Exception as exc:
+            return [f"无法读取 Git 状态：{exc}"]
+
+        lines: list[str] = []
+        branch = branch_proc.stdout.strip() or "<未知分支>"
+        lines.append(f"当前分支：{branch}")
+        status = status_proc.stdout.strip()
+        if status:
+            lines.append("有未提交变更：")
+            lines.extend(f"    {line}" for line in status.splitlines())
+        else:
+            lines.append("工作区干净。")
+        remote = remote_proc.stdout.strip()
+        if remote:
+            lines.append("远程仓库：")
+            lines.extend(f"    {line}" for line in remote.splitlines())
+        elif remote_proc.stderr.strip():
+            lines.append(f"远程仓库读取失败：{remote_proc.stderr.strip()}")
+        else:
+            lines.append("未配置远程仓库。")
         return lines
 
     def create_post(self, title: str, open_after: bool = False) -> Path:
@@ -309,6 +483,15 @@ class BlogWorkflow:
             raise RuntimeError(f"Command failed with exit code {code}: {' '.join(command)}")
 
     def npm_executable(self) -> str:
+        configured = str(self.config.npm_executable_path).strip()
+        if configured:
+            candidate = Path(configured)
+            if candidate.exists():
+                return str(candidate)
+            found_configured = shutil.which(configured)
+            if found_configured:
+                return found_configured
+
         found = shutil.which("npm.cmd") or shutil.which("npm")
         if found:
             return found
@@ -326,16 +509,75 @@ class BlogWorkflow:
 
         raise RuntimeError("找不到 npm。请确认 Node.js 已安装，或把 npm.cmd 加入 PATH。")
 
+    def node_executable(self) -> str:
+        found = shutil.which("node.exe") or shutil.which("node")
+        if found:
+            return found
+
+        try:
+            npm_path = Path(self.npm_executable())
+        except RuntimeError:
+            npm_path = Path()
+        if npm_path:
+            candidate = npm_path.with_name("node.exe")
+            if candidate.exists():
+                return str(candidate)
+
+        candidates = [
+            Path(os.environ.get("ProgramFiles", "")) / "nodejs" / "node.exe",
+            Path(os.environ.get("ProgramFiles(x86)", "")) / "nodejs" / "node.exe",
+            Path("E:/Program Files/nodejs/node.exe"),
+            Path("D:/Program Files/nodejs/node.exe"),
+            Path("C:/Program Files/nodejs/node.exe"),
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                return str(candidate)
+
+        raise RuntimeError("找不到 node。请安装 Node.js LTS，或把 node.exe 加入 PATH。")
+
+    def git_executable(self) -> str:
+        configured = str(self.config.git_executable).strip() or "git"
+        candidate = Path(configured)
+        if candidate.exists():
+            return str(candidate)
+        found = shutil.which(configured)
+        if found:
+            return found
+        raise RuntimeError("找不到 git。请安装 Git，或在设置里选择 git.exe。")
+
     def resolve_command(self, command: list[str] | str) -> list[str]:
         if isinstance(command, str):
             command = shlex.split(command, posix=False)
         if command and command[0].lower() == "npm":
             return [self.npm_executable(), *command[1:]]
+        if command and command[0].lower() == "git":
+            return [self.git_executable(), *command[1:]]
         return command
 
 
 def yaml_scalar(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
+
+
+def strip_ansi(value: str) -> str:
+    return re.sub(r"\x1b\[[0-9;]*m", "", value)
+
+
+def discover_repo_root() -> Path:
+    starts: list[Path] = [Path.cwd()]
+    if getattr(sys, "frozen", False):
+        starts.append(Path(sys.executable).resolve().parent)
+    starts.append(Path(__file__).resolve().parent)
+
+    for start in starts:
+        for path in [start, *start.parents]:
+            package_json = path / "package.json"
+            if package_json.exists() and (path / ".git").exists():
+                return path
+            if package_json.exists() and (path / "tools" / "blog").exists():
+                return path
+    return Path(__file__).resolve().parents[2]
 
 
 def safe_file_name(value: str) -> str:

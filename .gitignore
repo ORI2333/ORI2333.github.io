@@ -7,6 +7,8 @@ db.json
 public/
 .deploy*/
 _multiconfig.yml
+dist/
+build/
 
 # Dependencies
 node_modules/

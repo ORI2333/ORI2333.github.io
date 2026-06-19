@@ -10,7 +10,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Hexo blog workflow helper")
     parser.add_argument(
         "action",
-        choices=["status", "new", "import", "sync", "build", "preview", "publish", "deploy-hk", "all", "open-vault"],
+        choices=["status", "check-env", "new", "import", "sync", "build", "preview", "publish", "deploy-hk", "all", "open-vault"],
     )
     parser.add_argument("--title", help="Post title for the new action")
     args = parser.parse_args()
@@ -20,6 +20,8 @@ def main() -> int:
     try:
         if args.action == "status":
             print(iter_lines(workflow.status_lines()))
+        elif args.action == "check-env":
+            print(iter_lines(workflow.environment_report()))
         elif args.action == "new":
             title = args.title or input("Post title: ")
             path = workflow.create_post(title, open_after=True)
