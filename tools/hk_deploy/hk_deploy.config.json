@@ -8,6 +8,12 @@
   "hkBlogPath": "/blog/",
   "edgeOneUrl": "https://myblog-ovffqon5.zh-cn.edgeone.cool/?eo_token=d48ab9ec107be1941455ce4d3e70ba16&eo_time=1781801300",
   "githubPagesUrl": "https://ori2333.github.io/",
+  "rootVerificationFiles": [
+    {
+      "name": "abcaf8ee720c22ea26418bb82f74d9c0.txt",
+      "content": "3d3ea2dca84de478dea1b309ec960efe05d7c2e0"
+    }
+  ],
   "nginxServerName": "blog.orixx.xyz www.blog.orixx.xyz",
   "nginxListen": 80,
   "enableHttps": true,

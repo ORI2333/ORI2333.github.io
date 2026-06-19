@@ -27,6 +27,7 @@ def main() -> int:
     run([hexo_executable(), "--config", f"_config.yml,{relative_to_repo(HEXO_HK_CONFIG_PATH)}", "generate"])
     rewrite_hk_asset_paths(public_dir, str(cfg.get("hkBlogPath", "/blog/")))
     write_gateway_page(cfg, public_dir)
+    write_root_verification_files(cfg, public_dir)
 
     with tempfile.TemporaryDirectory() as tmp:
         archive = Path(tmp) / "ori2333-blog.tar.gz"
@@ -149,6 +150,16 @@ def write_gateway_page(cfg: dict, public_dir: Path) -> None:
         ),
         encoding="utf-8",
     )
+
+
+def write_root_verification_files(cfg: dict, public_dir: Path) -> None:
+    public_dir.mkdir(parents=True, exist_ok=True)
+    for item in cfg.get("rootVerificationFiles", []):
+        name = str(item.get("name", "")).strip()
+        content = str(item.get("content", ""))
+        if not name or "/" in name or "\\" in name:
+            raise RuntimeError(f"Invalid root verification file name: {name!r}")
+        (public_dir / name).write_text(content, encoding="utf-8")
 
 
 def normalized_path(value: str) -> str:
