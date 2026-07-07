@@ -213,6 +213,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
             "desc_en": "Hosted on the Hong Kong server and suitable for steady everyday reading from most networks.",
             "href": hk_url,
             "meta": "blog.orixx.xyz/blog/",
+            "open_zh": "通过香港站点阅读",
+            "open_en": "Read via Hong Kong",
             "accent": "#35cd4b",
         },
         {
@@ -225,6 +227,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
             "desc_en": "Accelerated through Tencent Cloud EdgeOne/CDN for smoother access from mainland China.",
             "href": edge_url,
             "meta": "edgeone.cool",
+            "open_zh": "通过大陆优化线路阅读",
+            "open_en": "Read via mainland route",
             "accent": "#51aded",
         },
         {
@@ -237,6 +241,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
             "desc_en": "A public GitHub Pages mirror for international access and a backup when other routes are unavailable.",
             "href": github_url,
             "meta": "ori2333.github.io",
+            "open_zh": "通过备用镜像阅读",
+            "open_en": "Read via backup mirror",
             "accent": "#fdbc40",
         },
     ]
@@ -342,6 +348,23 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       color: var(--muted);
       font-size: 14px;
     }}
+    .brand.shared-article {{
+      align-items: flex-start;
+    }}
+    .brand.shared-article h1 {{
+      max-width: min(820px, calc(100vw - 180px));
+      overflow-wrap: anywhere;
+    }}
+    .article-kicker {{
+      display: none;
+      margin-bottom: 8px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 700;
+    }}
+    .brand.shared-article .article-kicker {{
+      display: block;
+    }}
     .theme-toggle,
     .lang-toggle {{
       flex: 0 0 auto;
@@ -401,6 +424,16 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       color: var(--muted);
       font-size: 14px;
       line-height: 1.6;
+    }}
+    .share-target-note {{
+      display: none;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }}
+    .share-target-note.show {{
+      display: block;
     }}
     .grid {{
       display: grid;
@@ -507,6 +540,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       .controls {{ margin-top: 2px; }}
       .grid {{ grid-template-columns: 1fr; }}
       h1 {{ font-size: 29px; }}
+      .brand.shared-article h1 {{ max-width: calc(100vw - 140px); }}
       .card {{ min-height: 190px; }}
     }}
   </style>
@@ -518,6 +552,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
         <div class="brand">
           <img src="{html.escape(avatar_path, quote=True)}" alt="ORI2333">
           <div>
+            <span class="article-kicker" data-i18n="articleKicker">分享文章</span>
             <h1 id="page-title">ORI2333's Blog</h1>
             <span data-i18n="subtitle">选择一条适合当前网络环境的阅读线路</span>
           </div>
@@ -529,6 +564,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       </div>
       <div class="intro">
         <p data-i18n="intro">这里提供同一份博客内容的多个访问线路。如果当前网络加载较慢，可以切换到另一条线路继续阅读。</p>
+        <p class="share-target-note" data-i18n="targetInstruction">请选择一条访问线路开始阅读这篇文章。</p>
       </div>
       <div class="actions">
         <button class="recommend" type="button" data-i18n="recommend">自动推荐线路</button>
@@ -578,9 +614,13 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
         zh: {{
           subtitle: "选择一条适合当前网络环境的阅读线路",
           intro: "这里提供同一份博客内容的多个访问线路。如果当前网络加载较慢，可以切换到另一条线路继续阅读。",
+          articleKicker: "分享文章",
+          targetSubtitle: "请选择一条适合当前网络的阅读线路",
+          targetIntro: "你打开的是一篇分享文章。下方三条线路都指向同一篇内容，选择当前网络下更顺手的一条即可。",
+          targetInstruction: "如果某条线路加载较慢，可以返回这里切换到另一条线路继续阅读。",
           recommend: "自动推荐线路",
           recommendHint: "根据当前网络自动判断更适合的访问入口。",
-          targetReady: "已识别分享文章，选择任一线路将打开同一篇内容。",
+          targetReady: "请选择下方任意线路打开文章。",
           checking: "正在检测当前网络...",
           recommended: "推荐：",
           fallbackEdge: "检测服务暂不可用，已根据浏览器语言和时区给出保守建议。",
@@ -591,9 +631,13 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
         en: {{
           subtitle: "Choose the best route for your current network",
           intro: "This page offers multiple routes to the same blog. If one route loads slowly, switch to another and keep reading.",
+          articleKicker: "Shared Post",
+          targetSubtitle: "Choose the best reading route for your network",
+          targetIntro: "You opened a shared post. All three routes point to the same article, so pick the one that works best right now.",
+          targetInstruction: "If one route loads slowly, come back here and switch to another route.",
           recommend: "Recommend route",
           recommendHint: "Automatically choose a route based on your current network.",
-          targetReady: "Shared article detected. Any route will open the same post.",
+          targetReady: "Choose any route below to open the article.",
           checking: "Checking your network...",
           recommended: "Recommended: ",
           fallbackEdge: "The detection service is unavailable, so this is a conservative suggestion based on language and timezone.",
@@ -610,7 +654,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
         return path.replace(/\\/{{2,}}/g, "/");
       }}
       function stripBlogPrefix(path) {{
-        var normalized = normalizePath(path);
+        var normalized = normalizePath(path).replace(/\\/index\\.html$/i, "/");
         var prefix = hkBlogPath.replace(/\\/+$/, "");
         if (prefix && normalized.toLowerCase().indexOf(prefix.toLowerCase() + "/") === 0) {{
           return normalizePath(normalized.slice(prefix.length));
@@ -622,9 +666,25 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       }}
       function readablePath(path) {{
         try {{
-          return decodeURIComponent(path);
+          return decodeURIComponent(String(path || "").replace(/\\+/g, "%20"));
         }} catch (error) {{
           return path;
+        }}
+      }}
+      function articleTitleFromPath(path) {{
+        var parts = stripBlogPrefix(path).split("/").filter(Boolean);
+        var last = parts.length ? parts[parts.length - 1] : "";
+        if (!last && parts.length > 1) last = parts[parts.length - 2];
+        last = readablePath(last).replace(/\\/index\\.html$/i, "").replace(/\\.html$/i, "");
+        last = last.replace(/^\\d{{4}}-\\d{{2}}-\\d{{2}}-/, "");
+        return last || "ORI2333's Blog";
+      }}
+      function fullReadableUrl(href) {{
+        try {{
+          var url = new URL(href);
+          return url.hostname + readablePath(url.pathname).replace(/\\/index\\.html$/i, "/");
+        }} catch (error) {{
+          return href;
         }}
       }}
       function readTargetPath() {{
@@ -652,6 +712,26 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       function updateTargetHint() {{
         if (targetPath && recommendResult) recommendResult.textContent = text[currentLang()].targetReady;
       }}
+      function applySharedArticleMode() {{
+        if (!targetPath) return;
+        var lang = currentLang();
+        var title = articleTitleFromPath(targetPath);
+        var brand = document.querySelector(".brand");
+        var pageTitle = document.getElementById("page-title");
+        var subtitle = document.querySelector("[data-i18n='subtitle']");
+        var intro = document.querySelector("[data-i18n='intro']");
+        var note = document.querySelector(".share-target-note");
+        document.title = title + " - 选择阅读线路";
+        if (brand) brand.classList.add("shared-article");
+        if (pageTitle) pageTitle.textContent = title;
+        if (subtitle) subtitle.textContent = text[lang].targetSubtitle;
+        if (intro) intro.textContent = text[lang].targetIntro;
+        if (note) {{
+          note.classList.add("show");
+          note.textContent = text[lang].targetInstruction;
+        }}
+        updateTargetHint();
+      }}
       function applyTargetRoutes() {{
         if (!targetPath) return;
         cards.forEach(function (card) {{
@@ -662,14 +742,13 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           var href = routeUrl(base, targetPath);
           link.href = href;
           if (label) {{
-            var url = new URL(href);
-            var path = readablePath(url.pathname).replace(/\\/index\\.html$/i, "/");
-            label.textContent = url.hostname + path;
-            label.title = label.textContent;
+            var lang = currentLang();
+            label.textContent = card.getAttribute("data-open-" + lang) || text[lang].targetReady;
+            label.title = fullReadableUrl(href);
             label.setAttribute("data-target-label", "true");
           }}
         }});
-        updateTargetHint();
+        applySharedArticleMode();
       }}
       function applyLang(lang) {{
         root.dataset.lang = lang;
@@ -684,7 +763,11 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           card.querySelector("[data-label]").textContent = card.getAttribute("data-label-" + lang);
           card.querySelector("[data-desc]").textContent = card.getAttribute("data-desc-" + lang);
         }});
-        updateTargetHint();
+        if (targetPath) {{
+          applyTargetRoutes();
+        }} else {{
+          updateTargetHint();
+        }}
       }}
       function setRecommended(target, reason) {{
         var lang = currentLang();
@@ -706,7 +789,6 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       }}
       var savedLang = localStorage.getItem(langKey) || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en");
       applyLang(savedLang);
-      applyTargetRoutes();
       if (langButton) {{
         langButton.addEventListener("click", function () {{
           var next = currentLang() === "zh" ? "en" : "zh";
@@ -737,7 +819,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
 
 
 def gateway_card(card: dict[str, str]) -> str:
-    return f"""<article class="card" data-route="{html.escape(card['key'], quote=True)}" data-title-zh="{html.escape(card['title_zh'], quote=True)}" data-title-en="{html.escape(card['title_en'], quote=True)}" data-label-zh="{html.escape(card['label_zh'], quote=True)}" data-label-en="{html.escape(card['label_en'], quote=True)}" data-desc-zh="{html.escape(card['desc_zh'], quote=True)}" data-desc-en="{html.escape(card['desc_en'], quote=True)}" style="--accent: {card['accent']}">
+    return f"""<article class="card" data-route="{html.escape(card['key'], quote=True)}" data-title-zh="{html.escape(card['title_zh'], quote=True)}" data-title-en="{html.escape(card['title_en'], quote=True)}" data-label-zh="{html.escape(card['label_zh'], quote=True)}" data-label-en="{html.escape(card['label_en'], quote=True)}" data-desc-zh="{html.escape(card['desc_zh'], quote=True)}" data-desc-en="{html.escape(card['desc_en'], quote=True)}" data-open-zh="{html.escape(card['open_zh'], quote=True)}" data-open-en="{html.escape(card['open_en'], quote=True)}" style="--accent: {card['accent']}">
           <div>
             <span class="label" data-label>{html.escape(card['label_zh'])}</span>
             <h2 data-title>{html.escape(card['title_zh'])}</h2>
