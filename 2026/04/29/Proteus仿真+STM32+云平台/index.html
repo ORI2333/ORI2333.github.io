@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ori2333.github.io/images/posts/huawieyun.webp">
 <meta property="article:published_time" content="2026-04-29T00:00:00.000Z">
-<meta property="article:modified_time" content="2026-07-07T15:53:25.858Z">
+<meta property="article:modified_time" content="2026-07-07T16:11:10.167Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="接单">
 <meta property="article:tag" content="STM32">
@@ -42,7 +42,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"Proteus仿真+STM32+云平台","description":"前言此项目为接单项目，负责数据上云和下发数据部分\n碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发...","image":"https://ori2333.github.io/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/images/posts/huawieyun.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-04-29T00:00:00.000Z","dateModified":"2026-07-07T15:53:25.858Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"Proteus仿真+STM32+云平台","description":"前言此项目为接单项目，负责数据上云和下发数据部分\n碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发...","image":"https://ori2333.github.io/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/images/posts/huawieyun.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-04-29T00:00:00.000Z","dateModified":"2026-07-07T16:11:10.167Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/04/29/Proteus%E4%BB%BF%E7%9C%9F+STM32+%E4%BA%91%E5%B9%B3%E5%8F%B0/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -572,7 +572,7 @@
                     <a class="tag-none-link" href="/tags/MQTT/" rel="tag">MQTT</a>, <a class="tag-none-link" href="/tags/STM32/" rel="tag">STM32</a>, <a class="tag-none-link" href="/tags/proteus/" rel="tag">proteus</a>, <a class="tag-none-link" href="/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/" rel="tag">云平台</a>, <a class="tag-none-link" href="/tags/%E6%8E%A5%E5%8D%95/" rel="tag">接单</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-07-07T15:53:25.858Z" itemprop="dateModified">最后编辑：2026-07-07</time>
+                    <time datetime="2026-07-07T16:11:10.167Z" itemprop="dateModified">最后编辑：2026-07-07</time>
                 </div>
             </div>
         </footer>
@@ -775,7 +775,7 @@
                         
                             <div>
                                 
-                                    <li>中国区域由 <a href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/" target="_blank" rel="nofollow">腾讯云</a> 托管加速</li>
+                                    <li>中国区域由 <a href="https://myblog-ovffqon5.zh-cn.edgeone.cool/" target="_blank" rel="nofollow">腾讯云 EdgeOne</a> 加速</li>
                                 
                             </div>
                         
@@ -934,20 +934,43 @@ window.__COMMENTS_ENABLED=false;
     return path.replace(/\/{2,}/g, "/");
   }
   function stripBlogPrefix(path){
-    var normalized = normalizePath(path);
+    var normalized = normalizePath(path).replace(/\/index\.html$/i, "/");
     if (normalized.toLowerCase().indexOf("/blog/") === 0) return normalizePath(normalized.slice(5));
     if (normalized.toLowerCase() === "/blog") return "/";
     return normalized;
   }
+  function normalizeSharePath(path){
+    var normalized = stripBlogPrefix(path);
+    if (normalized !== "/" && normalized.slice(-1) !== "/") normalized += "/";
+    return normalized;
+  }
+  function utf8Bytes(value){
+    if (window.TextEncoder) return Array.prototype.slice.call(new TextEncoder().encode(value));
+    var utf8 = unescape(encodeURIComponent(value));
+    var bytes = [];
+    for (var i = 0; i < utf8.length; i += 1) bytes.push(utf8.charCodeAt(i));
+    return bytes;
+  }
+  function shortIdFromPath(path){
+    var hash = 2166136261;
+    var bytes = utf8Bytes(normalizeSharePath(path));
+    for (var i = 0; i < bytes.length; i += 1) {
+      hash ^= bytes[i];
+      hash = Math.imul(hash, 16777619) >>> 0;
+    }
+    var id = hash.toString(36);
+    while (id.length < 7) id = "0" + id;
+    return id;
+  }
   function sharePath(){
     try {
-      return stripBlogPrefix(decodeURI(new URL(originalUrl(), location.href).pathname || "/"));
+      return normalizeSharePath(decodeURI(new URL(originalUrl(), location.href).pathname || "/"));
     } catch (error) {
-      return stripBlogPrefix(decodeURI(location.pathname || "/"));
+      return normalizeSharePath(decodeURI(location.pathname || "/"));
     }
   }
   function shareUrl(){
-    return gateway + "#" + sharePath();
+    return gateway + "s/" + shortIdFromPath(sharePath());
   }
   function metaContent(selector){
     var node = document.querySelector(selector);
