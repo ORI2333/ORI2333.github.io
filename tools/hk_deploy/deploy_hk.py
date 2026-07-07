@@ -37,10 +37,9 @@ def main() -> int:
         remote = remote_target(cfg)
 
         ssh_base = ssh_command(cfg)
-        scp_base = scp_command(cfg)
 
         run([*ssh_base, remote, remote_prepare_script(cfg)])
-        run([*scp_base, str(archive), f"{remote}:{cfg['remoteTmp']}"])
+        upload_archive(ssh_base, remote, archive, cfg)
         run([*ssh_base, remote, remote_extract_script(cfg)])
 
     print(f"Deployed to {public_url(cfg)}")
@@ -99,6 +98,14 @@ def public_url(cfg: dict) -> str:
 def run(command: list[str]) -> None:
     print("$ " + " ".join(command))
     subprocess.run(command, cwd=REPO_ROOT, check=True)
+
+
+def upload_archive(ssh_base: list[str], remote: str, archive: Path, cfg: dict) -> None:
+    remote_tmp = shell_quote(cfg["remoteTmp"])
+    command = [*ssh_base, remote, f"cat > {remote_tmp}"]
+    print("$ " + " ".join(command) + f" < {archive}")
+    with archive.open("rb") as handle:
+        subprocess.run(command, cwd=REPO_ROOT, stdin=handle, check=True)
 
 
 def npm_executable() -> str:
@@ -944,10 +951,6 @@ def make_archive(public_dir: Path, archive: Path) -> None:
 
 def ssh_command(cfg: dict) -> list[str]:
     return ["ssh", "-p", str(cfg["port"]), *cfg.get("sshOptions", [])]
-
-
-def scp_command(cfg: dict) -> list[str]:
-    return ["scp", "-P", str(cfg["port"]), *cfg.get("sshOptions", [])]
 
 
 def remote_target(cfg: dict) -> str:
