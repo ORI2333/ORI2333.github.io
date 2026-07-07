@@ -645,18 +645,18 @@
             <div class="kr-modal-icon">
                 <i class="fa fa-share-alt"></i>
             </div>
-            <div class="kr-modal-title">分享这一刻</div>
+            <div class="kr-modal-title">分享这篇文章</div>
             <button class="kr-modal-close" onclick="krCloseShareModal()">
                 <i class="fa fa-times-circle"></i>
             </button>
         </div>
         <div class="kr-modal-body">
-            <div class="kr-share-message">让朋友们也来瞅瞅！</div>
+            <div class="kr-share-message">分享链接会先进入线路选择页，读者可选择稳定访问、大陆优化或备用镜像。</div>
             <div class="kr-share-qr" id="kr-share-qr"></div>
             <div class="kr-share-platforms">
                 
-                    <button class="kr-share-platform-button" style="color: #62b6e7;" title="喵窝" onclick="krShareModalOpenPlatform('https://nya.one/share?text=%3E%20$TITLE%0A%3E%0A%3E%20$SUMMARY%0A----%20$SITE%0A%0A$URL')">
-                        <svg fill="currentColor" width="18" height="18" viewBox="0 0 329 388"><path d="M0,36.226c0,-19.993 16.233,-36.226 36.226,-36.226c13.788,0 25.787,7.719 31.908,19.068l188.366,229.845l0,-111.259c-6.356,5.508 -14.645,8.843 -23.707,8.843c-19.994,0 -36.226,-16.232 -36.226,-36.226c-0,-8.551 2.968,-16.413 7.93,-22.613l-0.015,-0.013l56.614,-69.08c6.2,-11.073 18.047,-18.565 31.63,-18.565c19.994,0 36.227,16.233 36.227,36.226l-0,314.644c-0,19.994 -16.233,36.226 -36.227,36.226c-13.166,0 -24.701,-7.039 -31.044,-17.555l-189.229,-230.899l-0,212.228c-0,19.994 -16.233,36.226 -36.227,36.226c-19.993,0 -36.226,-16.232 -36.226,-36.226l0,-314.644Z" /></svg>
+                    <button class="kr-share-platform-button" style="color: #51aded;" title="选择线路" onclick="krShareModalOpenPlatform('$URL')">
+                        <i class="fa fa-share-alt"></i>
                     </button>
                 
             </div>
@@ -694,7 +694,140 @@
 
 <!-- 额外的追加注入项 -->
 
-  <script>window.__COMMENTS_ENABLED=false;</script>
+  <style>
+#kr-share-modal .kr-modal-content{max-width:660px;max-height:560px;}
+#kr-share-modal .kr-modal-body{gap:14px;padding:1rem 2rem 1.6rem;}
+#kr-share-modal .kr-share-message{line-height:1.7;text-align:left;width:100%;}
+#kr-share-modal .kr-share-qr{width:212px;height:212px;padding:8px;background:rgba(255,255,255,.03);}
+#kr-share-modal .kr-share-qr canvas,
+#kr-share-modal .kr-share-qr svg{width:192px!important;height:192px!important;}
+#kr-share-modal .ori-share-link{width:min(100%,500px);display:flex;gap:8px;align-items:center;}
+#kr-share-modal .ori-share-input{flex:1;min-width:0;height:38px;padding:0 12px;border:1px solid rgba(120,206,121,.65);border-radius:8px;background:rgba(255,255,255,.08);color:inherit;font-size:14px;line-height:38px;outline:none;overflow:hidden;text-overflow:ellipsis;}
+#kr-share-modal .ori-share-copy{flex:0 0 auto;height:38px;padding:0 14px!important;border-radius:8px!important;background:#78ce79!important;color:#08140a!important;font-size:14px!important;font-weight:600;}
+#kr-share-modal .ori-share-copy:hover{filter:brightness(1.06);}
+@media (max-width:560px){
+  #kr-share-modal .kr-modal-content{max-height:620px;padding:12px;}
+  #kr-share-modal .kr-modal-body{padding:1rem;gap:12px;}
+  #kr-share-modal .kr-share-qr{width:196px;height:196px;}
+  #kr-share-modal .kr-share-qr canvas,
+  #kr-share-modal .kr-share-qr svg{width:176px!important;height:176px!important;}
+  #kr-share-modal .ori-share-link{flex-direction:column;align-items:stretch;}
+  #kr-share-modal .ori-share-copy{width:100%;}
+}
+</style>
+<script>
+window.__COMMENTS_ENABLED=false;
+(function(){
+  var gateway = "https://blog.orixx.xyz/";
+  function originalUrl(){
+    var meta = document.querySelector('meta[property="og:url"]');
+    return meta && meta.content ? meta.content : location.href;
+  }
+  function normalizePath(path){
+    path = "/" + String(path || "").replace(/^\/+/, "");
+    return path.replace(/\/{2,}/g, "/");
+  }
+  function stripBlogPrefix(path){
+    var normalized = normalizePath(path);
+    if (normalized.toLowerCase().indexOf("/blog/") === 0) return normalizePath(normalized.slice(5));
+    if (normalized.toLowerCase() === "/blog") return "/";
+    return normalized;
+  }
+  function sharePath(){
+    try {
+      return stripBlogPrefix(decodeURI(new URL(originalUrl(), location.href).pathname || "/"));
+    } catch (error) {
+      return stripBlogPrefix(decodeURI(location.pathname || "/"));
+    }
+  }
+  function shareUrl(){
+    return gateway + "#" + sharePath();
+  }
+  function metaContent(selector){
+    var node = document.querySelector(selector);
+    return node && node.content ? node.content : "";
+  }
+  function replaceToken(value, token, replacement){
+    return String(value).split(token).join(replacement);
+  }
+  function renderShareQr(){
+    var box = document.getElementById("kr-share-qr");
+    if (!box || !window.QRCodeStyling) return;
+    box.innerHTML = "";
+    new QRCodeStyling({
+      width: 192,
+      height: 192,
+      data: shareUrl(),
+      image: (document.querySelector('link[rel="icon"]') || {}).href,
+      dotsOptions: { color: "#78ce79", type: "extra-rounded" },
+      backgroundOptions: { color: "transparent" },
+      imageOptions: { crossOrigin: "anonymous", margin: 1 }
+    }).append(box);
+    updateShareLinkBox();
+  }
+  function ensureShareLinkBox(){
+    var body = document.querySelector("#kr-share-modal .kr-modal-body");
+    if (!body) return null;
+    var box = body.querySelector(".ori-share-link");
+    if (box) return box;
+    box = document.createElement("div");
+    box.className = "ori-share-link";
+    box.innerHTML = '<input class="ori-share-input" type="text" readonly aria-label="分享链接"><button class="ori-share-copy" type="button">复制链接</button>';
+    var platforms = body.querySelector(".kr-share-platforms");
+    body.insertBefore(box, platforms || null);
+    var input = box.querySelector(".ori-share-input");
+    var button = box.querySelector(".ori-share-copy");
+    input.addEventListener("focus", function(){ input.select(); });
+    button.addEventListener("click", function(){
+      var link = input.value;
+      function done(){
+        button.textContent = "已复制";
+        setTimeout(function(){ button.textContent = "复制链接"; }, 1400);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(done).catch(function(){ input.select(); document.execCommand("copy"); done(); });
+      } else {
+        input.select();
+        document.execCommand("copy");
+        done();
+      }
+    });
+    return box;
+  }
+  function updateShareLinkBox(){
+    var box = ensureShareLinkBox();
+    if (!box) return;
+    var input = box.querySelector(".ori-share-input");
+    if (input) input.value = shareUrl();
+  }
+  function installShareOverride(){
+    ensureShareLinkBox();
+    updateShareLinkBox();
+    window.krShareModalOpenPlatform = function(template){
+      var link = String(template || "$URL");
+      link = replaceToken(link, "$URL", shareUrl());
+      link = replaceToken(link, "$TITLE", metaContent('meta[property="og:title"]'));
+      link = replaceToken(link, "$SUMMARY", metaContent('meta[property="og:description"]'));
+      link = replaceToken(link, "$SITE", metaContent('meta[property="og:site_name"]'));
+      window.open(link, "_blank");
+    };
+    window.initQRCode = renderShareQr;
+    if (window.krOpenShareModal && !window.krOpenShareModal.__oriWrapped) {
+      var open = window.krOpenShareModal;
+      window.krOpenShareModal = function(){
+        open();
+        setTimeout(renderShareQr, 50);
+      };
+      window.krOpenShareModal.__oriWrapped = true;
+    }
+    renderShareQr();
+  }
+  document.addEventListener("DOMContentLoaded", installShareOverride);
+  window.addEventListener("load", installShareOverride);
+  window.addEventListener("pjax:complete", function(){ setTimeout(installShareOverride, 50); });
+})();
+</script>
+
 
 
     </body>
