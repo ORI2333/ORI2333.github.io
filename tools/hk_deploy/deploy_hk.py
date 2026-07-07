@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import html
+import re
 import shutil
 import subprocess
 import sys
@@ -26,6 +27,7 @@ def main() -> int:
     run([npm, "run", "clean"])
     run([hexo_executable(), "--config", f"_config.yml,{relative_to_repo(HEXO_HK_CONFIG_PATH)}", "generate"])
     rewrite_hk_asset_paths(public_dir, str(cfg.get("hkBlogPath", "/blog/")))
+    write_share_map(public_dir, str(cfg.get("hkBlogPath", "/blog/")))
     write_gateway_page(cfg, public_dir)
     write_root_verification_files(cfg, public_dir)
 
@@ -196,6 +198,73 @@ def rewrite_hk_asset_paths(public_dir: Path, blog_path: str) -> None:
             updated = updated.replace(old, new)
         if updated != content:
             path.write_text(updated, encoding="utf-8")
+
+
+def write_share_map(public_dir: Path, blog_path: str) -> None:
+    blog_path = normalized_path(blog_path).rstrip("/")
+    blog_public_dir = public_dir / blog_path.strip("/")
+    if not blog_public_dir.exists():
+        raise RuntimeError(f"Missing HK blog output: {blog_public_dir}")
+
+    posts: dict[str, dict[str, str]] = {}
+    for index_path in sorted(blog_public_dir.glob("20[0-9][0-9]/*/*/*/index.html")):
+        rel_dir = index_path.parent.relative_to(blog_public_dir).as_posix()
+        path = "/" + rel_dir.strip("/") + "/"
+        content = index_path.read_text(encoding="utf-8", errors="ignore")
+        title = extract_html_meta(content, "og:title") or title_from_path(path)
+        posts[share_id(path)] = {
+            "path": path,
+            "title": title,
+        }
+
+    (public_dir / "share-map.json").write_text(
+        json.dumps({"version": 1, "posts": posts}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+
+def extract_html_meta(content: str, property_name: str) -> str:
+    pattern = re.compile(
+        r'<meta\s+[^>]*property=["\']'
+        + re.escape(property_name)
+        + r'["\'][^>]*content=["\']([^"\']+)["\'][^>]*>',
+        re.IGNORECASE,
+    )
+    match = pattern.search(content)
+    return html.unescape(match.group(1)).strip() if match else ""
+
+
+def title_from_path(path: str) -> str:
+    name = path.strip("/").split("/")[-1] if path.strip("/") else ""
+    name = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", name)
+    return name or "ORI2333's Blog"
+
+
+def share_id(path: str) -> str:
+    value = normalized_share_path(path).encode("utf-8")
+    hash_value = 2166136261
+    for byte in value:
+        hash_value ^= byte
+        hash_value = (hash_value * 16777619) & 0xFFFFFFFF
+    return base36(hash_value).rjust(7, "0")
+
+
+def normalized_share_path(path: str) -> str:
+    value = "/" + str(path).strip("/")
+    value = re.sub(r"/index\.html$", "", value, flags=re.IGNORECASE)
+    value = re.sub(r"/{2,}", "/", value)
+    return value.rstrip("/") + "/"
+
+
+def base36(value: int) -> str:
+    alphabet = "0123456789abcdefghijklmnopqrstuvwxyz"
+    if value == 0:
+        return "0"
+    digits: list[str] = []
+    while value:
+        value, remainder = divmod(value, 36)
+        digits.append(alphabet[remainder])
+    return "".join(reversed(digits))
 
 
 def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str) -> str:
@@ -609,7 +678,9 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
         github: {json.dumps(github_url, ensure_ascii=False)}
       }};
       var hkBlogPath = {json.dumps(hk_blog_path, ensure_ascii=False)};
+      var targetId = readShortId();
       var targetPath = readTargetPath();
+      var targetTitle = "";
       var text = {{
         zh: {{
           subtitle: "选择一条适合当前网络环境的阅读线路",
@@ -621,6 +692,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           recommend: "自动推荐线路",
           recommendHint: "根据当前网络自动判断更适合的访问入口。",
           targetReady: "请选择下方任意线路打开文章。",
+          resolvingShort: "正在解析分享文章...",
+          shortMissing: "这个短链接暂时没有找到对应文章，请从站点首页选择线路访问。",
           checking: "正在检测当前网络...",
           recommended: "推荐：",
           fallbackEdge: "检测服务暂不可用，已根据浏览器语言和时区给出保守建议。",
@@ -638,6 +711,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           recommend: "Recommend route",
           recommendHint: "Automatically choose a route based on your current network.",
           targetReady: "Choose any route below to open the article.",
+          resolvingShort: "Resolving the shared post...",
+          shortMissing: "This short link does not match an article yet. Please choose a route from the gateway.",
           checking: "Checking your network...",
           recommended: "Recommended: ",
           fallbackEdge: "The detection service is unavailable, so this is a conservative suggestion based on language and timezone.",
@@ -687,6 +762,13 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           return href;
         }}
       }}
+      function readShortId() {{
+        var pathMatch = location.pathname.match(/^\\/s\\/([a-z0-9]+)\\/?$/i);
+        if (pathMatch) return pathMatch[1].toLowerCase();
+        var params = new URLSearchParams(location.search);
+        var id = params.get("s") || params.get("id") || "";
+        return /^[a-z0-9]+$/i.test(id) ? id.toLowerCase() : "";
+      }}
       function readTargetPath() {{
         var hash = location.hash || "";
         if (hash.indexOf("#/") === 0) {{
@@ -715,7 +797,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       function applySharedArticleMode() {{
         if (!targetPath) return;
         var lang = currentLang();
-        var title = articleTitleFromPath(targetPath);
+        var title = targetTitle || articleTitleFromPath(targetPath);
         var brand = document.querySelector(".brand");
         var pageTitle = document.getElementById("page-title");
         var subtitle = document.querySelector("[data-i18n='subtitle']");
@@ -731,6 +813,23 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           note.textContent = text[lang].targetInstruction;
         }}
         updateTargetHint();
+      }}
+      function resolveShortTarget() {{
+        if (!targetId || targetPath) return;
+        var lang = currentLang();
+        if (recommendResult) recommendResult.textContent = text[lang].resolvingShort;
+        fetch("/share-map.json", {{ cache: "no-store" }})
+          .then(function (res) {{ if (!res.ok) throw new Error("missing share map"); return res.json(); }})
+          .then(function (data) {{
+            var item = data && data.posts ? data.posts[targetId] : null;
+            if (!item || !item.path) throw new Error("missing short link");
+            targetPath = stripBlogPrefix(item.path);
+            targetTitle = item.title || "";
+            applyTargetRoutes();
+          }})
+          .catch(function () {{
+            if (recommendResult) recommendResult.textContent = text[currentLang()].shortMissing;
+          }});
       }}
       function applyTargetRoutes() {{
         if (!targetPath) return;
@@ -765,6 +864,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
         }});
         if (targetPath) {{
           applyTargetRoutes();
+        }} else if (targetId) {{
+          if (recommendResult) recommendResult.textContent = text[lang].resolvingShort;
         }} else {{
           updateTargetHint();
         }}
@@ -789,6 +890,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       }}
       var savedLang = localStorage.getItem(langKey) || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en");
       applyLang(savedLang);
+      resolveShortTarget();
       if (langButton) {{
         langButton.addEventListener("click", function () {{
           var next = currentLang() === "zh" ? "en" : "zh";

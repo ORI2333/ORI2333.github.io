@@ -64,7 +64,7 @@ footer:
     additional:
       - - 由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 驱动
         - 在 <a href="https://github.com" target="_blank" rel="nofollow">GitHub</a> 托管
-      - - 中国区域由 <a href="https://myblog-0gjrvu3m02b08f6a-1256135654.tcloudbaseapp.com/" target="_blank" rel="nofollow">腾讯云</a> 托管加速
+      - - 中国区域由 <a href="https://myblog-ovffqon5.zh-cn.edgeone.cool/" target="_blank" rel="nofollow">腾讯云 EdgeOne</a> 加速
 
 share:
   enable: true
@@ -261,20 +261,43 @@ additional_injections:
         return path.replace(/\/{2,}/g, "/");
       }
       function stripBlogPrefix(path){
-        var normalized = normalizePath(path);
+        var normalized = normalizePath(path).replace(/\/index\.html$/i, "/");
         if (normalized.toLowerCase().indexOf("/blog/") === 0) return normalizePath(normalized.slice(5));
         if (normalized.toLowerCase() === "/blog") return "/";
         return normalized;
       }
+      function normalizeSharePath(path){
+        var normalized = stripBlogPrefix(path);
+        if (normalized !== "/" && normalized.slice(-1) !== "/") normalized += "/";
+        return normalized;
+      }
+      function utf8Bytes(value){
+        if (window.TextEncoder) return Array.prototype.slice.call(new TextEncoder().encode(value));
+        var utf8 = unescape(encodeURIComponent(value));
+        var bytes = [];
+        for (var i = 0; i < utf8.length; i += 1) bytes.push(utf8.charCodeAt(i));
+        return bytes;
+      }
+      function shortIdFromPath(path){
+        var hash = 2166136261;
+        var bytes = utf8Bytes(normalizeSharePath(path));
+        for (var i = 0; i < bytes.length; i += 1) {
+          hash ^= bytes[i];
+          hash = Math.imul(hash, 16777619) >>> 0;
+        }
+        var id = hash.toString(36);
+        while (id.length < 7) id = "0" + id;
+        return id;
+      }
       function sharePath(){
         try {
-          return stripBlogPrefix(decodeURI(new URL(originalUrl(), location.href).pathname || "/"));
+          return normalizeSharePath(decodeURI(new URL(originalUrl(), location.href).pathname || "/"));
         } catch (error) {
-          return stripBlogPrefix(decodeURI(location.pathname || "/"));
+          return normalizeSharePath(decodeURI(location.pathname || "/"));
         }
       }
       function shareUrl(){
-        return gateway + "#" + sharePath();
+        return gateway + "s/" + shortIdFromPath(sharePath());
       }
       function metaContent(selector){
         var node = document.querySelector(selector);
