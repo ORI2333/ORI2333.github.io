@@ -968,10 +968,17 @@ def remote_prepare_script(cfg: dict) -> str:
 def remote_extract_script(cfg: dict) -> str:
     remote_root = shell_quote(cfg["remoteRoot"])
     remote_tmp = shell_quote(cfg["remoteTmp"])
+    remote_next = shell_quote(str(cfg["remoteRoot"]).rstrip("/") + ".next")
+    remote_bak = shell_quote(str(cfg["remoteRoot"]).rstrip("/") + ".bak")
     return (
         "set -e; "
-        f"find {remote_root} -mindepth 1 -maxdepth 1 -exec rm -rf {{}} +; "
-        f"tar -xzf {remote_tmp} -C {remote_root}; "
+        f"rm -rf {remote_next}; "
+        f"mkdir -p {remote_next}; "
+        f"tar -xzf {remote_tmp} -C {remote_next}; "
+        f"rm -rf {remote_bak}; "
+        f"if [ -d {remote_root} ]; then mv {remote_root} {remote_bak}; fi; "
+        f"mv {remote_next} {remote_root}; "
+        f"rm -rf {remote_bak}; "
         f"rm -f {remote_tmp}"
     )
 
