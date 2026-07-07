@@ -477,6 +477,13 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       overflow-wrap: anywhere;
       font-weight: 500;
       color: var(--text);
+      line-height: 1.5;
+    }}
+    .open strong[data-target-label="true"] {{
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
     }}
     .arrow {{
       flex: 0 0 auto;
@@ -560,12 +567,20 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       var recommendButton = document.querySelector(".recommend");
       var recommendResult = document.querySelector(".recommend-result");
       var cards = Array.prototype.slice.call(document.querySelectorAll(".card"));
+      var routeBases = {{
+        hk: {json.dumps(hk_url, ensure_ascii=False)},
+        edge: {json.dumps(edge_url, ensure_ascii=False)},
+        github: {json.dumps(github_url, ensure_ascii=False)}
+      }};
+      var hkBlogPath = {json.dumps(hk_blog_path, ensure_ascii=False)};
+      var targetPath = readTargetPath();
       var text = {{
         zh: {{
           subtitle: "选择一条适合当前网络环境的阅读线路",
           intro: "这里提供同一份博客内容的多个访问线路。如果当前网络加载较慢，可以切换到另一条线路继续阅读。",
           recommend: "自动推荐线路",
           recommendHint: "根据当前网络自动判断更适合的访问入口。",
+          targetReady: "已识别分享文章，选择任一线路将打开同一篇内容。",
           checking: "正在检测当前网络...",
           recommended: "推荐：",
           fallbackEdge: "检测服务暂不可用，已根据浏览器语言和时区给出保守建议。",
@@ -578,6 +593,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           intro: "This page offers multiple routes to the same blog. If one route loads slowly, switch to another and keep reading.",
           recommend: "Recommend route",
           recommendHint: "Automatically choose a route based on your current network.",
+          targetReady: "Shared article detected. Any route will open the same post.",
           checking: "Checking your network...",
           recommended: "Recommended: ",
           fallbackEdge: "The detection service is unavailable, so this is a conservative suggestion based on language and timezone.",
@@ -588,6 +604,72 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       }};
       function currentLang() {{
         return root.dataset.lang === "en" ? "en" : "zh";
+      }}
+      function normalizePath(path) {{
+        path = "/" + String(path || "").replace(/^\\/+/, "");
+        return path.replace(/\\/{{2,}}/g, "/");
+      }}
+      function stripBlogPrefix(path) {{
+        var normalized = normalizePath(path);
+        var prefix = hkBlogPath.replace(/\\/+$/, "");
+        if (prefix && normalized.toLowerCase().indexOf(prefix.toLowerCase() + "/") === 0) {{
+          return normalizePath(normalized.slice(prefix.length));
+        }}
+        if (prefix && normalized.toLowerCase() === prefix.toLowerCase()) {{
+          return "/";
+        }}
+        return normalized;
+      }}
+      function readablePath(path) {{
+        try {{
+          return decodeURIComponent(path);
+        }} catch (error) {{
+          return path;
+        }}
+      }}
+      function readTargetPath() {{
+        var hash = location.hash || "";
+        if (hash.indexOf("#/") === 0) {{
+          return stripBlogPrefix(readablePath(hash.slice(1).split(/[?#]/)[0] || "/"));
+        }}
+        var params = new URLSearchParams(location.search);
+        var target = params.get("target") || params.get("to") || "";
+        if (!target) return "";
+        try {{
+          return stripBlogPrefix(readablePath(new URL(target, location.href).pathname || "/"));
+        }} catch (error) {{
+          return stripBlogPrefix(readablePath(String(target).split(/[?#]/)[0] || "/"));
+        }}
+      }}
+      function routeUrl(base, path) {{
+        var url = new URL(base, location.href);
+        if (!path || path === "/") return url.toString();
+        var basePath = url.pathname.replace(/\\/+$/, "");
+        var cleanPath = String(path).replace(/^\\/+/, "");
+        url.pathname = ((basePath ? basePath + "/" : "/") + cleanPath).replace(/\\/{{2,}}/g, "/");
+        return url.toString();
+      }}
+      function updateTargetHint() {{
+        if (targetPath && recommendResult) recommendResult.textContent = text[currentLang()].targetReady;
+      }}
+      function applyTargetRoutes() {{
+        if (!targetPath) return;
+        cards.forEach(function (card) {{
+          var base = routeBases[card.dataset.route];
+          var link = card.querySelector("a.open");
+          var label = card.querySelector("a.open strong");
+          if (!base || !link) return;
+          var href = routeUrl(base, targetPath);
+          link.href = href;
+          if (label) {{
+            var url = new URL(href);
+            var path = readablePath(url.pathname).replace(/\\/index\\.html$/i, "/");
+            label.textContent = url.hostname + path;
+            label.title = label.textContent;
+            label.setAttribute("data-target-label", "true");
+          }}
+        }});
+        updateTargetHint();
       }}
       function applyLang(lang) {{
         root.dataset.lang = lang;
@@ -602,6 +684,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           card.querySelector("[data-label]").textContent = card.getAttribute("data-label-" + lang);
           card.querySelector("[data-desc]").textContent = card.getAttribute("data-desc-" + lang);
         }});
+        updateTargetHint();
       }}
       function setRecommended(target, reason) {{
         var lang = currentLang();
@@ -623,6 +706,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
       }}
       var savedLang = localStorage.getItem(langKey) || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en");
       applyLang(savedLang);
+      applyTargetRoutes();
       if (langButton) {{
         langButton.addEventListener("click", function () {{
           var next = currentLang() === "zh" ? "en" : "zh";
