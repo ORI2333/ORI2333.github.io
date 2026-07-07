@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260621202056347.png?imageSlim">
 <meta property="article:published_time" content="2026-07-07T22:32:10.000Z">
-<meta property="article:modified_time" content="2026-07-07T17:07:50.780Z">
+<meta property="article:modified_time" content="2026-07-07T17:13:54.438Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="FPGA">
 <meta property="article:tag" content="RK3588">
@@ -44,7 +44,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 FPGA + RK3588 的水表指针动态质检系统：从 HDMI 视频链路到 YOLO11-pose 水量计算","description":"这篇文章记录一个真实硬件项目的端到端搭建过程：前端用 FPGA 接入 SC1336 DVP 相机，完成相机初始化、DDR3 帧缓存、基础 ISP 和 HDMI 输出；后端用 RK3588 接收 HDMI 视频流，调用 YOLO11-pose RKNN 模型检测水表小表盘中心与指针尖端，最...","image":"https://ori2333.github.io/2026/07/07/2026-07-07-%E5%9F%BA%E4%BA%8E-FPGA-+-RK3588-%E7%9A%84%E6%B0%B4%E8%A1%A8%E6%8C%87%E9%92%88%E5%8A%A8%E6%80%81%E8%B4%A8%E6%A3%80%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E-HDMI-%E8%A7%86%E9%A2%91%E9%93%BE%E8%B7%AF%E5%88%B0-YOLO11-pose-%E6%B0%B4%E9%87%8F%E8%AE%A1%E7%AE%97/https:/obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260621202056347.png?imageSlim","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-07-07T22:32:10.000Z","dateModified":"2026-07-07T17:07:50.780Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/07/07/2026-07-07-%E5%9F%BA%E4%BA%8E-FPGA-+-RK3588-%E7%9A%84%E6%B0%B4%E8%A1%A8%E6%8C%87%E9%92%88%E5%8A%A8%E6%80%81%E8%B4%A8%E6%A3%80%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E-HDMI-%E8%A7%86%E9%A2%91%E9%93%BE%E8%B7%AF%E5%88%B0-YOLO11-pose-%E6%B0%B4%E9%87%8F%E8%AE%A1%E7%AE%97/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 FPGA + RK3588 的水表指针动态质检系统：从 HDMI 视频链路到 YOLO11-pose 水量计算","description":"这篇文章记录一个真实硬件项目的端到端搭建过程：前端用 FPGA 接入 SC1336 DVP 相机，完成相机初始化、DDR3 帧缓存、基础 ISP 和 HDMI 输出；后端用 RK3588 接收 HDMI 视频流，调用 YOLO11-pose RKNN 模型检测水表小表盘中心与指针尖端，最...","image":"https://ori2333.github.io/2026/07/07/2026-07-07-%E5%9F%BA%E4%BA%8E-FPGA-+-RK3588-%E7%9A%84%E6%B0%B4%E8%A1%A8%E6%8C%87%E9%92%88%E5%8A%A8%E6%80%81%E8%B4%A8%E6%A3%80%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E-HDMI-%E8%A7%86%E9%A2%91%E9%93%BE%E8%B7%AF%E5%88%B0-YOLO11-pose-%E6%B0%B4%E9%87%8F%E8%AE%A1%E7%AE%97/https:/obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260621202056347.png?imageSlim","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-07-07T22:32:10.000Z","dateModified":"2026-07-07T17:13:54.438Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/07/07/2026-07-07-%E5%9F%BA%E4%BA%8E-FPGA-+-RK3588-%E7%9A%84%E6%B0%B4%E8%A1%A8%E6%8C%87%E9%92%88%E5%8A%A8%E6%80%81%E8%B4%A8%E6%A3%80%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E-HDMI-%E8%A7%86%E9%A2%91%E9%93%BE%E8%B7%AF%E5%88%B0-YOLO11-pose-%E6%B0%B4%E9%87%8F%E8%AE%A1%E7%AE%97/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -1461,7 +1461,7 @@
                     <a class="tag-none-link" href="/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/tags/RK3588/" rel="tag">RK3588</a>, <a class="tag-none-link" href="/tags/RKNN/" rel="tag">RKNN</a>, <a class="tag-none-link" href="/tags/YOLO11/" rel="tag">YOLO11</a>, <a class="tag-none-link" href="/tags/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/" rel="tag">机器视觉</a>, <a class="tag-none-link" href="/tags/%E6%B0%B4%E8%A1%A8%E8%B4%A8%E6%A3%80/" rel="tag">水表质检</a>, <a class="tag-none-link" href="/tags/%E8%BD%AF%E7%A1%AC%E5%8D%8F%E5%90%8C/" rel="tag">软硬协同</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-07-07T17:07:50.780Z" itemprop="dateModified">最后编辑：2026-07-07</time>
+                    <time datetime="2026-07-07T17:13:54.438Z" itemprop="dateModified">最后编辑：2026-07-07</time>
                 </div>
             </div>
         </footer>
