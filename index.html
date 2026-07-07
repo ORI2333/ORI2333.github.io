@@ -221,6 +221,56 @@
             
             
                 <div class="kratos-entry-thumb">
+                    <a href="/2026/07/07/2026-07-07-%E5%9F%BA%E4%BA%8E-FPGA-+-RK3588-%E7%9A%84%E6%B0%B4%E8%A1%A8%E6%8C%87%E9%92%88%E5%8A%A8%E6%80%81%E8%B4%A8%E6%A3%80%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E-HDMI-%E8%A7%86%E9%A2%91%E9%93%BE%E8%B7%AF%E5%88%B0-YOLO11-pose-%E6%B0%B4%E9%87%8F%E8%AE%A1%E7%AE%97/">
+                        <img class="kratos-entry-thumb-img" src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260621202056347.png?imageSlim" alt="基于 FPGA + RK3588 的水表指针动态质检系统：从 HDMI 视频链路到 YOLO11-pose 水量计算">
+                    </a>
+                </div>
+            
+            <div class="kratos-entry-post-inner">
+                <header class="kratos-entry-header">
+                        <a class="label-link" href="/categories/docs/">docs</a>
+                    <h2 class="kratos-entry-title"><a href="/2026/07/07/2026-07-07-%E5%9F%BA%E4%BA%8E-FPGA-+-RK3588-%E7%9A%84%E6%B0%B4%E8%A1%A8%E6%8C%87%E9%92%88%E5%8A%A8%E6%80%81%E8%B4%A8%E6%A3%80%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E-HDMI-%E8%A7%86%E9%A2%91%E9%93%BE%E8%B7%AF%E5%88%B0-YOLO11-pose-%E6%B0%B4%E9%87%8F%E8%AE%A1%E7%AE%97/" itemprop="mainEntityOfPage"><span itemprop="name headline">基于 FPGA + RK3588 的水表指针动态质检系统：从 HDMI 视频链路到 YOLO11-pose 水量计算</span></a>
+                </header>
+                <div class="kratos-entry-content">
+                    <p itemProp="description">
+                        
+                            这篇文章记录一个真实硬件项目的端到端搭建过程：前端用 FPGA 接入 SC1336 DVP 相机，完成相机初始化、DDR3 帧缓存、基础 ISP 和 HDMI 输出；后端用 RK3588 接收 HDMI 视频流，调用 YOLO11-pose RKNN 模型检测水表小表盘中心与指针尖端，最后在本地 Web 页面上计算指针角度、累计圈数和经过水量。<br>项目对应的开源整理仓库已经放在 GitHub：<br>ORI2333&#x2F;Water-meter-quality-inspection<br>这不是一个单纯的“识别水表读数”Demo。真正的目标是动态质检：在某个测试时刻开始计量，让水表实际通水，系统持续观察指针运动，判断水表是否按预期转动，并计算本次经过的水量。也就是说，系统要同时解决成像、视频链路、模型推理、关键点稳定、角度展开、进制换算和 Web 交互这些问题。
+                        
+                    </p>
+                </div>
+            </div>
+        </div>
+        <footer class="kratos-entry-post-meta">
+            <span class="pull-left">
+                <time datetime="2026-07-07T22:32:10.000Z" itemprop="datePublished">
+                    <a><i class="fa fa-calendar"></i> 2026-07-07</a>
+                </time>
+                <a>
+                    
+                        <i class="fa fa-tags"></i>
+                        <a class="tag-none-link" href="/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/tags/RK3588/" rel="tag">RK3588</a>, <a class="tag-none-link" href="/tags/RKNN/" rel="tag">RKNN</a>
+                    
+                </a>
+                
+                
+            </span>
+            <span class="pull-right">
+                <a class="read-more" href="/2026/07/07/2026-07-07-%E5%9F%BA%E4%BA%8E-FPGA-+-RK3588-%E7%9A%84%E6%B0%B4%E8%A1%A8%E6%8C%87%E9%92%88%E5%8A%A8%E6%80%81%E8%B4%A8%E6%A3%80%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E-HDMI-%E8%A7%86%E9%A2%91%E9%93%BE%E8%B7%AF%E5%88%B0-YOLO11-pose-%E6%B0%B4%E9%87%8F%E8%AE%A1%E7%AE%97/" title="阅读全文">阅读全文<i class="fa fa-chevron-circle-right"></i></a>
+            </span>
+        </footer>
+    </div>
+</article>
+    
+
+    
+    
+        <article class="kratos-hentry clearfix" itemscope itemtype="https://schema.org/Article">
+    <div class="kratos-entry-border clearfix">
+        
+        <div class="kratos-entry-post-main">
+            
+            
+                <div class="kratos-entry-thumb">
                     <a href="/2026/06/21/2026-06-21-%E6%B0%B4%E4%BA%A7%E5%85%BB%E6%AE%96%E7%89%A9%E8%81%94%E7%BD%91%E6%99%BA%E8%83%BD%E6%B5%8B%E6%8E%A7%E7%B3%BB%E7%BB%9F/">
                         <img class="kratos-entry-thumb-img" src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260621002539168.png?imageSlim" alt="水产养殖物联网智能测控系统">
                     </a>
@@ -666,7 +716,7 @@ Video Input
                 文章
             </span>
             <span class="count">
-                8
+                9
             </span>
         </a>
         <a class="meta-item" href="/categories/">
@@ -682,7 +732,7 @@ Video Input
                 标签
             </span>
             <span class="count">
-                13
+                19
             </span>
         </a>
     </div>
@@ -691,7 +741,7 @@ Video Input
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
     <h4 class="widget-title"><i class="fa fa-folder"></i>分类列表</h4>
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/docs/">docs</a><span class="category-list-count">3</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/docs/">docs</a><span class="category-list-count">4</span></li></ul>
   </aside>
 
 
@@ -700,7 +750,7 @@ Video Input
   <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
     <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
       <div class="tag-clouds">
-        <a href="/tags/FPGA/" style="font-size: 0.8em;">FPGA</a> <a href="/tags/ISP/" style="font-size: 0.8em;">ISP</a> <a href="/tags/MQTT/" style="font-size: 0.6em;">MQTT</a> <a href="/tags/STM32/" style="font-size: 0.6em;">STM32</a> <a href="/tags/Web/" style="font-size: 0.6em;">Web</a> <a href="/tags/proteus/" style="font-size: 0.6em;">proteus</a> <a href="/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/" style="font-size: 0.6em;">云平台</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" style="font-size: 0.7em;">博客网站</a> <a href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" style="font-size: 0.8em;">图像处理</a> <a href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" style="font-size: 0.6em;">工作流</a> <a href="/tags/%E6%8E%A5%E5%8D%95/" style="font-size: 0.7em;">接单</a> <a href="/tags/%E7%89%A9%E8%81%94%E7%BD%91/" style="font-size: 0.6em;">物联网</a> <a href="/tags/%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/" style="font-size: 0.6em;">自动部署</a>
+        <a href="/tags/FPGA/" style="font-size: 0.8em;">FPGA</a> <a href="/tags/ISP/" style="font-size: 0.73em;">ISP</a> <a href="/tags/MQTT/" style="font-size: 0.6em;">MQTT</a> <a href="/tags/RK3588/" style="font-size: 0.6em;">RK3588</a> <a href="/tags/RKNN/" style="font-size: 0.6em;">RKNN</a> <a href="/tags/STM32/" style="font-size: 0.6em;">STM32</a> <a href="/tags/Web/" style="font-size: 0.6em;">Web</a> <a href="/tags/YOLO11/" style="font-size: 0.6em;">YOLO11</a> <a href="/tags/proteus/" style="font-size: 0.6em;">proteus</a> <a href="/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/" style="font-size: 0.6em;">云平台</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" style="font-size: 0.67em;">博客网站</a> <a href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" style="font-size: 0.73em;">图像处理</a> <a href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" style="font-size: 0.6em;">工作流</a> <a href="/tags/%E6%8E%A5%E5%8D%95/" style="font-size: 0.67em;">接单</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/" style="font-size: 0.6em;">机器视觉</a> <a href="/tags/%E6%B0%B4%E8%A1%A8%E8%B4%A8%E6%A3%80/" style="font-size: 0.6em;">水表质检</a> <a href="/tags/%E7%89%A9%E8%81%94%E7%BD%91/" style="font-size: 0.6em;">物联网</a> <a href="/tags/%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/" style="font-size: 0.6em;">自动部署</a>
       </div>
   </aside>
 
@@ -711,6 +761,12 @@ Video Input
   <div class="tab-content">
       <ul class="list-group">
         
+        
+          
+          
+            <a class="list-group-item" href="/2026/07/07/2026-07-07-%E5%9F%BA%E4%BA%8E-FPGA-+-RK3588-%E7%9A%84%E6%B0%B4%E8%A1%A8%E6%8C%87%E9%92%88%E5%8A%A8%E6%80%81%E8%B4%A8%E6%A3%80%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E-HDMI-%E8%A7%86%E9%A2%91%E9%93%BE%E8%B7%AF%E5%88%B0-YOLO11-pose-%E6%B0%B4%E9%87%8F%E8%AE%A1%E7%AE%97/"><i class="fa fa-book"></i> 基于 FPGA + RK3588 的水表指针动态质检系统：从 HDMI 视频链路到 YOLO11-pose 水量计算</a>
+            
+          
         
           
           
@@ -737,11 +793,7 @@ Video Input
           
         
           
-          
-            <a class="list-group-item" href="/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/"><i class="fa fa-book"></i> ODDR原语说明</a>
             
-          
-        
           
             
           
