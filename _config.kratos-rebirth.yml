@@ -69,7 +69,7 @@ footer:
 share:
   enable: true
   title: "分享这篇文章"
-  message: "分享链接会先进入线路选择页，读者可选择稳定访问、大陆优化或备用镜像。"
+  message: "分享链接会先进入线路选择页，读者可选择稳定访问、腾讯云 CDN 或备用镜像。"
   platforms:
     - name: "选择线路"
       icon: "share-alt"

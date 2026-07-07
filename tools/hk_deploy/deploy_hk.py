@@ -296,15 +296,15 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
         {
             "key": "edge",
             "title_zh": "CDN优化线路",
-            "title_en": "Mainland Optimized",
+            "title_en": "CDN Route",
             "label_zh": "腾讯云 CDN 加速",
             "label_en": "Tencent Cloud CDN",
-            "desc_zh": "接入腾讯云 EdgeOne/CDN 加速",
-            "desc_en": "Accelerated through Tencent Cloud EdgeOne/CDN for smoother access from mainland China.",
+            "desc_zh": "接入腾讯云 EdgeOne/CDN 加速，作为由腾讯云托管的高速访问线路。",
+            "desc_en": "Served through Tencent Cloud EdgeOne/CDN as a fast hosted access route.",
             "href": edge_url,
             "meta": "orizhen.xyz",
             "open_zh": "通过CDN优化线路阅读",
-            "open_en": "Read via mainland route",
+            "open_en": "Read via CDN route",
             "accent": "#51aded",
         },
         {
@@ -703,7 +703,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           shortMissing: "这个短链接暂时没有找到对应文章，请从站点首页选择线路访问。",
           checking: "正在检测当前网络...",
           recommended: "推荐：",
-          fallbackEdge: "检测服务暂不可用，已根据浏览器语言和时区给出保守建议。",
+          fallbackEdge: "检测服务暂不可用，已根据浏览器语言和时区优先推荐腾讯云 CDN 线路。",
           fallbackHk: "检测服务暂不可用，建议先使用香港站点；如果加载慢再切换线路。",
           error: "暂时无法完成自动检测，请手动选择访问线路。",
           note: "提示：如果某个入口加载慢，切换到另一个线路即可。"
@@ -722,7 +722,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
           shortMissing: "This short link does not match an article yet. Please choose a route from the gateway.",
           checking: "Checking your network...",
           recommended: "Recommended: ",
-          fallbackEdge: "The detection service is unavailable, so this is a conservative suggestion based on language and timezone.",
+          fallbackEdge: "The detection service is unavailable, so Tencent Cloud CDN is suggested based on language and timezone.",
           fallbackHk: "The detection service is unavailable. Try the Hong Kong route first, then switch if it is slow.",
           error: "Automatic detection is unavailable right now. Please choose a route manually.",
           note: "Tip: if one route is slow, switch to another route."
@@ -892,8 +892,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
         var timezone = "";
         try {{ timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; }} catch (error) {{}}
         var browserLang = (navigator.language || "").toLowerCase();
-        var mainlandLike = timezone === "Asia/Shanghai" || browserLang === "zh-cn";
-        setRecommended(mainlandLike ? "edge" : "hk", mainlandLike ? text[lang].fallbackEdge : text[lang].fallbackHk);
+        var cdnPreferred = timezone === "Asia/Shanghai" || browserLang === "zh-cn";
+        setRecommended(cdnPreferred ? "edge" : "hk", cdnPreferred ? text[lang].fallbackEdge : text[lang].fallbackHk);
       }}
       var savedLang = localStorage.getItem(langKey) || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en");
       applyLang(savedLang);
