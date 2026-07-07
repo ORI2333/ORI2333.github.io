@@ -64,7 +64,7 @@ footer:
     additional:
       - - 由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 驱动
         - 在 <a href="https://github.com" target="_blank" rel="nofollow">GitHub</a> 托管
-      - - 中国区域由 <a href="https://myblog-ovffqon5.zh-cn.edgeone.cool/" target="_blank" rel="nofollow">腾讯云 EdgeOne</a> 加速
+      - - 中国区域由 <a href="https://orizhen.xyz/" target="_blank" rel="nofollow">腾讯云 EdgeOne</a> 加速
 
 share:
   enable: true

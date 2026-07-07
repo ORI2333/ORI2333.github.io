@@ -302,7 +302,7 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
             "desc_zh": "接入腾讯云 EdgeOne/CDN 加速，适合中国大陆网络下直连较慢时切换使用。",
             "desc_en": "Accelerated through Tencent Cloud EdgeOne/CDN for smoother access from mainland China.",
             "href": edge_url,
-            "meta": "edgeone.cool",
+            "meta": "orizhen.xyz",
             "open_zh": "通过大陆优化线路阅读",
             "open_en": "Read via mainland route",
             "accent": "#51aded",
