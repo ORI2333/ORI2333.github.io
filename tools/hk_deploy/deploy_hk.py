@@ -102,10 +102,51 @@ def run(command: list[str]) -> None:
 
 def upload_archive(ssh_base: list[str], remote: str, archive: Path, cfg: dict) -> None:
     remote_tmp = shell_quote(cfg["remoteTmp"])
-    command = [*ssh_base, remote, f"cat > {remote_tmp}"]
-    print("$ " + " ".join(command) + f" < {archive}")
-    with archive.open("rb") as handle:
-        subprocess.run(command, cwd=REPO_ROOT, stdin=handle, check=True)
+    upload_attempts = int(cfg.get("uploadAttempts", 3))
+    archive_size = archive.stat().st_size
+    upload_command = [
+        *ssh_base,
+        "-o",
+        "ServerAliveInterval=0",
+        remote,
+        f"cat > {remote_tmp}",
+    ]
+    verify_command = [*ssh_base, remote, f"test -s {remote_tmp} && tar -tzf {remote_tmp} >/dev/null"]
+    last_error: subprocess.CalledProcessError | None = None
+
+    for attempt in range(1, upload_attempts + 1):
+        print(
+            "$ "
+            + " ".join(upload_command)
+            + f" < {archive} ({archive_size} bytes, attempt {attempt}/{upload_attempts})"
+        )
+        with archive.open("rb") as handle:
+            upload_result = subprocess.run(
+                upload_command,
+                cwd=REPO_ROOT,
+                stdin=handle,
+            )
+        if upload_result.returncode != 0:
+            last_error = subprocess.CalledProcessError(upload_result.returncode, upload_command)
+            cleanup_remote_tmp(ssh_base, remote, remote_tmp)
+        else:
+            print("$ " + " ".join(verify_command))
+            verify_result = subprocess.run(verify_command, cwd=REPO_ROOT)
+            if verify_result.returncode == 0:
+                return
+            last_error = subprocess.CalledProcessError(verify_result.returncode, verify_command)
+            cleanup_remote_tmp(ssh_base, remote, remote_tmp)
+
+        if attempt < upload_attempts:
+            print("Upload failed or archive verification failed; retrying...")
+
+    if last_error:
+        raise last_error
+    raise RuntimeError("Archive upload failed before starting.")
+
+
+def cleanup_remote_tmp(ssh_base: list[str], remote: str, remote_tmp: str) -> None:
+    subprocess.run([*ssh_base, remote, f"rm -f {remote_tmp}"], cwd=REPO_ROOT)
 
 
 def npm_executable() -> str:
