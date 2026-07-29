@@ -40,6 +40,9 @@ def candidate_pythons() -> list[Path]:
         Path.home() / "miniconda3",
     ]
     for root in common_roots:
+        # Prefer the project's documented Conda environment over Anaconda base.
+        candidates.append(root / "envs" / "myenv312" / "python.exe")
+        candidates.append(root / "envs" / "myenv312" / "pythonw.exe")
         candidates.append(root / "python.exe")
         candidates.append(root / "pythonw.exe")
 

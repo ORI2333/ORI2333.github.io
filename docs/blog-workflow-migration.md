@@ -29,10 +29,16 @@ This note explains how to restore the local blog workflow on a new computer or a
 npm ci
 ```
 
-2. Install or activate a Python environment with one Qt binding:
+2. Activate the project's Anaconda environment, `myenv312`, which includes PySide6:
+
+```powershell
+conda activate myenv312
+```
+
+If restoring this workflow on another machine, install or activate a Python environment with one Qt binding:
 
 ```bash
-python -c "import PyQt5"
+python -c "import PySide6"
 ```
 
 Any one of these is fine:

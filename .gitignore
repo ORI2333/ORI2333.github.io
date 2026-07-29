@@ -19,3 +19,6 @@ __pycache__/
 
 # Temp
 *.log
+
+# Private handoff notes with credentials
+docs/private/
