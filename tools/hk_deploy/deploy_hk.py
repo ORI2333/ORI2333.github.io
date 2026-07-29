@@ -106,12 +106,14 @@ def upload_archive(ssh_base: list[str], remote: str, archive: Path, cfg: dict) -
     archive_size = archive.stat().st_size
     upload_command = [
         *ssh_base,
-        "-o",
-        "ServerAliveInterval=0",
         remote,
         f"cat > {remote_tmp}",
     ]
-    verify_command = [*ssh_base, remote, f"test -s {remote_tmp} && tar -tzf {remote_tmp} >/dev/null"]
+    verify_command = [
+        *ssh_base,
+        remote,
+        f'test "$(wc -c < {remote_tmp})" -eq {archive_size} && tar -tzf {remote_tmp} >/dev/null',
+    ]
     last_error: subprocess.CalledProcessError | None = None
 
     for attempt in range(1, upload_attempts + 1):
