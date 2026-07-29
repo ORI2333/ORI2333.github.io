@@ -14,11 +14,11 @@ cover: https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidi
 draft: false
 ---
 
-写专利或论文 Word 稿时，公式常以 `$...$` 文本存在；正式提交前往往要变成 **MathType** 对象。本文记录一套以 **Python** 为主的落地方法：需求从哪来、为什么用「模拟快捷键」而不是整篇黑盒转换、实现要点、使用步骤，以及 MathType 忙时如何避免把 Word 撑爆。
-
-开源仓库：[ORI2333/word-latex-to-mathtype](https://github.com/ORI2333/word-latex-to-mathtype)
+写专利或论文 Word 稿时，公式常以 `$...$` 文本存在；正式提交前往往要变成 **MathType** 对象。
 
 <!-- more -->
+
+本文记录一套以 **Python** 为主的落地方法：需求从哪来、为什么用「模拟快捷键」而不是整篇黑盒转换、实现要点、使用步骤，以及 MathType 忙时如何避免把 Word 撑爆。
 
 ## 1. 需求从哪来
 
