@@ -62,28 +62,21 @@ def publish_pull_bundle() -> None:
         git_env = os.environ.copy()
         git_env["GIT_TERMINAL_PROMPT"] = "0"
         subprocess.run(
-            ["git", "clone", "--depth", "1", "--branch", "main", remote_url, str(bundle_dir)],
+            ["git", "init", "--initial-branch", branch, str(bundle_dir)],
             cwd=REPO_ROOT,
-            env=git_env,
             check=True,
             stdout=subprocess.DEVNULL,
         )
-
-        for path in bundle_dir.iterdir():
-            if path.name != ".git":
-                shutil.rmtree(path) if path.is_dir() else path.unlink()
         shutil.copytree(public_dir, bundle_dir, dirs_exist_ok=True)
-        subprocess.run(["git", "-C", str(bundle_dir), "switch", "--orphan", branch], check=True, stdout=subprocess.DEVNULL)
         subprocess.run(["git", "-C", str(bundle_dir), "add", "-A"], check=True)
-        if subprocess.run(["git", "-C", str(bundle_dir), "diff", "--cached", "--quiet"]).returncode == 0:
-            return
         subprocess.run(
             ["git", "-C", str(bundle_dir), "-c", "user.name=github-actions[bot]", "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com", "commit", "-m", "deploy: update Hong Kong bundle"],
             check=True,
             stdout=subprocess.DEVNULL,
         )
+        subprocess.run(["git", "-C", str(bundle_dir), "remote", "add", "origin", remote_url], check=True)
         subprocess.run(
-            ["git", "-C", str(bundle_dir), "push", "--force", "origin", f"HEAD:{branch}"],
+            ["git", "-C", str(bundle_dir), "push", "--force", "origin", branch],
             env=git_env,
             check=True,
             stdout=subprocess.DEVNULL,
