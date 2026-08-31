@@ -77,12 +77,84 @@ def apply_env_overrides(cfg: dict) -> None:
             "-i",
             key_path,
             "-o",
-            "ServerAliveInterval=15",
+            "BatchMode=yes",
+            "-o",
+            "ConnectTimeout=20",
+            "-o",
+            "ConnectionAttempts=1",
+            "-o",
+            "ServerAliveInterval=10",
             "-o",
             "ServerAliveCountMax=3",
             "-o",
             "StrictHostKeyChecking=accept-new",
         ]
+
+def upload_archive(ssh_base: list[str], remote: str, archive: Path, cfg: dict) -> None:
+    remote_tmp = str(cfg["remoteTmp"])
+    upload_attempts = int(cfg.get("uploadAttempts", 3))
+    archive_size = archive.stat().st_size
+    rsync = shutil.which("rsync")
+    if rsync:
+        upload_command = [
+            rsync,
+            "--partial",
+            "--append-verify",
+            "--timeout=30",
+            "-e",
+            " ".join(ssh_base),
+            str(archive),
+            f"{remote}:{remote_tmp}",
+        ]
+    else:
+        upload_command = [
+            *ssh_base,
+            remote,
+            f"cat > {shell_quote(remote_tmp)}",
+        ]
+    verify_command = [
+        *ssh_base,
+        remote,
+        f'test "$(wc -c < {shell_quote(remote_tmp)})" -eq {archive_size} && tar -tzf {shell_quote(remote_tmp)} >/dev/null',
+    ]
+    last_error: subprocess.CalledProcessError | None = None
+
+    for attempt in range(1, upload_attempts + 1):
+        if rsync:
+            print(
+                "$ "
+                + " ".join(upload_command)
+                + f" ({archive_size} bytes, attempt {attempt}/{upload_attempts})"
+            )
+            upload_result = subprocess.run(upload_command, cwd=REPO_ROOT)
+        else:
+            print(
+                "$ "
+                + " ".join(upload_command)
+                + f" < {archive} ({archive_size} bytes, attempt {attempt}/{upload_attempts})"
+            )
+            with archive.open("rb") as handle:
+                upload_result = subprocess.run(
+                    upload_command,
+                    cwd=REPO_ROOT,
+                    stdin=handle,
+                )
+        if upload_result.returncode != 0:
+            last_error = subprocess.CalledProcessError(upload_result.returncode, upload_command)
+        else:
+            print("$ " + " ".join(verify_command))
+            verify_result = subprocess.run(verify_command, cwd=REPO_ROOT)
+            if verify_result.returncode == 0:
+                return
+            last_error = subprocess.CalledProcessError(verify_result.returncode, verify_command)
+
+        if attempt < upload_attempts:
+            print("Upload failed or archive verification failed; retrying...")
+
+    if last_error:
+        raise last_error
+    raise RuntimeError("Archive upload failed before starting.")
+
 
 
 def public_url(cfg: dict) -> str:
@@ -100,55 +172,6 @@ def run(command: list[str]) -> None:
     subprocess.run(command, cwd=REPO_ROOT, check=True)
 
 
-def upload_archive(ssh_base: list[str], remote: str, archive: Path, cfg: dict) -> None:
-    remote_tmp = shell_quote(cfg["remoteTmp"])
-    upload_attempts = int(cfg.get("uploadAttempts", 3))
-    archive_size = archive.stat().st_size
-    upload_command = [
-        *ssh_base,
-        remote,
-        f"cat > {remote_tmp}",
-    ]
-    verify_command = [
-        *ssh_base,
-        remote,
-        f'test "$(wc -c < {remote_tmp})" -eq {archive_size} && tar -tzf {remote_tmp} >/dev/null',
-    ]
-    last_error: subprocess.CalledProcessError | None = None
-
-    for attempt in range(1, upload_attempts + 1):
-        print(
-            "$ "
-            + " ".join(upload_command)
-            + f" < {archive} ({archive_size} bytes, attempt {attempt}/{upload_attempts})"
-        )
-        with archive.open("rb") as handle:
-            upload_result = subprocess.run(
-                upload_command,
-                cwd=REPO_ROOT,
-                stdin=handle,
-            )
-        if upload_result.returncode != 0:
-            last_error = subprocess.CalledProcessError(upload_result.returncode, upload_command)
-            cleanup_remote_tmp(ssh_base, remote, remote_tmp)
-        else:
-            print("$ " + " ".join(verify_command))
-            verify_result = subprocess.run(verify_command, cwd=REPO_ROOT)
-            if verify_result.returncode == 0:
-                return
-            last_error = subprocess.CalledProcessError(verify_result.returncode, verify_command)
-            cleanup_remote_tmp(ssh_base, remote, remote_tmp)
-
-        if attempt < upload_attempts:
-            print("Upload failed or archive verification failed; retrying...")
-
-    if last_error:
-        raise last_error
-    raise RuntimeError("Archive upload failed before starting.")
-
-
-def cleanup_remote_tmp(ssh_base: list[str], remote: str, remote_tmp: str) -> None:
-    subprocess.run([*ssh_base, remote, f"rm -f {remote_tmp}"], cwd=REPO_ROOT)
 
 
 def npm_executable() -> str:
@@ -994,6 +1017,7 @@ def make_archive(public_dir: Path, archive: Path) -> None:
 
 def ssh_command(cfg: dict) -> list[str]:
     return ["ssh", "-p", str(cfg["port"]), *cfg.get("sshOptions", [])]
+
 
 
 def remote_target(cfg: dict) -> str:
