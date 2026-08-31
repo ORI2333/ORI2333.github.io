@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  
+    <link rel="icon" href="/blog/images/theme/头像.jpg?v=20260329">
+  
+  
+  <title>博客1.2版本（多线路访问） | ORI2333&#39;s Blog</title>
+  <link rel="canonical" href="https://blog.orixx.xyz/blog/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/">
+  <meta name="author" content="ORI2333" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="博客网站, 工作流, 自动部署" />
+  
+  <meta name="description" content="这篇文章整理一下本站现在的写作和发布方式。它既是一篇面向读者的技术说明，也是一份公开的维护记录：内容如何从 Obsidian 进入博客，页面如何发布到 GitHub Pages，为什么还会准备独立服务器线路和 EdgeOne 加速入口。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="博客1.2版本（多线路访问）">
+<meta property="og:url" content="https://blog.orixx.xyz/blog/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/index.html">
+<meta property="og:site_name" content="ORI2333&#39;s Blog">
+<meta property="og:description" content="这篇文章整理一下本站现在的写作和发布方式。它既是一篇面向读者的技术说明，也是一份公开的维护记录：内容如何从 Obsidian 进入博客，页面如何发布到 GitHub Pages，为什么还会准备独立服务器线路和 EdgeOne 加速入口。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260621003331386.png?imageSlim">
+<meta property="article:published_time" content="2026-06-19T02:30:00.000Z">
+<meta property="article:modified_time" content="2026-08-31T15:28:49.319Z">
+<meta property="article:author" content="ORI2333">
+<meta property="article:tag" content="博客网站">
+<meta property="article:tag" content="工作流">
+<meta property="article:tag" content="自动部署">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260621003331386.png?imageSlim">
+  
+  <!-- JSON-LD 结构化数据 -->
+  
+  
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"博客1.2版本（多线路访问）","description":"这篇文章整理一下本站现在的写作和发布方式。它既是一篇面向读者的技术说明，也是一份公开的维护记录：内容如何从 Obsidian 进入博客，页面如何发布到 GitHub Pages，为什么还会准备独立服务器线路和 EdgeOne 加速入口。\n","image":"https://blog.orixx.xyz/blog/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/https:/obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260621003331386.png?imageSlim","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://blog.orixx.xyz/blog/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-06-19T02:30:00.000Z","dateModified":"2026-08-31T15:28:49.319Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.orixx.xyz/blog/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/"}}
+    </script>
+  
+  <!-- 关键 CSS 预加载 -->
+  <link rel="preload" href="/blog/css/kr-core.min.css" as="style" crossorigin>
+  <link rel="preload" href="/blog/css/kr-theme/light.min.css" as="style" crossorigin>
+  <link rel="preload" href="/blog/css/kr-theme/dark.min.css" as="style" crossorigin>
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/blog/css/kr-core.min.css" media="all">
+  <link rel="stylesheet" id="theme-light-css" href="/blog/css/kr-theme/light.min.css" media="all">
+  <link rel="stylesheet" id="theme-dark-css" href="/blog/css/kr-theme/dark.min.css" media="(prefers-color-scheme: dark)">
+  
+    <link rel="stylesheet"  id="highlight-css" href="/blog/css/highlight/highlight.js/night-eighties.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/css/highlight/highlight.js/night-eighties.min.css"></noscript>
+  
+  <script src="/blog/js/kr-theme.min.js"></script>
+  <link rel="stylesheet"  id="fontawe-css" href="/blog/vendors/font-awesome@4.7.0/css/font-awesome.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/vendors/font-awesome@4.7.0/css/font-awesome.min.css"></noscript>
+  
+    <link rel="stylesheet"  id="nprogress-css" href="/blog/vendors/nprogress@0.2.0/nprogress.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/vendors/nprogress@0.2.0/nprogress.css"></noscript>
+  
+  
+    <link rel="stylesheet"  href="/blog/vendors/viewerjs@1.11.6/dist/viewer.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/blog/vendors/viewerjs@1.11.6/dist/viewer.min.css"></noscript>
+  
+  <!-- 预先加载的JS文件 -->
+  
+    <script src="/blog/vendors/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  
+  <!-- 自定义站点横幅和背景 -->
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/blog/images/theme/banner-light.webp');
+      }
+      html[data-theme="dark"] .kratos-cover.kratos-cover-2 {
+        background-image: url('/blog/images/theme/banner-dark.webp');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/blog/images/theme/bg-light.webp');
+        }
+        html[data-theme="dark"] body.custom-background {
+          background-image: url('/blog/images/theme/bg-dark.webp');
+        }
+      }
+    
+    
+      .widget-kratos-about .photo-background {
+        background-image: url('/blog/images/default.webp');
+      }
+      html[data-theme="dark"] .widget-kratos-about .photo-background {
+        background-image: url('/blog/images/default.webp');
+      }
+    
+  </style>
+
+  <!-- 额外的追加注入项 -->
+  
+    <style>.kratos-cover.kratos-cover-2{background-position:center center!important;background-repeat:no-repeat!important;background-size:cover!important;}.widget-kratos-about .about-contact-icons{display:flex;justify-content:space-evenly;align-items:center;max-width:240px;margin:14px auto 0;}.widget-kratos-about .about-contact-icons a{line-height:1;color:inherit;display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;}.widget-kratos-about .about-contact-icons a i{font-size:24px;}.widget-kratos-about .about-contact-icons a img{width:24px;height:24px;object-fit:contain;display:block;}.widget-kratos-about .about-contact-icons a img[alt='Email']{width:27px;height:27px;opacity:.98;}html[data-theme='dark'] .widget-kratos-about .about-contact-icons a img[alt='GitHub']{filter:brightness(0) invert(1);opacity:.98;}.widget-kratos-about .about-contact-icons a:hover{transform:translateY(-1px);}#footer .kratos-social-icons li a{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;}#footer .kratos-social-icons li a .footer-social-icon{width:34px;height:34px;object-fit:contain;display:block;}#footer .kratos-social-icons li a .footer-icon-email{filter:brightness(0) invert(1);opacity:.94;}#footer .kratos-social-icons li a .footer-icon-github{filter:brightness(0) invert(1);opacity:.95;}.kr-comments-disabled{margin:16px 0;padding:12px 14px;border:1px dashed rgba(160,160,160,.45);border-radius:10px;color:#9aa3b7;background:rgba(90,98,120,.08);text-align:center;}</style>
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/">
+                                        
+                                            
+                                                <i class="fa fa-home"></i>
+                                            
+                                            首页
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/archives/">
+                                        
+                                            
+                                                <i class="fa fa-archive"></i>
+                                            
+                                            归档
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/categories/">
+                                        
+                                            
+                                                <i class="fa fa-folder-open"></i>
+                                            
+                                            分类
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/tags/">
+                                        
+                                            
+                                                <i class="fa fa-tags"></i>
+                                            
+                                            标签
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/blog/about/">
+                                        
+                                            
+                                                <i class="fa fa-user"></i>
+                                            
+                                            关于
+                                        </a>
+                                        
+                                    </li>
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/blog/">ORI2333&#39;s Blog</a></div>
+                    <div id="kratos-nav-toggle-wrapper" class="nav-toggle">
+                        <a id="kratos-nav-toggle" class="kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/blog/">
+                        <h2>ORI2333&#39;s Blog</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+
+
+        
+
+            
+
+            <section class="kr-main-col col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://blog.orixx.xyz/blog/2026/06/19/2026-06-19-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BB%B4%E6%8A%A4%E6%89%8B%E5%86%8C/">
+    <div class="kratos-hentry kratos-page-inner clearfix">
+        <header class="kratos-page-header">
+            
+                <h1 class="kratos-page-title text-center" itemprop="name headline">博客1.2版本（多线路访问）</h1>
+            
+            <ul class="kratos-page-meta text-center">
+                <li><time datetime="2026-06-19T02:30:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-06-19</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
+                </li>
+                
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~3.89K
+                        
+                        字
+                    </li>
+                
+                
+                
+            </ul>
+        </header>
+        <div class="kratos-page-content kr-post">
+            
+            
+            
+            <hr />
+            <div itemprop="articleBody"><p>这篇文章整理一下本站现在的写作和发布方式。它既是一篇面向读者的技术说明，也是一份公开的维护记录：内容如何从 Obsidian 进入博客，页面如何发布到 GitHub Pages，为什么还会准备独立服务器线路和 EdgeOne 加速入口。</p>
+<span id="more"></span>
+
+<h2 id="为什么要做多线路访问"><a href="#为什么要做多线路访问" class="headerlink" title="为什么要做多线路访问"></a>为什么要做多线路访问</h2><p>这个博客本质上是一套静态网站。静态博客的好处是简单、稳定、容易备份；问题是不同网络环境下，访问 GitHub Pages、境外服务器或国内加速线路的体验可能不一样。</p>
+<p>所以本站现在提供一个访问选择页：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://blog.orixx.xyz/</span><br></pre></td></tr></table></figure>
+
+<p>这个页面不是另一套内容，而是同一份博客的入口导航。读者可以按自己的网络环境选择更顺畅的线路：</p>
+<ul>
+<li>稳定访问：由独立服务器提供，作为日常推荐入口。</li>
+<li>大陆优化线路：通过腾讯云 EdgeOne 做访问加速。</li>
+<li>备用镜像：GitHub Pages 上的公开镜像。</li>
+</ul>
+<p>这样做的目标很朴素：文章只维护一份，但访问方式可以更灵活。</p>
+<h2 id="写作入口：Obsidian"><a href="#写作入口：Obsidian" class="headerlink" title="写作入口：Obsidian"></a>写作入口：Obsidian</h2><p>文章最初写在 Obsidian 里。它适合做长期笔记，也适合写 Markdown，所以博客草稿和正式文章都放在同一个写作环境中维护。</p>
+<p>当前约定是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Blog/Posts   # 博客文章</span><br><span class="line">Blog/Assets  # 博客素材</span><br><span class="line">Blog/Trash   # 删除文章时的回收目录</span><br></pre></td></tr></table></figure>
+
+<p>每篇文章使用 Hexo 兼容的 front matter，例如：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">示例文章</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2026-06-19 12:00:00</span></span><br><span class="line"><span class="attr">tags:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">博客网站</span></span><br><span class="line"><span class="attr">categories:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">docs</span></span><br><span class="line"><span class="attr">cover:</span> <span class="string">/images/theme/default-cover.webp</span></span><br><span class="line"><span class="attr">draft:</span> <span class="literal">false</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>draft: true</code> 表示私有草稿，不会同步到博客源码目录；改成 <code>draft: false</code> 后才会进入发布流程。</p>
+<h2 id="本地图形化工具"><a href="#本地图形化工具" class="headerlink" title="本地图形化工具"></a>本地图形化工具</h2><p>为了减少重复命令，仓库里放了一个本地 GUI：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run blog</span><br></pre></td></tr></table></figure>
+
+<p>它用 Python + Qt 写成。启动脚本会自动寻找可用的 Qt 环境，例如 PySide6、PyQt6 或 PyQt5。当前机器使用的是 Anaconda 环境里的 PyQt。</p>
+<p>GUI 主要做几件事：</p>
+<ul>
+<li>新建草稿。</li>
+<li>把 Obsidian 文章同步到 Hexo。</li>
+<li>执行本地构建检查。</li>
+<li>设置本地封面或图床封面。</li>
+<li>删除文章并同步下线。</li>
+<li>推送源码分支，让 GitHub Actions 自动部署。</li>
+</ul>
+<p>如果不打开 GUI，也可以用命令行完成同样的流程：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm run blog:<span class="built_in">sync</span></span><br><span class="line">npm run blog:build</span><br><span class="line">npm run blog:publish</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>blog:publish</code> 不直接上传所有站点，它只推送博客源码分支。真正的线上部署由 GitHub Actions 统一处理。</p>
+<h2 id="图片和封面"><a href="#图片和封面" class="headerlink" title="图片和封面"></a>图片和封面</h2><p>文章封面可以使用站内图片，也可以使用外部图床链接：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cover:</span> <span class="string">/images/posts/example.webp</span></span><br><span class="line"><span class="attr">cover:</span> <span class="string">https://example.com/example.webp</span></span><br></pre></td></tr></table></figure>
+
+<p>如果不想为每篇文章单独维护封面，可以保留默认值：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cover:</span> <span class="string">/images/theme/default-cover.webp</span></span><br></pre></td></tr></table></figure>
+
+<p>GUI 里有两个辅助按钮：</p>
+<ul>
+<li><code>选择封面</code>：选择本地图片，自动复制到博客图片目录。</li>
+<li><code>封面 URL</code>：把图床链接写入最近修改的文章。</li>
+</ul>
+<p>如果图片已经在 Obsidian 中直接写成 URL，也可以保持原样。同步脚本会保留这种写法。</p>
+<h2 id="从源码到线上页面"><a href="#从源码到线上页面" class="headerlink" title="从源码到线上页面"></a>从源码到线上页面</h2><p>这个博客仓库使用 <code>source</code> 分支维护源码。文章、图片、脚本、主题配置都在这个分支里。推送后，GitHub Actions 会运行：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+
+<p>发布流程大致是：</p>
+<ol>
+<li>安装 Node.js 和 npm 依赖。</li>
+<li>执行 Hexo 构建。</li>
+<li>把 GitHub Pages 版本发布到 <code>main</code> 分支。</li>
+<li>使用独立配置再构建一份适合 <code>/blog/</code> 路径的版本。</li>
+<li>通过 SSH 同步到独立服务器目录。</li>
+</ol>
+<p>这样，本地电脑不需要分别登录每个发布平台；只要源码进入 GitHub，后续部署就由自动化流程接管。</p>
+<h2 id="GitHub-Pages"><a href="#GitHub-Pages" class="headerlink" title="GitHub Pages"></a>GitHub Pages</h2><p>GitHub Pages 是本站的公开镜像之一：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://ori2333.github.io/</span><br></pre></td></tr></table></figure>
+
+<p>它的优点是稳定、透明、和源码仓库绑定紧密。GitHub Actions 会把 Hexo 生成的静态文件发布到 <code>main</code> 分支，因此 <code>source</code> 分支负责维护源码，<code>main</code> 分支负责承载静态页面。</p>
+<h2 id="独立服务器线路"><a href="#独立服务器线路" class="headerlink" title="独立服务器线路"></a>独立服务器线路</h2><p>除了 GitHub Pages，本站还部署了一份服务器托管版本：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://blog.orixx.xyz/blog/</span><br></pre></td></tr></table></figure>
+
+<p>入口页则是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://blog.orixx.xyz/</span><br></pre></td></tr></table></figure>
+
+<p>服务器部署脚本在：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tools/hk_deploy/</span><br></pre></td></tr></table></figure>
+
+<p>几个关键文件分别负责：</p>
+<ul>
+<li><code>deploy_hk.py</code>：构建服务器版本、生成访问选择页、打包并上传。</li>
+<li><code>_config.hk.yml</code>：覆盖 Hexo 的 <code>url</code>、<code>root</code> 和 <code>public_dir</code>。</li>
+<li><code>hk_deploy.config.json</code>：保存域名、远程目录和入口链接配置。</li>
+<li><code>nginx-ori2333-blog.conf</code>：Nginx 配置模板。</li>
+<li><code>setup_hk_server.py</code>：初始化服务器站点配置和 HTTPS。</li>
+</ul>
+<p>服务器上的目录固定为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/var/www/ori2333-blog</span><br></pre></td></tr></table></figure>
+
+<p>部署脚本只同步这个目录，不会接管服务器上的其他服务。旧的 <code>/hk/</code> 路径会跳转到 <code>/blog/</code>，用于兼容早期测试阶段的地址。</p>
+<p>HTTPS 使用 Let’s Encrypt。证书有效期为 90 天，需要服务器保持自动续签任务开启。</p>
+<h2 id="EdgeOne-加速线路"><a href="#EdgeOne-加速线路" class="headerlink" title="EdgeOne 加速线路"></a>EdgeOne 加速线路</h2><p>为了改善中国大陆网络访问体验，本站还准备了腾讯云 EdgeOne 入口。它不是另一套博客，也不是另一份文章源，而是一条访问加速线路。</p>
+<p>日常写作不需要为 EdgeOne 单独做任何操作。文章发布后，GitHub Pages 和服务器版本先更新；EdgeOne 再按照它的源站和缓存策略提供加速访问。</p>
+<p>如果某次访问发现 EdgeOne 内容延迟，通常优先检查：</p>
+<ul>
+<li>GitHub Actions 是否部署成功。</li>
+<li>加速线路的源站是否可访问。</li>
+<li>是否命中了旧缓存。</li>
+<li>当前访问 URL 是否带着过期参数。</li>
+</ul>
+<h2 id="仓库结构"><a href="#仓库结构" class="headerlink" title="仓库结构"></a>仓库结构</h2><p>仓库里最常用的目录是这些：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">source/_posts/                   # Hexo 文章源文件</span><br><span class="line">source/images/posts/             # 文章配图</span><br><span class="line">source/images/theme/             # 主题图片、头像、背景、默认封面</span><br><span class="line">tools/blog/                      # 本地 GUI 和同步工具</span><br><span class="line">tools/hk_deploy/                 # 独立服务器部署工具</span><br><span class="line">templates/blog-post.md           # 新文章模板</span><br><span class="line">docs/blog-workflow-migration.md  # 换电脑和环境迁移说明</span><br><span class="line">.github/workflows/deploy.yml     # 自动部署流程</span><br></pre></td></tr></table></figure>
+
+<p><code>public/</code> 是 Hexo 构建产物，不需要手动维护，也不应该作为主要修改对象。真正值得维护的是文章、图片、配置和脚本。</p>
+<h2 id="删除和下线"><a href="#删除和下线" class="headerlink" title="删除和下线"></a>删除和下线</h2><p>删除文章时，最好不要只在一个目录里删文件。GUI 的 <code>删除文章</code> 会同时处理 Obsidian 和 Hexo 源文件：</p>
+<ul>
+<li>原文移动到 <code>Blog/Trash</code>。</li>
+<li><code>source/_posts</code> 中的同名文章被删除。</li>
+<li>构建和发布流程会让线上页面同步下线。</li>
+</ul>
+<p>这可以避免“本地删掉了，线上还看得到”的情况。</p>
+<h2 id="换电脑时需要恢复什么"><a href="#换电脑时需要恢复什么" class="headerlink" title="换电脑时需要恢复什么"></a>换电脑时需要恢复什么</h2><p>如果以后换电脑，重点是恢复写作和发布环境：</p>
+<ol>
+<li>安装 Node.js，并在仓库里运行 <code>npm ci</code>。</li>
+<li>准备一个带 Qt 的 Python 环境。</li>
+<li>配置 Obsidian 库路径。</li>
+<li>确认可以推送 GitHub 的 <code>source</code> 分支。</li>
+<li>如果需要本地手动部署服务器版本，再恢复 SSH key。</li>
+</ol>
+<p>可以先用这条命令检查 GUI 环境：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run blog:check</span><br></pre></td></tr></table></figure>
+
+<p>它会同时检查 Python&#x2F;Qt、Git、Node.js、npm、Hexo 依赖、Obsidian 路径和 Git 状态。换电脑后如果缺少 Git 或 Node.js，报告里会给出对应的处理建议。</p>
+<p>服务器自动部署所需的密钥放在 GitHub Actions Secrets 中，不写进仓库。相关名称包括：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HK_HOST</span><br><span class="line">HK_PORT</span><br><span class="line">HK_USER</span><br><span class="line">HK_REMOTE_ROOT</span><br><span class="line">HK_SSH_KEY</span><br></pre></td></tr></table></figure>
+
+<h2 id="这套流程的取舍"><a href="#这套流程的取舍" class="headerlink" title="这套流程的取舍"></a>这套流程的取舍</h2><p>这套系统的重点不是追求复杂，而是把容易出错的部分拆开：</p>
+<ul>
+<li>Obsidian 负责写作体验。</li>
+<li>GUI 负责减少重复操作。</li>
+<li>Hexo 负责生成静态页面。</li>
+<li>GitHub Actions 负责自动部署。</li>
+<li>独立服务器和 EdgeOne 负责改善访问体验。</li>
+</ul>
+<p>从读者视角看，只需要选择一条顺畅的访问线路；从维护视角看，只需要维护一份文章源。这个边界清楚以后，后续更换域名、迁移服务器或调整加速线路，都不会影响写作本身。</p>
+</div>
+        </div>
+        
+            <div class="kratos-copyright text-center clearfix">
+                <span itemprop="copyrightNotice">本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</span>
+            </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+            
+            
+                <div class="post-actions text-center clearfix" id="post-actions">
+                
+                    <a class="donate" href="javascript:;" onclick="krOpenDonateModal()"><i class="fa fa-bitcoin"></i> 打赏</a>
+                
+                
+                    <a class="share" href="javascript:;" onclick="krOpenShareModal()"><i class="fa fa-share-alt"></i> 分享</a>
+                
+                </div>
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    <a class="tag-none-link" href="/blog/tags/%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/" rel="tag">博客网站</a>, <a class="tag-none-link" href="/blog/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" rel="tag">工作流</a>, <a class="tag-none-link" href="/blog/tags/%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/" rel="tag">自动部署</a>
+                </div>
+                <div class="pull-date">
+                    <time datetime="2026-08-31T15:28:49.319Z" itemprop="dateModified">最后编辑：2026-08-31</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            <div class="nav-previous clearfix">
+                <a title=" FPGA DDR3 + AXI4 帧缓冲控制器实现指南" href="/blog/2026/05/15/FPGA DDR3 + AXI4 帧缓冲控制器实现指南/"><i class="fa fa-angle-left"></i> 上一篇</a>
+            </div>
+            
+            
+            <div class="nav-next clearfix">
+                <a title=" 水产养殖物联网智能测控系统" href="/blog/2026/06/21/2026-06-21-水产养殖物联网智能测控系统/">下一篇 <i class="fa fa-angle-right"></i></a>
+            </div>
+            
+        </nav>
+    
+    
+</article>
+
+        
+
+            </section>
+
+            
+                
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/blog/images/theme/头像.jpg" alt="ORI2333" loading="lazy" decoding="auto" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">A blog about programming, technology, and more.<br><span class="about-contact-icons"><a href="mailto:ori2333.zh@gmail.com" title="Email"><img src="/blog/icons/default-sites/email.svg" alt="Email"></a><a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub"><img src="/blog/icons/default-sites/github.svg" alt="GitHub"></a><a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili"><img src="/blog/icons/default-sites/bilibili.ico" alt="Bilibili"></a><a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu"><img src="/blog/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu"></a></span></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/blog/archives/">
+            <span class="title">
+                文章
+            </span>
+            <span class="count">
+                12
+            </span>
+        </a>
+        <a class="meta-item" href="/blog/categories/">
+            <span class="title">
+                分类
+            </span>
+            <span class="count">
+                1
+            </span>
+        </a>
+        <a class="meta-item" href="/blog/tags/">
+            <span class="title">
+                标签
+            </span>
+            <span class="count">
+                33
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类列表</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/docs/">docs</a><span class="category-list-count">7</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/blog/tags/4G/" style="font-size: 0.6em;">4G</a> <a href="/blog/tags/AMQP/" style="font-size: 0.6em;">AMQP</a> <a href="/blog/tags/FPGA/" style="font-size: 0.8em;">FPGA</a> <a href="/blog/tags/ISP/" style="font-size: 0.73em;">ISP</a> <a href="/blog/tags/IoT/" style="font-size: 0.6em;">IoT</a> <a href="/blog/tags/LaTeX/" style="font-size: 0.6em;">LaTeX</a> <a href="/blog/tags/MQTT/" style="font-size: 0.6em;">MQTT</a> <a href="/blog/tags/MathType/" style="font-size: 0.6em;">MathType</a> <a href="/blog/tags/Python/" style="font-size: 0.67em;">Python</a> <a href="/blog/tags/RK3588/" style="font-size: 0.6em;">RK3588</a> <a href="/blog/tags/RKNN/" style="font-size: 0.6em;">RKNN</a> <a href="/blog/tags/RS485/" style="font-size: 0.6em;">RS485</a> <a href="/blog/tags/STM32/" style="font-size: 0.6em;">STM32</a> <a href="/blog/tags/Web/" style="font-size: 0.6em;">Web</a> <a href="/blog/tags/Windows%E8%87%AA%E5%8A%A8%E5%8C%96/" style="font-size: 0.6em;">Windows自动化</a> <a href="/blog/tags/Word/" style="font-size: 0.6em;">Word</a> <a href="/blog/tags/YOLO11/" style="font-size: 0.6em;">YOLO11</a> <a href="/blog/tags/proteus/" style="font-size: 0.6em;">proteus</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/08/31/2026-08-31-%E3%80%90%E8%AE%BA%E6%96%87%E4%B8%AD%E7%A8%BF%EF%BC%81%E3%80%91Stall-Free-Software%E2%80%93Hardware-Co-Design-for-Perception-Driven-CLAHE/"><i class="fa fa-book"></i> 【论文中稿！】Stall-Free Software–Hardware Co-Design for Perception-Driven CLAHE</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/07/24/2026-07-24-%E5%BF%AB%E9%80%9F%E5%B0%86word%E4%B8%ADlatex%E5%85%AC%E5%BC%8F%E5%BF%AB%E9%80%9F%E8%BD%AC%E6%8D%A2%E4%B8%BAmathtpye%E6%A0%BC%E5%BC%8F%E7%9A%84%E8%84%9A%E6%9C%AC%E5%92%8C%E6%96%B9%E6%B3%95/"><i class="fa fa-book"></i> 快速将 Word 中 LaTeX 公式批量转为 MathType 的脚本与方法（Python）</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/07/10/2026-07-10-%E5%A1%94%E7%9F%B34G+485+%E5%8D%8E%E4%B8%BA%E4%BA%91%E6%95%B0%E6%8D%AE%E4%BA%92%E8%81%94V1/"><i class="fa fa-book"></i> 塔石 4G + RS485 + 华为云 IoTDA 数据互联实践</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/07/07/2026-07-07-%E5%9F%BA%E4%BA%8E-FPGA-+-RK3588-%E7%9A%84%E6%B0%B4%E8%A1%A8%E6%8C%87%E9%92%88%E5%8A%A8%E6%80%81%E8%B4%A8%E6%A3%80%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E-HDMI-%E8%A7%86%E9%A2%91%E9%93%BE%E8%B7%AF%E5%88%B0-YOLO11-pose-%E6%B0%B4%E9%87%8F%E8%AE%A1%E7%AE%97/"><i class="fa fa-book"></i> 基于 FPGA + RK3588 的水表指针动态质检系统：从 HDMI 视频链路到 YOLO11-pose 水量计算</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/blog/2026/06/21/2026-06-21-%E6%B0%B4%E4%BA%A7%E5%85%BB%E6%AE%96%E7%89%A9%E8%81%94%E7%BD%91%E6%99%BA%E8%83%BD%E6%B5%8B%E6%8E%A7%E7%B3%BB%E7%BB%9F/"><i class="fa fa-book"></i> 水产养殖物联网智能测控系统</a>
+            
+          
+        
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+            
+
+        
+
+                </div>
+    </div>
+</div>
+
+<footer>
+    <div id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                            <li>
+                                <a href="mailto:ori2333.zh@gmail.com" title="Email">
+                                    <img class="footer-social-icon footer-icon-email" src="/blog/icons/default-sites/email.svg" alt="Email">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub">
+                                    <img class="footer-social-icon footer-icon-github" src="/blog/icons/default-sites/github.svg" alt="GitHub">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili">
+                                    <img class="footer-social-icon" src="/blog/icons/default-sites/bilibili.ico" alt="Bilibili">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu">
+                                    <img class="footer-social-icon" src="/blog/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu">
+                                </a>
+                            </li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2026 ORI2333's Blog 版权所有.</li>
+                            <li>本站已运行<span id="kr-since">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>自豪地使用 <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a> 主题</li>
+                            <li>站点由 <a href="https://github.com/ORI2333" target="_blank">ORI2333</a> 用 <i class="fa fa-heart" style="color:#d43f57"></i> 搭建</li>
+                        </div>
+                        <!-- 额外的追加注入项 -->
+                        
+                            <div>
+                                
+                                    <li>由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 驱动</li>
+                                
+                                    <li>在 <a href="https://github.com" target="_blank" rel="nofollow">GitHub</a> 托管</li>
+                                
+                            </div>
+                        
+                            <div>
+                                
+                                    <li>中国区域由 <a href="https://orizhen.xyz/" target="_blank" rel="nofollow">腾讯云 EdgeOne</a> 加速</li>
+                                
+                            </div>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                <!-- 额外的追加注入项 -->
+                
+                
+                    <div class="box search-box">
+                        <a href="/blog/search">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                <div class="box theme-box" id="theme-toggle">
+                    <span class="fa fa-adjust"></span>
+                </div>
+            </div>
+            <div id="gotop-box" class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+
+    <div id="kr-donate-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseDonateModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-bitcoin"></i>
+            </div>
+            <div class="kr-modal-title">赞助喵</div>
+            <button class="kr-modal-close" onclick="krCloseDonateModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-donate-message">非常感谢您的喜欢！ <i class="fa fa-heart" style="color:#d43f57"></i></div>
+            <div class="kr-donate-qr" id="kr-donate-qr">
+                
+                    <img class="kr-donate-placeholder" src="https://dev.krt.moe/demo-assets/donate.webp" alt="赞助喵" />
+                
+            </div>
+            <div class="kr-donate-platforms">
+                
+                    
+                        <button class="kr-donate-platform-button" style="color: skyblue;" title="模拟支付" onclick="krDonateModalShowPlatformQR('example_payment', 'skyblue')">
+                            <i class="fa fa-credit-card"></i>
+                        </button>
+                    
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/blog/js/kr-modal/donate.min.js"></script>
+
+
+
+
+    <div id="kr-share-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseShareModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-share-alt"></i>
+            </div>
+            <div class="kr-modal-title">分享这篇文章</div>
+            <button class="kr-modal-close" onclick="krCloseShareModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-share-message">分享链接会先进入线路选择页，读者可选择稳定访问、腾讯云 CDN 或备用镜像。</div>
+            <div class="kr-share-qr" id="kr-share-qr"></div>
+            <div class="kr-share-platforms">
+                
+                    <button class="kr-share-platform-button" style="color: #51aded;" title="选择线路" onclick="krShareModalOpenPlatform('$URL')">
+                        <i class="fa fa-share-alt"></i>
+                    </button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/blog/js/kr-modal/share.min.js"></script>
+
+
+
+<!-- 额外的追加注入项 -->
+
+
+        <script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/blog/";
+</script>
+
+
+  <script defer src="/blog/vendors/nprogress@0.2.0/nprogress.js"></script>
+
+
+
+  <script defer src="/blog/vendors/viewerjs@1.11.6/dist/viewer.min.js"></script>
+
+
+<script defer src="/blog/js/kr-core.min.js"></script>
+
+
+  <script defer src="/blog/js/kr-pjax.min.js"></script>
+
+
+<!-- 额外的追加注入项 -->
+
+  <style>
+#kr-share-modal .kr-modal-content{max-width:660px;max-height:560px;}
+#kr-share-modal .kr-modal-body{gap:14px;padding:1rem 2rem 1.6rem;}
+#kr-share-modal .kr-share-message{line-height:1.7;text-align:left;width:100%;}
+#kr-share-modal .kr-share-qr{width:212px;height:212px;padding:8px;background:rgba(255,255,255,.03);}
+#kr-share-modal .kr-share-qr canvas,
+#kr-share-modal .kr-share-qr svg{width:192px!important;height:192px!important;}
+#kr-share-modal .ori-share-link{width:min(100%,500px);display:flex;gap:8px;align-items:center;}
+#kr-share-modal .ori-share-input{flex:1;min-width:0;height:38px;padding:0 12px;border:1px solid rgba(120,206,121,.65);border-radius:8px;background:rgba(255,255,255,.08);color:inherit;font-size:14px;line-height:38px;outline:none;overflow:hidden;text-overflow:ellipsis;}
+#kr-share-modal .ori-share-copy{flex:0 0 auto;height:38px;padding:0 14px!important;border-radius:8px!important;background:#78ce79!important;color:#08140a!important;font-size:14px!important;font-weight:600;}
+#kr-share-modal .ori-share-copy:hover{filter:brightness(1.06);}
+@media (max-width:560px){
+  #kr-share-modal .kr-modal-content{max-height:620px;padding:12px;}
+  #kr-share-modal .kr-modal-body{padding:1rem;gap:12px;}
+  #kr-share-modal .kr-share-qr{width:196px;height:196px;}
+  #kr-share-modal .kr-share-qr canvas,
+  #kr-share-modal .kr-share-qr svg{width:176px!important;height:176px!important;}
+  #kr-share-modal .ori-share-link{flex-direction:column;align-items:stretch;}
+  #kr-share-modal .ori-share-copy{width:100%;}
+}
+</style>
+<script>
+window.__COMMENTS_ENABLED=false;
+(function(){
+  var gateway = "https://blog.orixx.xyz/";
+  function originalUrl(){
+    var meta = document.querySelector('meta[property="og:url"]');
+    return meta && meta.content ? meta.content : location.href;
+  }
+  function normalizePath(path){
+    path = "/" + String(path || "").replace(/^\/+/, "");
+    return path.replace(/\/{2,}/g, "/");
+  }
+  function stripBlogPrefix(path){
+    var normalized = normalizePath(path).replace(/\/index\.html$/i, "/");
+    if (normalized.toLowerCase().indexOf("/blog/") === 0) return normalizePath(normalized.slice(5));
+    if (normalized.toLowerCase() === "/blog") return "/";
+    return normalized;
+  }
+  function normalizeSharePath(path){
+    var normalized = stripBlogPrefix(path);
+    if (normalized !== "/" && normalized.slice(-1) !== "/") normalized += "/";
+    return normalized;
+  }
+  function utf8Bytes(value){
+    if (window.TextEncoder) return Array.prototype.slice.call(new TextEncoder().encode(value));
+    var utf8 = unescape(encodeURIComponent(value));
+    var bytes = [];
+    for (var i = 0; i < utf8.length; i += 1) bytes.push(utf8.charCodeAt(i));
+    return bytes;
+  }
+  function shortIdFromPath(path){
+    var hash = 2166136261;
+    var bytes = utf8Bytes(normalizeSharePath(path));
+    for (var i = 0; i < bytes.length; i += 1) {
+      hash ^= bytes[i];
+      hash = Math.imul(hash, 16777619) >>> 0;
+    }
+    var id = hash.toString(36);
+    while (id.length < 7) id = "0" + id;
+    return id;
+  }
+  function sharePath(){
+    try {
+      return normalizeSharePath(decodeURI(new URL(originalUrl(), location.href).pathname || "/"));
+    } catch (error) {
+      return normalizeSharePath(decodeURI(location.pathname || "/"));
+    }
+  }
+  function shareUrl(){
+    return gateway + "s/" + shortIdFromPath(sharePath());
+  }
+  function metaContent(selector){
+    var node = document.querySelector(selector);
+    return node && node.content ? node.content : "";
+  }
+  function replaceToken(value, token, replacement){
+    return String(value).split(token).join(replacement);
+  }
+  function renderShareQr(){
+    var box = document.getElementById("kr-share-qr");
+    if (!box || !window.QRCodeStyling) return;
+    box.innerHTML = "";
+    new QRCodeStyling({
+      width: 192,
+      height: 192,
+      data: shareUrl(),
+      image: (document.querySelector('link[rel="icon"]') || {}).href,
+      dotsOptions: { color: "#78ce79", type: "extra-rounded" },
+      backgroundOptions: { color: "transparent" },
+      imageOptions: { crossOrigin: "anonymous", margin: 1 }
+    }).append(box);
+    updateShareLinkBox();
+  }
+  function ensureShareLinkBox(){
+    var body = document.querySelector("#kr-share-modal .kr-modal-body");
+    if (!body) return null;
+    var box = body.querySelector(".ori-share-link");
+    if (box) return box;
+    box = document.createElement("div");
+    box.className = "ori-share-link";
+    box.innerHTML = '<input class="ori-share-input" type="text" readonly aria-label="分享链接"><button class="ori-share-copy" type="button">复制链接</button>';
+    var platforms = body.querySelector(".kr-share-platforms");
+    body.insertBefore(box, platforms || null);
+    var input = box.querySelector(".ori-share-input");
+    var button = box.querySelector(".ori-share-copy");
+    input.addEventListener("focus", function(){ input.select(); });
+    button.addEventListener("click", function(){
+      var link = input.value;
+      function done(){
+        button.textContent = "已复制";
+        setTimeout(function(){ button.textContent = "复制链接"; }, 1400);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(done).catch(function(){ input.select(); document.execCommand("copy"); done(); });
+      } else {
+        input.select();
+        document.execCommand("copy");
+        done();
+      }
+    });
+    return box;
+  }
+  function updateShareLinkBox(){
+    var box = ensureShareLinkBox();
+    if (!box) return;
+    var input = box.querySelector(".ori-share-input");
+    if (input) input.value = shareUrl();
+  }
+  function installShareOverride(){
+    ensureShareLinkBox();
+    updateShareLinkBox();
+    window.krShareModalOpenPlatform = function(template){
+      var link = String(template || "$URL");
+      link = replaceToken(link, "$URL", shareUrl());
+      link = replaceToken(link, "$TITLE", metaContent('meta[property="og:title"]'));
+      link = replaceToken(link, "$SUMMARY", metaContent('meta[property="og:description"]'));
+      link = replaceToken(link, "$SITE", metaContent('meta[property="og:site_name"]'));
+      window.open(link, "_blank");
+    };
+    window.initQRCode = renderShareQr;
+    if (window.krOpenShareModal && !window.krOpenShareModal.__oriWrapped) {
+      var open = window.krOpenShareModal;
+      window.krOpenShareModal = function(){
+        open();
+        setTimeout(renderShareQr, 50);
+      };
+      window.krOpenShareModal.__oriWrapped = true;
+    }
+    renderShareQr();
+  }
+  document.addEventListener("DOMContentLoaded", installShareOverride);
+  window.addEventListener("load", installShareOverride);
+  window.addEventListener("pjax:complete", function(){ setTimeout(installShareOverride, 50); });
+})();
+</script>
+
+
+
+    </body>
+</html>

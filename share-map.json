@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "posts": {
+    "12uyz0o": {
+      "path": "/2025/08/02/ISP之常用图像缩放算法/",
+      "title": "ISP之常用图像缩放算法"
+    },
+    "119oeh2": {
+      "path": "/2026/03/29/博客与主题使用指南/",
+      "title": "博客运维指南"
+    },
+    "0f5yz33": {
+      "path": "/2026/04/18/ODDR（Xilinx 原语）/",
+      "title": "ODDR原语说明"
+    },
+    "0pwbppe": {
+      "path": "/2026/04/18/hdmi_display设计手册/",
+      "title": "HDMI Display设计手册"
+    },
+    "03xxd52": {
+      "path": "/2026/04/29/Proteus仿真+STM32+云平台/",
+      "title": "Proteus仿真+STM32+云平台"
+    },
+    "0ezlsdq": {
+      "path": "/2026/05/15/FPGA DDR3 + AXI4 帧缓冲控制器实现指南/",
+      "title": "FPGA DDR3 + AXI4 帧缓冲控制器实现指南"
+    },
+    "0r4mqzf": {
+      "path": "/2026/06/19/2026-06-19-个人博客维护手册/",
+      "title": "博客1.2版本（多线路访问）"
+    },
+    "1sa8z00": {
+      "path": "/2026/06/21/2026-06-21-水产养殖物联网智能测控系统/",
+      "title": "水产养殖物联网智能测控系统"
+    },
+    "08z1fox": {
+      "path": "/2026/07/07/2026-07-07-基于-FPGA-+-RK3588-的水表指针动态质检系统：从-HDMI-视频链路到-YOLO11-pose-水量计算/",
+      "title": "基于 FPGA + RK3588 的水表指针动态质检系统：从 HDMI 视频链路到 YOLO11-pose 水量计算"
+    },
+    "1p1iqjn": {
+      "path": "/2026/07/10/2026-07-10-塔石4G+485+华为云数据互联V1/",
+      "title": "塔石 4G + RS485 + 华为云 IoTDA 数据互联实践"
+    },
+    "07hu4oi": {
+      "path": "/2026/07/24/2026-07-24-快速将word中latex公式快速转换为mathtpye格式的脚本和方法/",
+      "title": "快速将 Word 中 LaTeX 公式批量转为 MathType 的脚本与方法（Python）"
+    },
+    "01939wx": {
+      "path": "/2026/08/31/2026-08-31-【论文中稿！】Stall-Free-Software–Hardware-Co-Design-for-Perception-Driven-CLAHE/",
+      "title": "【论文中稿！】Stall-Free Software–Hardware Co-Design for Perception-Driven CLAHE"
+    }
+  }
+}
