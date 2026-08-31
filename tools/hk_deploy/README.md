@@ -34,6 +34,8 @@ npm run deploy:hk:setup
 npm run deploy:hk
 ```
 
+GitHub Actions 使用 `hk-deploy` 分支作为临时静态包：服务器通过 HTTPS 主动从 GitHub 拉取后，在博客目录内原子替换。这样不会把十几 MB 的压缩包从 GitHub Runner 通过 SSH 推送到服务器；本地 `npm run deploy:hk` 仍可使用 SSH 直接上传。
+
 当前状态：
 
 - `https://blog.orixx.xyz/` 是站点选择页，支持黑白主题切换、中英文切换和自动推荐访问线路。

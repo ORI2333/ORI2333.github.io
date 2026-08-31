@@ -5,6 +5,10 @@ on:
     branches:
       - source
   workflow_dispatch:
+concurrency:
+  group: deploy-blog
+  cancel-in-progress: true
+
 
 permissions:
   contents: write
@@ -64,6 +68,10 @@ jobs:
       - name: Deploy to Hong Kong static host
         if: ${{ env.HK_DEPLOY_ENABLED == 'true' }}
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          HK_PULL_MODE: "true"
+          HK_PULL_BRANCH: hk-deploy
           HK_HOST: ${{ secrets.HK_HOST }}
           HK_PORT: ${{ secrets.HK_PORT }}
           HK_USER: ${{ secrets.HK_USER }}

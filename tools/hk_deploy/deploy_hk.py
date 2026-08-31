@@ -31,19 +31,63 @@ def main() -> int:
     write_gateway_page(cfg, public_dir)
     write_root_verification_files(cfg, public_dir)
 
-    with tempfile.TemporaryDirectory() as tmp:
-        archive = Path(tmp) / "ori2333-blog.tar.gz"
-        make_archive(public_dir, archive)
-        remote = remote_target(cfg)
-
-        ssh_base = ssh_command(cfg)
-
-        run([*ssh_base, remote, remote_prepare_script(cfg)])
-        upload_archive(ssh_base, remote, archive, cfg)
-        run([*ssh_base, remote, remote_extract_script(cfg)])
+    remote = remote_target(cfg)
+    ssh_base = ssh_command(cfg)
+    if os.environ.get("HK_PULL_MODE") == "true":
+        publish_pull_bundle()
+        run([*ssh_base, remote, remote_pull_script(cfg)])
+    else:
+        with tempfile.TemporaryDirectory() as tmp:
+            archive = Path(tmp) / "ori2333-blog.tar.gz"
+            make_archive(public_dir, archive)
+            run([*ssh_base, remote, remote_prepare_script(cfg)])
+            upload_archive(ssh_base, remote, archive, cfg)
+            run([*ssh_base, remote, remote_extract_script(cfg)])
 
     print(f"Deployed to {public_url(cfg)}")
     return 0
+
+
+def publish_pull_bundle() -> None:
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    repository = os.environ.get("GITHUB_REPOSITORY", "").strip()
+    branch = os.environ.get("HK_PULL_BRANCH", "hk-deploy").strip()
+    if not token or not repository or not branch:
+        raise RuntimeError("HK_PULL_MODE requires GITHUB_TOKEN, GITHUB_REPOSITORY and HK_PULL_BRANCH.")
+
+    public_dir = REPO_ROOT / "public"
+    with tempfile.TemporaryDirectory() as tmp:
+        bundle_dir = Path(tmp) / "bundle"
+        remote_url = f"https://x-access-token:{token}@github.com/{repository}.git"
+        git_env = os.environ.copy()
+        git_env["GIT_TERMINAL_PROMPT"] = "0"
+        subprocess.run(
+            ["git", "clone", "--depth", "1", "--branch", "main", remote_url, str(bundle_dir)],
+            cwd=REPO_ROOT,
+            env=git_env,
+            check=True,
+            stdout=subprocess.DEVNULL,
+        )
+
+        for path in bundle_dir.iterdir():
+            if path.name != ".git":
+                shutil.rmtree(path) if path.is_dir() else path.unlink()
+        shutil.copytree(public_dir, bundle_dir, dirs_exist_ok=True)
+        subprocess.run(["git", "-C", str(bundle_dir), "switch", "--orphan", branch], check=True, stdout=subprocess.DEVNULL)
+        subprocess.run(["git", "-C", str(bundle_dir), "add", "-A"], check=True)
+        if subprocess.run(["git", "-C", str(bundle_dir), "diff", "--cached", "--quiet"]).returncode == 0:
+            return
+        subprocess.run(
+            ["git", "-C", str(bundle_dir), "-c", "user.name=github-actions[bot]", "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com", "commit", "-m", "deploy: update Hong Kong bundle"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+        )
+        subprocess.run(
+            ["git", "-C", str(bundle_dir), "push", "--force", "origin", f"HEAD:{branch}"],
+            env=git_env,
+            check=True,
+            stdout=subprocess.DEVNULL,
+        )
 
 
 def validate_config(cfg: dict) -> None:
@@ -1036,6 +1080,29 @@ def remote_prepare_script(cfg: dict) -> str:
         f"mkdir -p {remote_root}; "
         f"rm -f {remote_tmp}; "
         "command -v tar >/dev/null"
+    )
+
+
+def remote_pull_script(cfg: dict) -> str:
+    repository = os.environ.get("GITHUB_REPOSITORY", "").strip()
+    branch = os.environ.get("HK_PULL_BRANCH", "hk-deploy").strip()
+    if not repository or not branch:
+        raise RuntimeError("HK_PULL_MODE requires GITHUB_REPOSITORY and HK_PULL_BRANCH.")
+    remote_root_value = str(cfg["remoteRoot"])
+    remote_root = shell_quote(remote_root_value)
+    remote_next = shell_quote(remote_root_value.rstrip("/") + ".next")
+    remote_bak = shell_quote(remote_root_value.rstrip("/") + ".bak")
+    bundle_url = shell_quote(f"https://codeload.github.com/{repository}/tar.gz/refs/heads/{branch}")
+    return (
+        "set -e; "
+        f"rm -rf {remote_next}; "
+        f"mkdir -p {remote_next}; "
+        f"curl --fail --location --retry 3 --connect-timeout 10 --max-time 180 {bundle_url} "
+        f"| tar -xzf - --strip-components=1 -C {remote_next}; "
+        f"rm -rf {remote_bak}; "
+        f"if [ -d {remote_root} ]; then mv {remote_root} {remote_bak}; fi; "
+        f"mv {remote_next} {remote_root}; "
+        f"rm -rf {remote_bak}"
     )
 
 
