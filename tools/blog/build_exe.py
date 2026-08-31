@@ -40,6 +40,7 @@ def main() -> int:
         str(REPO_ROOT / "build" / "pyinstaller"),
         "--paths",
         str(REPO_ROOT / "tools" / "blog"),
+        *sum((["--exclude-module", name] for name in QT_BINDINGS if name != detected_qt), []),
         "--hidden-import",
         "blog_gui",
         "--hidden-import",
