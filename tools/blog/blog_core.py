@@ -430,25 +430,38 @@ class BlogWorkflow:
         asset_count = copy_folder(self.hexo_images_path, self.obsidian_assets_path, "*", log)
         return post_count, asset_count
 
-    def sync_to_hexo(self, log: LogFn | None = None) -> tuple[int, int, int]:
+    def sync_to_hexo(self, log: LogFn | None = None) -> tuple[int, int, int, int]:
         self.hexo_posts_path.mkdir(parents=True, exist_ok=True)
         self.hexo_images_path.mkdir(parents=True, exist_ok=True)
 
         post_count = 0
         draft_count = 0
+        removed_count = 0
         if self.obsidian_posts_path.exists():
+            expected: set[str] = set()
             for post in sorted(self.obsidian_posts_path.glob("*.md")):
+                if not post.is_file():
+                    continue
                 if is_draft_post(post):
                     draft_count += 1
                     continue
                 content = normalize_cover(post.read_text(encoding="utf-8-sig"), self.config.default_cover)
                 (self.hexo_posts_path / post.name).write_text(content, encoding="utf-8")
+                expected.add(post.name)
                 post_count += 1
+            # 镜像 Obsidian 的删除与改名：Hexo 中不再发布的文章（孤儿或已转草稿）必须移除，
+            # 否则改名会留下一份旧文件被当成新文章重复发布。
+            for hexo_post in sorted(self.hexo_posts_path.glob("*.md")):
+                if hexo_post.is_file() and hexo_post.name not in expected:
+                    hexo_post.unlink()
+                    removed_count += 1
+                    if log:
+                        log(f"已移除 Hexo 中不再发布的文章：{hexo_post.name}")
         elif log:
             log(f"Missing posts folder: {self.obsidian_posts_path}")
 
         asset_count = copy_folder(self.obsidian_assets_path, self.hexo_images_path, "*", log)
-        return post_count, draft_count, asset_count
+        return post_count, draft_count, asset_count, removed_count
 
     def build(self, log: LogFn | None = None) -> None:
         npm = self.npm_executable()
@@ -468,7 +481,7 @@ class BlogWorkflow:
             log("发布源码，GitHub Actions 会自动部署 GitHub Pages 和香港站点。")
         self.publish(log)
 
-    def all(self, log: LogFn | None = None) -> tuple[int, int, int]:
+    def all(self, log: LogFn | None = None) -> tuple[int, int, int, int]:
         result = self.sync_to_hexo(log)
         self.build(log)
         self.publish_all_targets(log)
@@ -621,7 +634,7 @@ def is_draft_post(path: Path) -> bool:
     match = re.match(r"(?s)^---\s*\r?\n(.*?)\r?\n---", content)
     if not match:
         return False
-    return re.search(r"(?im)^\s*draft\s*:\s*true\s*$", match.group(1)) is not None
+    return re.search(r"(?im)^\s*draft\s*:\s*[\"']?true[\"']?\s*$", match.group(1)) is not None
 
 
 def normalize_cover(content: str, default_cover: str) -> str:

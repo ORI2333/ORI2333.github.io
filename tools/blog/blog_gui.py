@@ -189,8 +189,8 @@ class Worker(QObject):
                 posts, assets = workflow.import_to_obsidian(self.log.emit)
                 self.done.emit(f"已导入 {posts} 篇文章和 {assets} 个资源。")
             elif self.action == "sync":
-                posts, drafts, assets = workflow.sync_to_hexo(self.log.emit)
-                self.done.emit(f"已同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源。")
+                posts, drafts, assets, removed = workflow.sync_to_hexo(self.log.emit)
+                self.done.emit(f"已同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源，清理 {removed} 篇失效文章。")
             elif self.action == "build":
                 workflow.build(self.log.emit)
                 self.done.emit("构建完成。")
@@ -201,8 +201,8 @@ class Worker(QObject):
                 workflow.deploy_hk(self.log.emit)
                 self.done.emit("香港站点部署完成。")
             elif self.action == "all":
-                posts, drafts, assets = workflow.all(self.log.emit)
-                self.done.emit(f"全部完成：同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源。")
+                posts, drafts, assets, removed = workflow.all(self.log.emit)
+                self.done.emit(f"全部完成：同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源，清理 {removed} 篇失效文章。")
             elif self.action == "open-vault":
                 open_path(workflow.require_vault())
                 self.done.emit("已打开 Obsidian 库。")
