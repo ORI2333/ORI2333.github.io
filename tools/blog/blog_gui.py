@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import re
 import sys
+import webbrowser
 from pathlib import Path
 
 try:
-    from PySide6.QtCore import QObject, QProcess, QThread, Signal as pyqtSignal
+    from PySide6.QtCore import QObject, QProcess, QThread, QTimer, Signal as pyqtSignal
     from PySide6.QtWidgets import (
         QApplication,
         QDialog,
@@ -25,7 +27,7 @@ try:
     )
 except ModuleNotFoundError:
     try:
-        from PyQt6.QtCore import QObject, QProcess, QThread, pyqtSignal
+        from PyQt6.QtCore import QObject, QProcess, QThread, QTimer, pyqtSignal
         from PyQt6.QtWidgets import (
             QApplication,
             QDialog,
@@ -45,7 +47,7 @@ except ModuleNotFoundError:
             QWidget,
         )
     except ModuleNotFoundError:
-        from PyQt5.QtCore import QObject, QProcess, QThread, pyqtSignal
+        from PyQt5.QtCore import QObject, QProcess, QThread, QTimer, pyqtSignal
         from PyQt5.QtWidgets import (
             QApplication,
             QDialog,
@@ -184,7 +186,7 @@ class Worker(QObject):
             elif self.action == "new":
                 assert self.value is not None
                 path = workflow.create_post(self.value, open_after=True)
-                self.done.emit(f"已创建草稿：{path}")
+                self.done.emit(f"已创建新文章：{path}\n模板默认 draft: true，属于私有草稿；在 Obsidian 属性里取消 draft 勾选后，点“一键完成”即可发布。")
             elif self.action == "import":
                 posts, assets = workflow.import_to_obsidian(self.log.emit)
                 self.done.emit(f"已导入 {posts} 篇文章和 {assets} 个资源。")
@@ -194,12 +196,11 @@ class Worker(QObject):
             elif self.action == "build":
                 workflow.build(self.log.emit)
                 self.done.emit("构建完成。")
-            elif self.action == "publish":
-                workflow.publish_all_targets(self.log.emit)
-                self.done.emit("发布完成。")
-            elif self.action == "deploy-hk":
-                workflow.deploy_hk(self.log.emit)
-                self.done.emit("香港站点部署完成。")
+            elif self.action == "rename-post":
+                assert self.value is not None
+                file_name, new_title = self.value.split("\n", 1)
+                workflow.set_post_title(file_name, new_title)
+                self.done.emit(f"已修改标题：{new_title}\n文件名与文章 URL 保持不变。\n点“一键完成”发布后线上生效。")
             elif self.action == "all":
                 posts, drafts, assets, removed = workflow.all(self.log.emit)
                 self.done.emit(f"全部完成：同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源，清理 {removed} 篇失效文章。")
@@ -319,6 +320,7 @@ class BlogWindow(QMainWindow):
         self.thread: QThread | None = None
         self.worker: Worker | None = None
         self.process: QProcess | None = None
+        self.preview_opened = False
 
         self.setWindowTitle("ORI 博客工作台")
         self.resize(1080, 720)
@@ -400,23 +402,22 @@ class BlogWindow(QMainWindow):
 
         row1 = QHBoxLayout()
         row1.setSpacing(8)
-        row1.addWidget(self.button("新建草稿", self.new_post, "primary"))
+        row1.addWidget(self.button("新建文章", self.new_post, "primary"))
         row1.addWidget(self.button("同步到 Hexo", lambda: self.run_worker("sync"), "primary"))
         row1.addWidget(self.button("构建检查", lambda: self.run_worker("build")))
         row1.addWidget(self.button("本地预览", self.preview))
-        row1.addWidget(self.button("发布全站", lambda: self.run_worker("publish"), "danger"))
-        row1.addWidget(self.button("一键完成", lambda: self.run_worker("all"), "danger"))
+        row1.addWidget(self.button("一键完成（同步+构建+发布）", lambda: self.run_worker("all"), "danger"))
         layout.addLayout(row1)
 
         row2 = QHBoxLayout()
         row2.setSpacing(8)
+        row2.addWidget(self.button("修改标题", self.rename_post))
         row2.addWidget(self.button("选择封面", self.pick_cover_file))
         row2.addWidget(self.button("封面 URL", self.set_cover_url))
         row2.addWidget(self.button("删除文章", self.delete_post, "danger"))
         row2.addWidget(self.button("导入到 Obsidian", lambda: self.run_worker("import")))
         row2.addWidget(self.button("打开 Obsidian", lambda: self.run_worker("open-vault")))
         row2.addWidget(self.button("环境检查", lambda: self.run_worker("check-env")))
-        row2.addWidget(self.button("查看状态", lambda: self.run_worker("status")))
         row2.addStretch(1)
         layout.addLayout(row2)
         return frame
@@ -458,9 +459,23 @@ class BlogWindow(QMainWindow):
         return btn
 
     def new_post(self) -> None:
-        title, ok = QInputDialog.getText(self, "新建草稿", "文章标题：")
+        title, ok = QInputDialog.getText(self, "新建文章", "文章标题：")
         if ok and title.strip():
             self.run_worker("new", title.strip())
+
+    def rename_post(self) -> None:
+        name = self.choose_post("选择要修改标题的文章", "只改页面显示的标题，不改文件名和 URL。改完点“一键完成”发布生效。", "选择文章")
+        if not name:
+            return
+        current = read_post_title(self.workflow.obsidian_posts_path / name)
+        new_title, ok = QInputDialog.getText(self, "修改文章标题", "新标题：", text=current)
+        if not ok:
+            return
+        new_title = new_title.strip()
+        if not new_title or new_title == current:
+            self.write_log("标题未变化，已取消。")
+            return
+        self.run_worker("rename-post", f"{name}\n{new_title}")
 
     def pick_cover_file(self) -> None:
         name = self.choose_post("选择要更换封面的文章", "先选择文章，再选择本地封面图片。", "选择文章")
@@ -596,6 +611,7 @@ class BlogWindow(QMainWindow):
             QMessageBox.information(self, "本地预览", "预览服务已经在运行。")
             return
         port = str(self.workflow.config.preferred_preview_port)
+        self.preview_opened = False
         self.write_log(f"\n> npm run server -- -p {port}")
         self.process = QProcess(self)
         self.process.setWorkingDirectory(str(self.workflow.repo_root))
@@ -605,6 +621,16 @@ class BlogWindow(QMainWindow):
         self.process.readyReadStandardError.connect(self.read_process_output)
         self.process.finished.connect(self.preview_finished)
         self.process.start()
+        QTimer.singleShot(8000, self.preview_fallback_open)
+
+    def preview_fallback_open(self) -> None:
+        if self.process is not None and not self.preview_opened:
+            self.open_preview_browser(f"http://localhost:{self.workflow.config.preferred_preview_port}/")
+
+    def open_preview_browser(self, url: str) -> None:
+        self.preview_opened = True
+        self.write_log(f"已在浏览器打开：{url}")
+        webbrowser.open(url)
 
     def read_process_output(self) -> None:
         assert self.process is not None
@@ -613,6 +639,10 @@ class BlogWindow(QMainWindow):
         for text in (data, err):
             if text:
                 self.write_log(text.rstrip())
+                if not self.preview_opened:
+                    match = re.search(r"http://localhost:\d+[^\s]*", text)
+                    if match:
+                        self.open_preview_browser(match.group(0).rstrip("."))
 
     def preview_finished(self) -> None:
         self.write_log("预览服务已停止。")

@@ -369,6 +369,18 @@ class BlogWorkflow:
         updated = set_front_matter_field(content, "cover", cover_value)
         post.write_text(updated, encoding="utf-8")
 
+    def set_post_title(self, file_name: str, new_title: str) -> Path:
+        new_title = new_title.strip()
+        if not new_title:
+            raise ValueError("标题不能为空。")
+        post = self.obsidian_posts_path / file_name
+        if not post.exists() or not post.is_file():
+            raise FileNotFoundError(f"Obsidian post not found: {post}")
+        content = post.read_text(encoding="utf-8-sig")
+        updated = set_front_matter_field(content, "title", yaml_scalar(new_title))
+        post.write_text(updated, encoding="utf-8")
+        return post
+
     def list_obsidian_posts(self) -> list[Path]:
         if not self.obsidian_posts_path.exists():
             return []
