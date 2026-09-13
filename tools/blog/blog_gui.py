@@ -67,7 +67,7 @@ except ModuleNotFoundError:
             QWidget,
         )
 
-from blog_core import BlogWorkflow, open_path
+from blog_core import BlogWorkflow, open_path, strip_ansi
 
 
 DELETE_KEEP_OBSIDIAN = "keep-obsidian"
@@ -638,11 +638,12 @@ class BlogWindow(QMainWindow):
         err = bytes(self.process.readAllStandardError()).decode(errors="replace")
         for text in (data, err):
             if text:
+                text = strip_ansi(text)
                 self.write_log(text.rstrip())
                 if not self.preview_opened:
-                    match = re.search(r"http://localhost:\d+[^\s]*", text)
+                    match = re.search(r"http://localhost:\d+/[\w\-./~:%?#&=@+]*", text)
                     if match:
-                        self.open_preview_browser(match.group(0).rstrip("."))
+                        self.open_preview_browser(match.group(0).rstrip("./"))
 
     def preview_finished(self) -> None:
         self.write_log("预览服务已停止。")
