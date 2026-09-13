@@ -40,7 +40,7 @@ GitHub Actions 使用 `hk-deploy` 分支作为临时静态包：服务器通过 
 
 - `https://blog.orixx.xyz/` 是站点选择页，支持黑白主题切换、中英文切换和自动推荐访问线路。
 - `https://blog.orixx.xyz/s/<短ID>` 是文章分享短链入口，会读取 `share-map.json` 并让读者选择香港、EdgeOne 或 GitHub Pages 线路打开同一篇文章。
-- 文章页面 canonical 使用 `/s/<短ID>/`；香港正文因站点挂载在 `/blog/` 下，实际为 `/blog/s/<短ID>/`。旧的日期/中文路径会跳转到对应短路径。
+- 文章页面 canonical 使用短路径；香港正文因站点挂载在 `/blog/` 下，实际为 `/blog/s/<短ID>/`。不生成旧日期/中文路径，也不保留旧路径跳转。
 - `https://blog.orixx.xyz/admin/` 是私有访问统计后台，需要账号密码登录。
 - 旧的 `/hk/` 路径会重定向到 `/blog/`。
 - 选择页的三个入口在 `tools/hk_deploy/hk_deploy.config.json` 中维护：`edgeOneUrl`、`hkBlogPath`、`githubPagesUrl`。
