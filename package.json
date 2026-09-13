@@ -42,6 +42,7 @@
     "hexo-renderer-marked": "^7.0.0",
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
-    "hexo-theme-kratos-rebirth": "^3.0.1"
+    "hexo-theme-kratos-rebirth": "^3.0.1",
+    "katex": "0.18.7"
   }
 }
