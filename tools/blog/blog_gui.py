@@ -191,8 +191,8 @@ class Worker(QObject):
                 posts, assets = workflow.import_to_obsidian(self.log.emit)
                 self.done.emit(f"已导入 {posts} 篇文章和 {assets} 个资源。")
             elif self.action == "sync":
-                posts, drafts, assets, removed = workflow.sync_to_hexo(self.log.emit)
-                self.done.emit(f"已同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源，清理 {removed} 篇失效文章。")
+                posts, drafts, assets, removed, drawings = workflow.sync_to_hexo(self.log.emit)
+                self.done.emit(f"已同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源，清理 {removed} 篇失效文章，转换 {drawings} 张 Excalidraw 绘图。")
             elif self.action == "build":
                 workflow.build(self.log.emit)
                 self.done.emit("构建完成。")
@@ -202,8 +202,8 @@ class Worker(QObject):
                 workflow.set_post_title(file_name, new_title)
                 self.done.emit(f"已修改标题：{new_title}\n文件名与文章 URL 保持不变。\n点“一键完成”发布后线上生效。")
             elif self.action == "all":
-                posts, drafts, assets, removed = workflow.all(self.log.emit)
-                self.done.emit(f"全部完成：同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源，清理 {removed} 篇失效文章。")
+                posts, drafts, assets, removed, drawings = workflow.all(self.log.emit)
+                self.done.emit(f"全部完成：同步 {posts} 篇文章，跳过 {drafts} 篇草稿，复制 {assets} 个资源，清理 {removed} 篇失效文章，转换 {drawings} 张 Excalidraw 绘图。")
             elif self.action == "open-vault":
                 open_path(workflow.require_vault())
                 self.done.emit("已打开 Obsidian 库。")
@@ -321,6 +321,7 @@ class BlogWindow(QMainWindow):
         self.worker: Worker | None = None
         self.process: QProcess | None = None
         self.preview_opened = False
+        self.preview_url: str | None = None
 
         self.setWindowTitle("ORI 博客工作台")
         self.resize(1080, 720)
@@ -608,7 +609,10 @@ class BlogWindow(QMainWindow):
 
     def preview(self) -> None:
         if self.process is not None:
-            QMessageBox.information(self, "本地预览", "预览服务已经在运行。")
+            # 服务已在运行：直接重新打开浏览器（比如标签页被关了），不再弹窗打断
+            url = self.preview_url or f"http://localhost:{self.workflow.config.preferred_preview_port}/"
+            self.write_log(f"预览服务已在运行，重新打开：{url}")
+            webbrowser.open(url)
             return
         port = str(self.workflow.config.preferred_preview_port)
         self.preview_opened = False
@@ -629,6 +633,7 @@ class BlogWindow(QMainWindow):
 
     def open_preview_browser(self, url: str) -> None:
         self.preview_opened = True
+        self.preview_url = url
         self.write_log(f"已在浏览器打开：{url}")
         webbrowser.open(url)
 
@@ -647,6 +652,8 @@ class BlogWindow(QMainWindow):
 
     def preview_finished(self) -> None:
         self.write_log("预览服务已停止。")
+        if self.process is not None:
+            self.process.deleteLater()
         self.process = None
 
     def task_done(self, message: str) -> None:

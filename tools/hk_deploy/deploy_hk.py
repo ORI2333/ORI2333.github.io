@@ -300,6 +300,8 @@ def rewrite_hk_asset_paths(public_dir: Path, blog_path: str) -> None:
         'url(/icons/': f'url({blog_path}/icons/',
         "url('/icons/": f"url('{blog_path}/icons/",
         'url("/icons/': f'url("{blog_path}/icons/',
+        'href="/js/': f'href="{blog_path}/js/',
+        'src="/js/': f'src="{blog_path}/js/',
     }
     for path in blog_public_dir.rglob("*"):
         if not path.is_file():

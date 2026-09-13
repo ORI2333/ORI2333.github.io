@@ -31,7 +31,7 @@ f(P) = (1 - d_x)(1 - d_y) f(Q_{11}) + d_x(1 - d_y) f(Q_{21}) + (1 - d_x)d_y f(Q_
 $$
 
 **原理实例化：**
-![[ISP之常用图像缩放算法 2025-07-25 20.53.47.excalidraw]]
+![ISP之常用图像缩放算法 2025-07-25 20.53.47](/images/posts/excalidraw/ISP之常用图像缩放算法-1.svg)
 
 ## 笔者理论改进
 笔者最终目标是实现再FPGA可以高效运行的双线性插值，为此需要在一开始从算法层面去改进。出于习惯，个人觉得以下公式更清晰：
@@ -401,7 +401,7 @@ def bilinear_verilog_optimized(src_img, dst_shape):
 
 ## FPGA实现
 ### 模块设计
-![[ISP之常用图像缩放算法 2025-07-26 19.32.04.excalidraw|2000]]
+![ISP之常用图像缩放算法 2025-07-26 19.32.04](/images/posts/excalidraw/ISP之常用图像缩放算法-2.svg)
 
 
 # BUG日志

@@ -47,6 +47,8 @@ def main() -> int:
         "blog_core",
         "--hidden-import",
         "blog_cli",
+        "--hidden-import",
+        "excalidraw_svg",
         "--add-data",
         f"{REPO_ROOT / 'tools' / 'blog' / 'blog.config.json'};tools/blog",
         "--add-data",

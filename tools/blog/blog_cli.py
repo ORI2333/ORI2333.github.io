@@ -30,8 +30,8 @@ def main() -> int:
             posts, assets = workflow.import_to_obsidian(print)
             print(f"Imported {posts} post(s) and {assets} asset(s).")
         elif args.action == "sync":
-            posts, drafts, assets, removed = workflow.sync_to_hexo(print)
-            print(f"Synced {posts} post(s), skipped {drafts} draft(s), copied {assets} asset(s), removed {removed} stale post(s).")
+            posts, drafts, assets, removed, drawings = workflow.sync_to_hexo(print)
+            print(f"Synced {posts} post(s), skipped {drafts} draft(s), copied {assets} asset(s), removed {removed} stale post(s), converted {drawings} excalidraw drawing(s).")
         elif args.action == "build":
             workflow.build(print)
         elif args.action == "preview":
@@ -41,8 +41,8 @@ def main() -> int:
         elif args.action == "deploy-hk":
             workflow.deploy_hk(print)
         elif args.action == "all":
-            posts, drafts, assets, removed = workflow.all(print)
-            print(f"Synced {posts} post(s), skipped {drafts} draft(s), copied {assets} asset(s), removed {removed} stale post(s).")
+            posts, drafts, assets, removed, drawings = workflow.all(print)
+            print(f"Synced {posts} post(s), skipped {drafts} draft(s), copied {assets} asset(s), removed {removed} stale post(s), converted {drawings} excalidraw drawing(s).")
         elif args.action == "open-vault":
             open_path(workflow.require_vault())
     except Exception as exc:

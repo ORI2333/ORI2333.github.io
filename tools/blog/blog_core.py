@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, Iterable
 
+from excalidraw_svg import excalidraw_text_to_svg
 
 LogFn = Callable[[str], None]
 
@@ -442,13 +443,77 @@ class BlogWorkflow:
         asset_count = copy_folder(self.hexo_images_path, self.obsidian_assets_path, "*", log)
         return post_count, asset_count
 
-    def sync_to_hexo(self, log: LogFn | None = None) -> tuple[int, int, int, int]:
+    def resolve_excalidraw_embeds(self, content: str, post: Path, log: LogFn | None = None) -> tuple[str, int]:
+        """把 Obsidian 的 ![[xxx.excalidraw]] 嵌入替换为标准 Markdown 图片。
+
+        Hexo 不解析 wiki 嵌入；插件的自动导出也默认关闭（库里只有压缩场景
+        JSON）。这里优先使用插件已导出的同名 SVG/PNG；否则用 excalidraw_svg
+        从场景数据生成 SVG，统一写入 source/images/posts/excalidraw/。
+        """
+        vault = self.require_vault()
+        search_dirs = (vault / "Excalidraw", self.obsidian_posts_path, self.obsidian_assets_path)
+        target_dir = self.hexo_images_path / "excalidraw"
+        count = 0
+
+        def find_drawing(stem: str) -> Path | None:
+            for folder in search_dirs:
+                candidate = folder / f"{stem}.md"
+                if candidate.exists():
+                    return candidate
+            matches = list(vault.rglob(f"{stem}.md"))
+            return matches[0] if matches else None
+
+        def find_export(stem: str) -> Path | None:
+            for suffix in (".svg", ".png"):
+                for folder in search_dirs:
+                    candidate = folder / f"{stem}{suffix}"
+                    if candidate.exists():
+                        return candidate
+            return None
+
+        def replace(match: re.Match) -> str:
+            nonlocal count
+            raw_name = match.group(1).strip()
+            stem = raw_name[:-3] if raw_name.lower().endswith(".md") else raw_name
+            if not stem.lower().endswith(".excalidraw"):
+                return match.group(0)
+            alt = Path(stem).stem
+            export = find_export(stem)
+            if export is not None:
+                dest = target_dir / f"{post.stem}-{count + 1}{export.suffix.lower()}"
+                target_dir.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(export, dest)
+            else:
+                drawing = find_drawing(stem)
+                if drawing is None:
+                    if log:
+                        log(f"警告：找不到 Excalidraw 绘图文件，嵌入原样保留：{raw_name}")
+                    return match.group(0)
+                try:
+                    svg = excalidraw_text_to_svg(drawing.read_text(encoding="utf-8-sig"))
+                except Exception as exc:
+                    if log:
+                        log(f"警告：Excalidraw 转换失败，嵌入原样保留：{raw_name}（{exc}）")
+                    return match.group(0)
+                dest = target_dir / f"{post.stem}-{count + 1}.svg"
+                target_dir.mkdir(parents=True, exist_ok=True)
+                dest.write_text(svg, encoding="utf-8")
+            count += 1
+            if log:
+                log(f"已转换 Excalidraw 绘图：{dest.name}")
+            return f"![{alt}](/images/posts/excalidraw/{dest.name})"
+
+        resolved = re.sub(r"!\[\[([^\]\|]+?)\s*(?:\|[^\]]*)?\]\]", replace, content)
+        return resolved, count
+
+    def sync_to_hexo(self, log: LogFn | None = None) -> tuple[int, int, int, int, int]:
         self.hexo_posts_path.mkdir(parents=True, exist_ok=True)
         self.hexo_images_path.mkdir(parents=True, exist_ok=True)
 
         post_count = 0
         draft_count = 0
         removed_count = 0
+        drawing_count = 0
         if self.obsidian_posts_path.exists():
             expected: set[str] = set()
             for post in sorted(self.obsidian_posts_path.glob("*.md")):
@@ -458,6 +523,8 @@ class BlogWorkflow:
                     draft_count += 1
                     continue
                 content = normalize_cover(post.read_text(encoding="utf-8-sig"), self.config.default_cover)
+                content, drawings = self.resolve_excalidraw_embeds(content, post, log)
+                drawing_count += drawings
                 (self.hexo_posts_path / post.name).write_text(content, encoding="utf-8")
                 expected.add(post.name)
                 post_count += 1
@@ -473,7 +540,7 @@ class BlogWorkflow:
             log(f"Missing posts folder: {self.obsidian_posts_path}")
 
         asset_count = copy_folder(self.obsidian_assets_path, self.hexo_images_path, "*", log)
-        return post_count, draft_count, asset_count, removed_count
+        return post_count, draft_count, asset_count, removed_count, drawing_count
 
     def build(self, log: LogFn | None = None) -> None:
         npm = self.npm_executable()
@@ -493,7 +560,7 @@ class BlogWorkflow:
             log("发布源码，GitHub Actions 会自动部署 GitHub Pages 和香港站点。")
         self.publish(log)
 
-    def all(self, log: LogFn | None = None) -> tuple[int, int, int, int]:
+    def all(self, log: LogFn | None = None) -> tuple[int, int, int, int, int]:
         result = self.sync_to_hexo(log)
         self.build(log)
         self.publish_all_targets(log)
