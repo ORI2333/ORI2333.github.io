@@ -296,7 +296,7 @@ class BlogWorkflow:
         post_dir.mkdir(parents=True, exist_ok=True)
 
         now = datetime.now()
-        file_name = f"{now:%Y-%m-%d}-{safe_file_name(title)}.md"
+        file_name = f"{safe_file_name(title)}.md"
         target = post_dir / file_name
         if target.exists():
             raise FileExistsError(f"File already exists: {target}")

@@ -46,7 +46,7 @@ GitHub Actions 使用 `hk-deploy` 分支作为临时静态包：服务器通过 
 - 选择页的三个入口在 `tools/hk_deploy/hk_deploy.config.json` 中维护：`edgeOneUrl`、`hkBlogPath`、`githubPagesUrl`。
 - HTTPS 使用 Let's Encrypt。证书有效期 90 天，服务器上需要保持 `certbot.timer` 或等效 cron 续签任务启用。
 - 香港部署会使用 `tools/hk_deploy/_config.hk.yml` 覆盖 Hexo 的 `url`，避免页面 canonical 仍指向 GitHub Pages。
-- 香港部署会自动根据 `/blog/yyyy/mm/dd/.../index.html` 生成根目录的 `share-map.json`，不要手动维护短链映射。
+- 香港部署会自动根据 `/blog/yyyy/mm/dd/.../index.html` 生成根目录的 `share-map.json`；GitHub Pages 构建会生成同域名 `/s/<短ID>/` 入口，不要手动维护短链映射。
 
 访问统计后台：
 
