@@ -14,7 +14,9 @@ categories:
 draft: false
 cover: https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163917125.png?imageSlim
 ---
+本项目提出一种基于SAC双教师蒸馏的感知驱动自适应CLAHE方案，通过离线强化学习训练与量化感知蒸馏生成轻量化学生网络，解决了传统固定参数在复杂光照下适应性差的问题。硬件侧采用流式像素架构与算子优化在Xilinx Kintex-7 FPGA上实现低延迟部署，相关成果已发表于CCF B类期刊ACM TECS。
 
+<!-- more -->
 ## 摘要
 
 对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉和嵌入式成像。其核心参数 Clip Limit 决定局部细节增强与噪声抑制之间的平衡：阈值过大容易放大噪声、破坏自然场景统计；阈值过小则难以恢复暗部纹理。固定 Clip Limit 在经过人工调参的单一场景中可以表现良好，但面对低照度、雾霾、过曝和连续光照变化时，参数缺乏适应性。
@@ -35,8 +37,6 @@ cover: https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidi
 | 等级   | CCF B类、SCI                                                                                                                                              |
 
 
-
-<!-- more -->
 
 ## 1. 引言
 
