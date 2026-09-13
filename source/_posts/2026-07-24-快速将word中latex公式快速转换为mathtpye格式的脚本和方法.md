@@ -1,6 +1,6 @@
 ---
-title: '快速将 Word 中 LaTeX 公式批量转为 MathType 的脚本与方法（Python）'
-date: '2026-07-24 00:17:24'
+title: 快速将 Word 中 LaTeX 公式批量转为 MathType 的脚本与方法（Python）
+date: 2026-07-24 00:17:24
 tags:
   - Word
   - MathType
@@ -9,7 +9,7 @@ tags:
   - 专利写作
   - Windows自动化
 categories:
-  - docs
+  - 小制作
 cover: https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260729225101944.png?imageSlim
 draft: false
 ---

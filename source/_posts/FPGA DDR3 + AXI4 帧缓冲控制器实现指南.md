@@ -3,9 +3,9 @@ title: FPGA DDR3 + AXI4 帧缓冲控制器实现指南
 date: 2026.05.15
 cover: /images/posts/上伊.webp
 tags:
-    - ISP
-    - FPGA
-    - 图像处理
+  - ISP
+  - FPGA
+  - 图像处理
 ---
 
 

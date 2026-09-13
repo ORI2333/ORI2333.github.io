@@ -10,7 +10,7 @@ tags:
   - 水表质检
   - 软硬协同
 categories:
-  - docs
+  - 项目
 cover: https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260621202056347.png?imageSlim
 draft: false
 ---
