@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ori2333.github.io/images/posts/ODDR.webp">
 <meta property="article:published_time" content="2026-04-18T00:00:00.000Z">
-<meta property="article:modified_time" content="2026-09-13T09:17:36.750Z">
+<meta property="article:modified_time" content="2026-09-13T09:35:58.109Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="FPGA">
 <meta property="article:tag" content="ISP">
@@ -40,7 +40,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"ODDR原语说明","description":"ODDR（Output Double Data Rate，双数据率输出）原语是 FPGA 内部（特别是 Xilinx FPGA 的 I&#x2F;O 模块中）一个非常重要的底层硬件资源。\n简单来说，它的核心功能是：在一个时钟周期内，利用时钟的上升沿和下降沿向外部引脚发送两次...","image":"https://ori2333.github.io/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/images/posts/ODDR.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-04-18T00:00:00.000Z","dateModified":"2026-09-13T09:17:36.750Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"ODDR原语说明","description":"ODDR（Output Double Data Rate，双数据率输出）原语是 FPGA 内部（特别是 Xilinx FPGA 的 I&#x2F;O 模块中）一个非常重要的底层硬件资源。\n简单来说，它的核心功能是：在一个时钟周期内，利用时钟的上升沿和下降沿向外部引脚发送两次...","image":"https://ori2333.github.io/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/images/posts/ODDR.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-04-18T00:00:00.000Z","dateModified":"2026-09-13T09:35:58.109Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/04/18/ODDR%EF%BC%88Xilinx%20%E5%8E%9F%E8%AF%AD%EF%BC%89/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -307,7 +307,7 @@
                     <a class="tag-none-link" href="/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/tags/ISP/" rel="tag">ISP</a>, <a class="tag-none-link" href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag">图像处理</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-09-13T09:17:36.750Z" itemprop="dateModified">最后编辑：2026-09-13</time>
+                    <time datetime="2026-09-13T09:35:58.109Z" itemprop="dateModified">最后编辑：2026-09-13</time>
                 </div>
             </div>
         </footer>
@@ -681,6 +681,10 @@
   #kr-share-modal .ori-share-link{flex-direction:column;align-items:stretch;}
   #kr-share-modal .ori-share-copy{width:100%;}
 }
+.math-display{max-width:100%;margin:1rem 0;overflow-x:auto;overflow-y:hidden;padding:.35rem .15rem;text-align:center;}
+.math-display>.katex-display{margin:0;}
+.math-inline{display:inline;}
+.math .katex{font-size:1.04em;}
 </style>
 <script>
 window.__COMMENTS_ENABLED=false;
@@ -917,6 +921,68 @@ window.__COMMENTS_ENABLED=false;
   }
   function setup(){
     if (document.querySelector('.mermaid[data-code]')) { watchTheme(); renderPending(); }
+  }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });
+})();
+</script>
+<script>
+(function(){
+  var KATEX_ROOT = window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/';
+  var KATEX_CSS = KATEX_ROOT + 'css/vendor/katex.min.css';
+  var KATEX_JS = KATEX_ROOT + 'js/vendor/katex.min.js';
+  var stylePromise = null;
+  var scriptPromise = null;
+  function ensureStyle(){
+    if (stylePromise !== null) return stylePromise;
+    stylePromise = new Promise(function(resolve, reject){
+      var existing = document.getElementById('ori-katex-css');
+      if (existing) { resolve(); return; }
+      var link = document.createElement('link');
+      link.id = 'ori-katex-css';
+      link.rel = 'stylesheet';
+      link.href = KATEX_CSS;
+      link.onload = resolve;
+      link.onerror = function(){ stylePromise = null; reject(new Error('KaTeX stylesheet load failed')); };
+      document.head.appendChild(link);
+    });
+    return stylePromise;
+  }
+  function ensureKaTeX(){
+    if (window.katex) return Promise.resolve(window.katex);
+    if (scriptPromise !== null) return scriptPromise;
+    scriptPromise = new Promise(function(resolve, reject){
+      var script = document.createElement('script');
+      script.src = KATEX_JS;
+      script.onload = function(){ resolve(window.katex); };
+      script.onerror = function(){ scriptPromise = null; reject(new Error('KaTeX script load failed')); };
+      document.head.appendChild(script);
+    });
+    return scriptPromise;
+  }
+  function renderPending(){
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.math[data-tex]'));
+    nodes = nodes.filter(function(node){ return node.getAttribute('data-rendered') !== 'true'; });
+    if (nodes.length === 0) return;
+    Promise.all([ensureStyle(), ensureKaTeX()]).then(function(results){
+      var katex = results[1];
+      nodes.forEach(function(node){
+        try {
+          katex.render(decodeURIComponent(node.getAttribute('data-tex') || ''), node, {
+            displayMode: node.classList.contains('math-display'),
+            throwOnError: false,
+            strict: 'warn',
+            trust: false,
+          });
+          node.setAttribute('data-rendered', 'true');
+        } catch (error) {
+          node.classList.add('math-error');
+        }
+      });
+    }).catch(function(){ /* 资源加载失败时保留 TeX 源码 */ });
+  }
+  function setup(){
+    if (document.querySelector('.math[data-tex]')) renderPending();
   }
   document.addEventListener('DOMContentLoaded', setup);
   window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });

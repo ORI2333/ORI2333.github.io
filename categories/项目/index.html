@@ -824,6 +824,10 @@
   #kr-share-modal .ori-share-link{flex-direction:column;align-items:stretch;}
   #kr-share-modal .ori-share-copy{width:100%;}
 }
+.math-display{max-width:100%;margin:1rem 0;overflow-x:auto;overflow-y:hidden;padding:.35rem .15rem;text-align:center;}
+.math-display>.katex-display{margin:0;}
+.math-inline{display:inline;}
+.math .katex{font-size:1.04em;}
 </style>
 <script>
 window.__COMMENTS_ENABLED=false;
@@ -1060,6 +1064,68 @@ window.__COMMENTS_ENABLED=false;
   }
   function setup(){
     if (document.querySelector('.mermaid[data-code]')) { watchTheme(); renderPending(); }
+  }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });
+})();
+</script>
+<script>
+(function(){
+  var KATEX_ROOT = window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/';
+  var KATEX_CSS = KATEX_ROOT + 'css/vendor/katex.min.css';
+  var KATEX_JS = KATEX_ROOT + 'js/vendor/katex.min.js';
+  var stylePromise = null;
+  var scriptPromise = null;
+  function ensureStyle(){
+    if (stylePromise !== null) return stylePromise;
+    stylePromise = new Promise(function(resolve, reject){
+      var existing = document.getElementById('ori-katex-css');
+      if (existing) { resolve(); return; }
+      var link = document.createElement('link');
+      link.id = 'ori-katex-css';
+      link.rel = 'stylesheet';
+      link.href = KATEX_CSS;
+      link.onload = resolve;
+      link.onerror = function(){ stylePromise = null; reject(new Error('KaTeX stylesheet load failed')); };
+      document.head.appendChild(link);
+    });
+    return stylePromise;
+  }
+  function ensureKaTeX(){
+    if (window.katex) return Promise.resolve(window.katex);
+    if (scriptPromise !== null) return scriptPromise;
+    scriptPromise = new Promise(function(resolve, reject){
+      var script = document.createElement('script');
+      script.src = KATEX_JS;
+      script.onload = function(){ resolve(window.katex); };
+      script.onerror = function(){ scriptPromise = null; reject(new Error('KaTeX script load failed')); };
+      document.head.appendChild(script);
+    });
+    return scriptPromise;
+  }
+  function renderPending(){
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.math[data-tex]'));
+    nodes = nodes.filter(function(node){ return node.getAttribute('data-rendered') !== 'true'; });
+    if (nodes.length === 0) return;
+    Promise.all([ensureStyle(), ensureKaTeX()]).then(function(results){
+      var katex = results[1];
+      nodes.forEach(function(node){
+        try {
+          katex.render(decodeURIComponent(node.getAttribute('data-tex') || ''), node, {
+            displayMode: node.classList.contains('math-display'),
+            throwOnError: false,
+            strict: 'warn',
+            trust: false,
+          });
+          node.setAttribute('data-rendered', 'true');
+        } catch (error) {
+          node.classList.add('math-error');
+        }
+      });
+    }).catch(function(){ /* 资源加载失败时保留 TeX 源码 */ });
+  }
+  function setup(){
+    if (document.querySelector('.math[data-tex]')) renderPending();
   }
   document.addEventListener('DOMContentLoaded', setup);
   window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });

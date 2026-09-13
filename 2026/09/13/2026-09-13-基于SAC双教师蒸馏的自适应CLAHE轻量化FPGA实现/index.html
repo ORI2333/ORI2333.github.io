@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163917125.png?imageSlim">
 <meta property="article:published_time" content="2026-09-13T00:00:00.000Z">
-<meta property="article:modified_time" content="2026-09-13T09:17:36.750Z">
+<meta property="article:modified_time" content="2026-09-13T09:35:58.109Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="FPGA">
 <meta property="article:tag" content="图像增强">
@@ -43,7 +43,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现","description":"摘要对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉...","image":"https://ori2333.github.io/2026/09/13/2026-09-13-%E5%9F%BA%E4%BA%8ESAC%E5%8F%8C%E6%95%99%E5%B8%88%E8%92%B8%E9%A6%8F%E7%9A%84%E8%87%AA%E9%80%82%E5%BA%94CLAHE%E8%BD%BB%E9%87%8F%E5%8C%96FPGA%E5%AE%9E%E7%8E%B0/https:/obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163917125.png?imageSlim","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-09-13T00:00:00.000Z","dateModified":"2026-09-13T09:17:36.750Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/09/13/2026-09-13-%E5%9F%BA%E4%BA%8ESAC%E5%8F%8C%E6%95%99%E5%B8%88%E8%92%B8%E9%A6%8F%E7%9A%84%E8%87%AA%E9%80%82%E5%BA%94CLAHE%E8%BD%BB%E9%87%8F%E5%8C%96FPGA%E5%AE%9E%E7%8E%B0/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现","description":"摘要对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉...","image":"https://ori2333.github.io/2026/09/13/2026-09-13-%E5%9F%BA%E4%BA%8ESAC%E5%8F%8C%E6%95%99%E5%B8%88%E8%92%B8%E9%A6%8F%E7%9A%84%E8%87%AA%E9%80%82%E5%BA%94CLAHE%E8%BD%BB%E9%87%8F%E5%8C%96FPGA%E5%AE%9E%E7%8E%B0/https:/obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163917125.png?imageSlim","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-09-13T00:00:00.000Z","dateModified":"2026-09-13T09:35:58.109Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/09/13/2026-09-13-%E5%9F%BA%E4%BA%8ESAC%E5%8F%8C%E6%95%99%E5%B8%88%E8%92%B8%E9%A6%8F%E7%9A%84%E8%87%AA%E9%80%82%E5%BA%94CLAHE%E8%BD%BB%E9%87%8F%E5%8C%96FPGA%E5%AE%9E%E7%8E%B0/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -233,7 +233,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~13.32K
+                            ~14.62K
                         
                         字
                     </li>
@@ -324,29 +324,34 @@
 <p>离线阶段的教师可以利用丰富但不可部署的信息寻找更好的 Clip Limit 轨迹。在线阶段只保留从像素流中可以实时获得的低维特征，并使用定点学生 MLP 产生参数增量。CLAHE 主路径始终读取活动参数 Bank；控制器在后台计算并写入影子 Bank，帧边界仅执行一次恒定延迟的 Bank Select 切换。</p>
 <p>这种组织方式将“感知质量优化”和“像素节拍保证”放在两条不同的路径上处理。控制器的执行时间被限制在一个帧周期内，不参与每个像素的组合关键路径。</p>
 <p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913162931583.png?imageSlim" alt="image.png"></p>
-<h2 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h2><h3 id="3-1-控制目标与时间尺度"><a href="#3-1-控制目标与时间尺度" class="headerlink" title="3.1 控制目标与时间尺度"></a>3.1 控制目标与时间尺度</h3><p>控制量为 Clip Limit 的连续增量。设当前帧参数为 $CL_t$，学生网络输出为 $y_t$，则执行的更新为：</p>
-<p>$$<br>CL_{t+1}&#x3D;\operatorname{clip}\left(CL_t+\Delta CL_{\max}\tanh(y_t),\ CL_{\min},\ CL_{\max}\right)<br>$$</p>
-<p>论文中使用 $CL_{\min}&#x3D;0.1$、$CL_{\max}&#x3D;20.0$ 和 $\Delta CL_{\max}&#x3D;2.0$。<code>tanh</code> 将网络输出约束为有界增量，<code>clip</code> 对应 FPGA 中的饱和逻辑。Clip Limit 寄存器采用 Q4.12 格式。</p>
+<h2 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h2><h3 id="3-1-控制目标与时间尺度"><a href="#3-1-控制目标与时间尺度" class="headerlink" title="3.1 控制目标与时间尺度"></a>3.1 控制目标与时间尺度</h3><p>控制量为 Clip Limit 的连续增量。设当前帧参数为 <span class="math math-inline" data-tex="CL_t">CL&#95;t</span>，学生网络输出为 <span class="math math-inline" data-tex="y_t">y&#95;t</span>，则执行的更新为：</p>
+<div class="math math-display" data-tex="CL_%7Bt%2B1%7D%3D%5Coperatorname%7Bclip%7D%5Cleft(CL_t%2B%5CDelta%20CL_%7B%5Cmax%7D%5Ctanh(y_t)%2C%5C%20CL_%7B%5Cmin%7D%2C%5C%20CL_%7B%5Cmax%7D%5Cright)">CL&#95;&#123;t+1&#125;=\operatorname&#123;clip&#125;\left(CL&#95;t+\Delta CL&#95;&#123;\max&#125;\tanh(y&#95;t),\ CL&#95;&#123;\min&#125;,\ CL&#95;&#123;\max&#125;\right)</div>
+
+<p>论文中使用 <span class="math math-inline" data-tex="CL_%7B%5Cmin%7D%3D0.1">CL&#95;&#123;\min&#125;&#x3D;0.1</span>、<span class="math math-inline" data-tex="CL_%7B%5Cmax%7D%3D20.0">CL&#95;&#123;\max&#125;&#x3D;20.0</span> 和 <span class="math math-inline" data-tex="%5CDelta%20CL_%7B%5Cmax%7D%3D2.0">\Delta CL&#95;&#123;\max&#125;&#x3D;2.0</span>。<code>tanh</code> 将网络输出约束为有界增量，<code>clip</code> 对应 FPGA 中的饱和逻辑。Clip Limit 寄存器采用 Q4.12 格式。</p>
 <p>决策时域设为五步。这里的“五步”不是对同一帧重复五次图像增强：硬件中每帧只进行一次 CLAHE，通过帧边界提交一次新参数，因此五步对应连续五帧的渐进调整。离线训练用静态图像迭代五次来近似短时间窗口内场景统计量近似不变的情况。</p>
 <p>这一选择带来了明确边界：同一帧内发生的突发照度变化，需要等到下一帧边界后才能被控制器反映。该延迟是为了换取帧内参数一致性和主路径无停顿，而不是实现缺陷被忽略。</p>
 <h3 id="3-2-非对称观测与-MDP-建模"><a href="#3-2-非对称观测与-MDP-建模" class="headerlink" title="3.2 非对称观测与 MDP 建模"></a>3.2 非对称观测与 MDP 建模</h3><p>CLAHE 参数调节建模为有限时域 MDP：</p>
-<p>$$<br>\mathcal{M}&#x3D;(\mathcal{S},\mathcal{A},\mathcal{R},\gamma,N_{\text{step}})<br>$$</p>
+<div class="math math-display" data-tex="%5Cmathcal%7BM%7D%3D(%5Cmathcal%7BS%7D%2C%5Cmathcal%7BA%7D%2C%5Cmathcal%7BR%7D%2C%5Cgamma%2CN_%7B%5Ctext%7Bstep%7D%7D)">\mathcal&#123;M&#125;=(\mathcal&#123;S&#125;,\mathcal&#123;A&#125;,\mathcal&#123;R&#125;,\gamma,N&#95;&#123;\text&#123;step&#125;&#125;)</div>
+
 <p>部署状态只包含 FPGA 可计算的五维向量：</p>
-<p>$$<br>s_t^{\text{lite}}&#x3D;[\mu_t,\sigma_t^2,H_{2,t},CL_t,\hat{t}]\in\mathbb{R}^{5}<br>$$</p>
+<div class="math math-display" data-tex="s_t%5E%7B%5Ctext%7Blite%7D%7D%3D%5B%5Cmu_t%2C%5Csigma_t%5E2%2CH_%7B2%2Ct%7D%2CCL_t%2C%5Chat%7Bt%7D%5D%5Cin%5Cmathbb%7BR%7D%5E%7B5%7D">s&#95;t^&#123;\text&#123;lite&#125;&#125;=[\mu&#95;t,\sigma&#95;t^2,H&#95;&#123;2,t&#125;,CL&#95;t,\hat&#123;t&#125;]\in\mathbb&#123;R&#125;^&#123;5&#125;</div>
+
 <p>其中：</p>
 <ul>
-<li>$\mu_t$：归一化均值；</li>
-<li>$\sigma_t^2$：归一化方差；</li>
-<li>$H_{2,t}$：二阶 Rényi 熵；</li>
-<li>$CL_t$：当前 Clip Limit；</li>
-<li>$\hat{t}&#x3D;t&#x2F;N_{\text{step}}$：归一化决策步数。</li>
+<li><span class="math math-inline" data-tex="%5Cmu_t">\mu&#95;t</span>：归一化均值；</li>
+<li><span class="math math-inline" data-tex="%5Csigma_t%5E2">\sigma&#95;t^2</span>：归一化方差；</li>
+<li><span class="math math-inline" data-tex="H_%7B2%2Ct%7D">H&#95;&#123;2,t&#125;</span>：二阶 Rényi 熵；</li>
+<li><span class="math math-inline" data-tex="CL_t">CL&#95;t</span>：当前 Clip Limit；</li>
+<li><span class="math math-inline" data-tex="%5Chat%7Bt%7D%3Dt%2FN_%7B%5Ctext%7Bstep%7D%7D">\hat&#123;t&#125;&#x3D;t&#x2F;N&#95;&#123;\text&#123;step&#125;&#125;</span>：归一化决策步数。</li>
 </ul>
 <p>全观测教师在此基础上额外输入 BRISQUE 和 NIQE：</p>
-<p>$$<br>s_t^{\text{rich}}&#x3D;[s_t^{\text{lite}},Q_{\text{BRISQUE},t},Q_{\text{NIQE},t}]\in\mathbb{R}^{7}<br>$$</p>
+<div class="math math-display" data-tex="s_t%5E%7B%5Ctext%7Brich%7D%7D%3D%5Bs_t%5E%7B%5Ctext%7Blite%7D%7D%2CQ_%7B%5Ctext%7BBRISQUE%7D%2Ct%7D%2CQ_%7B%5Ctext%7BNIQE%7D%2Ct%7D%5D%5Cin%5Cmathbb%7BR%7D%5E%7B7%7D">s&#95;t^&#123;\text&#123;rich&#125;&#125;=[s&#95;t^&#123;\text&#123;lite&#125;&#125;,Q&#95;&#123;\text&#123;BRISQUE&#125;,t&#125;,Q&#95;&#123;\text&#123;NIQE&#125;,t&#125;]\in\mathbb&#123;R&#125;^&#123;7&#125;</div>
+
 <p>这里的差异是刻意保留的。BRISQUE、NIQE 只作为离线训练期的特权信息，学生网络不试图在 FPGA 上重建这些指标。蒸馏的目标是让只看五维状态的学生，学习到由感知质量引导过的动作序列。</p>
-<p>选择 SAC 的原因在于动作空间本身是连续的。将 $[-2,2]$ 的更新量粗略离散为少量档位会造成显著的参数量化误差：保存的教师轨迹诊断表明，9 档离散动作的最终 Clip Limit 误差 P95 为 0.604；若要降至 0.072，需约 65 档动作。连续控制更符合 Clip Limit 小步调节的形式。</p>
+<p>选择 SAC 的原因在于动作空间本身是连续的。将 <span class="math math-inline" data-tex="%5B-2%2C2%5D">[-2,2]</span> 的更新量粗略离散为少量档位会造成显著的参数量化误差：保存的教师轨迹诊断表明，9 档离散动作的最终 Clip Limit 误差 P95 为 0.604；若要降至 0.072，需约 65 档动作。连续控制更符合 Clip Limit 小步调节的形式。</p>
 <p>奖励以 BRISQUE、NIQE 的改善为主，同时加入锐度、对比度的辅助 shaping、动作幅度惩罚、相邻动作平滑惩罚和终止项。终止项针对少量严重劣化和过大的累计更新量施加约束。训练的主要目标仍是最小化五步结束时的 BRISQUE：</p>
-<p>$$<br>Q_{\text{final}}\triangleq Q_{\text{BRISQUE},t&#x3D;N_{\text{step}}}<br>$$</p>
+<div class="math math-display" data-tex="Q_%7B%5Ctext%7Bfinal%7D%7D%5Ctriangleq%20Q_%7B%5Ctext%7BBRISQUE%7D%2Ct%3DN_%7B%5Ctext%7Bstep%7D%7D%7D">Q&#95;&#123;\text&#123;final&#125;&#125;\triangleq Q&#95;&#123;\text&#123;BRISQUE&#125;,t=N&#95;&#123;\text&#123;step&#125;&#125;&#125;</div>
+
 <h3 id="3-3-SAC-双教师与后验轨迹选择"><a href="#3-3-SAC-双教师与后验轨迹选择" class="headerlink" title="3.3 SAC 双教师与后验轨迹选择"></a>3.3 SAC 双教师与后验轨迹选择</h3><p>两个教师分别处理不同的信息条件：</p>
 <table>
 <thead>
@@ -358,27 +363,31 @@
 </thead>
 <tbody><tr>
 <td>Oracle Teacher</td>
-<td>$s_t^{\text{rich}}$</td>
+<td><span class="math math-inline" data-tex="s_t%5E%7B%5Ctext%7Brich%7D%7D">s&#95;t^&#123;\text&#123;rich&#125;&#125;</span></td>
 <td>使用 NR-IQA 特权信息，提供感知质量上界参考</td>
 </tr>
 <tr>
 <td>Robust Teacher</td>
-<td>$s_t^{\text{lite}}$</td>
+<td><span class="math math-inline" data-tex="s_t%5E%7B%5Ctext%7Blite%7D%7D">s&#95;t^&#123;\text&#123;lite&#125;&#125;</span></td>
 <td>仅使用部署可见信息，提供硬件可执行的稳健基线</td>
 </tr>
 </tbody></table>
 <p>Rich Teacher 并不是部署模型；Robust Teacher 也不是简单的降级版本。前者能避免仅依靠统计量时可能出现的感知退化，后者则直接暴露观测缺失带来的能力边界。两个教师在不同场景下并不稳定地互相支配，因此不预先指定某一类教师为“唯一正确答案”。</p>
-<p>PTS 的处理方式是：对于每个训练图像，两名教师各自 rollout 一条完整五步轨迹 $\tau^{k}<em>{\text{rich}}$ 与 $\tau^{k}</em>{\text{lite}}$，在终点计算最终质量，再保留完整轨迹中质量更优的一条：</p>
-<p>$$<br>\tau^{k}<em>{\text{best}}&#x3D;\arg\min</em>{\tau\in{\tau^{k}<em>{\text{rich}},\tau^{k}</em>{\text{lite}}}}Q_{\text{final}}(\tau)<br>$$</p>
+<p>PTS 的处理方式是：对于每个训练图像，两名教师各自 rollout 一条完整五步轨迹 <span class="math math-inline" data-tex="%5Ctau%5E%7Bk%7D_%7B%5Ctext%7Brich%7D%7D">\tau^&#123;k&#125;&#95;&#123;\text&#123;rich&#125;&#125;</span> 与 <span class="math math-inline" data-tex="%5Ctau%5E%7Bk%7D_%7B%5Ctext%7Blite%7D%7D">\tau^&#123;k&#125;&#95;&#123;\text&#123;lite&#125;&#125;</span>，在终点计算最终质量，再保留完整轨迹中质量更优的一条：</p>
+<div class="math math-display" data-tex="%5Ctau%5E%7Bk%7D_%7B%5Ctext%7Bbest%7D%7D%3D%5Carg%5Cmin_%7B%5Ctau%5Cin%5C%7B%5Ctau%5E%7Bk%7D_%7B%5Ctext%7Brich%7D%7D%2C%5Ctau%5E%7Bk%7D_%7B%5Ctext%7Blite%7D%7D%5C%7D%7DQ_%7B%5Ctext%7Bfinal%7D%7D(%5Ctau)">\tau^&#123;k&#125;&#95;&#123;\text&#123;best&#125;&#125;=\arg\min&#95;&#123;\tau\in\&#123;\tau^&#123;k&#125;&#95;&#123;\text&#123;rich&#125;&#125;,\tau^&#123;k&#125;&#95;&#123;\text&#123;lite&#125;&#125;\&#125;&#125;Q&#95;&#123;\text&#123;final&#125;&#125;(\tau)</div>
+
 <p>PTS 不是运行时模块，也不是每一步从两个动作中挑一个拼接。逐步拼接会破坏轨迹的时序一致性，并放大参数振荡。学生蒸馏数据只保留部署可见状态和被选中轨迹对应的动作：</p>
-<p>$$<br>\mathcal{D}&#x3D;{(s_t^{\text{lite}},a_t^*)}<br>$$</p>
+<div class="math math-display" data-tex="%5Cmathcal%7BD%7D%3D%5C%7B(s_t%5E%7B%5Ctext%7Blite%7D%7D%2Ca_t%5E*)%5C%7D">\mathcal&#123;D&#125;=\&#123;(s&#95;t^&#123;\text&#123;lite&#125;&#125;,a&#95;t^*)\&#125;</div>
+
 <p>这样，NR-IQA 的作用被限制在离线监督，不会引入不可部署的板端依赖。</p>
 <p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163008942.png?imageSlim" alt="image.png"></p>
 <h3 id="3-4-Q4-12-量化感知蒸馏"><a href="#3-4-Q4-12-量化感知蒸馏" class="headerlink" title="3.4 Q4.12 量化感知蒸馏"></a>3.4 Q4.12 量化感知蒸馏</h3><p>学生网络使用 <code>5 → 128 → 64 → 1</code> 的 MLP，仅保留输出 Clip Limit 增量的动作头。任何训练期辅助头均不导出到 FPGA。</p>
 <p>量化感知训练不是在浮点模型训练完成后附带做一次压缩。训练前向传播中就使用 Q4.12 参数量化、定点截断与饱和规则，以及与 RTL 一致的 <code>tanh</code> PWL&#x2F;LUT 近似：</p>
-<p>$$<br>\hat{a}<em>t&#x3D;T\bigl(Q(y_t)\bigr)\cdot\Delta CL</em>{\max}<br>$$</p>
-<p>其中 $Q(\cdot)$ 是 Q4.12 量化器，$T(\cdot)$ 是硬件可实现的 <code>tanh</code> 查表或分段线性近似。蒸馏损失为动作标签与定点学生输出的 $L_1$ 距离：</p>
-<p>$$<br>\mathcal{L}<em>{\text{distill}}(\theta)&#x3D;\mathbb{E}</em>{\mathcal{D}}\left[|\hat{a}_t-a_t^*|\right]<br>$$</p>
+<div class="math math-display" data-tex="%5Chat%7Ba%7D_t%3DT%5Cbigl(Q(y_t)%5Cbigr)%5Ccdot%5CDelta%20CL_%7B%5Cmax%7D">\hat&#123;a&#125;&#95;t=T\bigl(Q(y&#95;t)\bigr)\cdot\Delta CL&#95;&#123;\max&#125;</div>
+
+<p>其中 <span class="math math-inline" data-tex="Q(%5Ccdot)">Q(\cdot)</span> 是 Q4.12 量化器，<span class="math math-inline" data-tex="T(%5Ccdot)">T(\cdot)</span> 是硬件可实现的 <code>tanh</code> 查表或分段线性近似。蒸馏损失为动作标签与定点学生输出的 <span class="math math-inline" data-tex="L_1">L&#95;1</span> 距离：</p>
+<div class="math math-display" data-tex="%5Cmathcal%7BL%7D_%7B%5Ctext%7Bdistill%7D%7D(%5Ctheta)%3D%5Cmathbb%7BE%7D_%7B%5Cmathcal%7BD%7D%7D%5Cleft%5B%7C%5Chat%7Ba%7D_t-a_t%5E*%7C%5Cright%5D">\mathcal&#123;L&#125;&#95;&#123;\text&#123;distill&#125;&#125;(\theta)=\mathbb&#123;E&#125;&#95;&#123;\mathcal&#123;D&#125;&#125;\left[|\hat&#123;a&#125;&#95;t-a&#95;t^*|\right]</div>
+
 <p>导出阶段生成权重、偏置、归一化常数和激活查找表的 ROM 初始化文件。训练与推理共享数值定义，避免浮点软件模型、后量化模型和 RTL 之间出现不同的舍入、饱和或激活行为。</p>
 <p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163031336.png?imageSlim" alt="image.png"></p>
 <h2 id="4-FPGA-架构与无停顿实现"><a href="#4-FPGA-架构与无停顿实现" class="headerlink" title="4. FPGA 架构与无停顿实现"></a>4. FPGA 架构与无停顿实现</h2><h3 id="4-1-主路径与控制旁路"><a href="#4-1-主路径与控制旁路" class="headerlink" title="4.1 主路径与控制旁路"></a>4.1 主路径与控制旁路</h3><p>在线架构逻辑上分为两条路径：</p>
@@ -390,11 +399,14 @@
 <p>控制器 RTL 使用 SystemVerilog 实现，没有依赖 HLS。其硬件结构由流式特征模块、定点学生 MLP 和帧边界提交接口组成。控制 FSM 负责 <code>load → launch → wait → accumulate → commit</code> 五个阶段，完成每步动作更新和参数提交。</p>
 <p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913162622502.png?imageSlim"></p>
 <h3 id="4-2-硬件可观测特征提取"><a href="#4-2-硬件可观测特征提取" class="headerlink" title="4.2 硬件可观测特征提取"></a>4.2 硬件可观测特征提取</h3><p>控制旁路首先将输入流缩放为 <code>320 × 240</code> 代理流。缩放模块使用双口 BRAM 行缓存和 DSP48E1，实现定点双线性采样；横纵比例因子以 Q16.16 预计算，采样坐标由累加器生成，因此可以把不同输入分辨率映射到固定规模的统计代理图。</p>
-<p>均值和方差通过单遍扫描计算。模块维护一阶矩 $S_1&#x3D;\sum x_i$ 与二阶矩 $S_2&#x3D;\sum x_i^2$，在垂直消隐期使用流水除法器计算：</p>
-<p>$$<br>\mu&#x3D;\frac{S_1}{N_{\text{pix}}},\qquad<br>\sigma^2&#x3D;\frac{S_2}{N_{\text{pix}}}-\mu^2<br>$$</p>
+<p>均值和方差通过单遍扫描计算。模块维护一阶矩 <span class="math math-inline" data-tex="S_1%3D%5Csum%20x_i">S&#95;1&#x3D;\sum x&#95;i</span> 与二阶矩 <span class="math math-inline" data-tex="S_2%3D%5Csum%20x_i%5E2">S&#95;2&#x3D;\sum x&#95;i^2</span>，在垂直消隐期使用流水除法器计算：</p>
+<div class="math math-display" data-tex="%5Cmu%3D%5Cfrac%7BS_1%7D%7BN_%7B%5Ctext%7Bpix%7D%7D%7D%2C%5Cqquad%0A%5Csigma%5E2%3D%5Cfrac%7BS_2%7D%7BN_%7B%5Ctext%7Bpix%7D%7D%7D-%5Cmu%5E2">\mu=\frac&#123;S&#95;1&#125;&#123;N&#95;&#123;\text&#123;pix&#125;&#125;&#125;,\qquad
+\sigma^2=\frac&#123;S&#95;2&#125;&#123;N&#95;&#123;\text&#123;pix&#125;&#125;&#125;-\mu^2</div>
+
 <p>熵特征不直接使用 Shannon 熵。Shannon 熵要求对每个直方图 bin 计算对数，在 FPGA 上意味着较大的 LUT 开销或多周期迭代。实现改用二阶 Rényi 熵：</p>
-<p>$$<br>H_2&#x3D;2\log_2N_{\text{pix}}-\log_2\left(\sum_i c_i^2\right)<br>$$</p>
-<p>其中 $c_i$ 为灰度直方图计数。该形式将对数移到求和之外，硬件只需累计计数平方和并完成一次基于 CORDIC 的对数计算。它与 Shannon 熵有较高相关性，且不需要额外帧缓存。</p>
+<div class="math math-display" data-tex="H_2%3D2%5Clog_2N_%7B%5Ctext%7Bpix%7D%7D-%5Clog_2%5Cleft(%5Csum_i%20c_i%5E2%5Cright)">H&#95;2=2\log&#95;2N&#95;&#123;\text&#123;pix&#125;&#125;-\log&#95;2\left(\sum&#95;i c&#95;i^2\right)</div>
+
+<p>其中 <span class="math math-inline" data-tex="c_i">c&#95;i</span> 为灰度直方图计数。该形式将对数移到求和之外，硬件只需累计计数平方和并完成一次基于 CORDIC 的对数计算。它与 Shannon 熵有较高相关性，且不需要额外帧缓存。</p>
 <h3 id="4-3-定点学生-MLP"><a href="#4-3-定点学生-MLP" class="headerlink" title="4.3 定点学生 MLP"></a>4.3 定点学生 MLP</h3><p>学生网络输入为五维状态，网络结构为 <code>5 → 128 → 64 → 1</code>。权重与偏置均以 Q4.12 常量存入 ROM；隐藏层输出存入小型双口 RAM；乘加映射到 DSP48。隐藏层采用 ReLU，输出层由 <code>tanh</code> 的 PWL&#x2F;LUT 近似生成有界动作。</p>
 <p>MAC 阵列采用折叠计算，不需要为每个神经元完全展开乘法器。论文原型为每次帧更新预留 800 个周期，控制计算发生在当前帧期内，结果在后续帧边界生效。</p>
 <h3 id="4-4-双缓冲参数提交"><a href="#4-4-双缓冲参数提交" class="headerlink" title="4.4 双缓冲参数提交"></a>4.4 双缓冲参数提交</h3><p>活动 Bank 保存当前帧的 Clip Limit 与映射表控制信息；影子 Bank 用于接收控制器的新输出。当前帧内，CLAHE 主路径只读取活动 Bank，控制器可在影子 Bank 中更新参数和相关映射表。到达帧边界后，Bank Select 翻转，新参数对下一帧统一生效。</p>
@@ -403,15 +415,23 @@
 <p>本实现根据行、列计数器实时得到当前像素的相邻块索引，只保留支持 <code>3 × 3</code> 上下文的少量行缓存。直方图更新、CDF 生成和像素映射随光栅扫描并行进行，不需要整帧缓存。计算核心因此对分辨率相对不敏感，分辨率变化主要影响行缓存深度和 BRAM 的工具映射。</p>
 <p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163101799.png?imageSlim" alt="image.png"></p>
 <h4 id="4-5-2-常数倒数消除除法"><a href="#4-5-2-常数倒数消除除法" class="headerlink" title="4.5.2 常数倒数消除除法"></a>4.5.2 常数倒数消除除法</h4><p>标准 CLAHE 映射包含归一化除法：</p>
-<p>$$<br>T(g)&#x3D;\frac{\operatorname{CDF}(g)-\operatorname{CDF}<em>{\min}}{N</em>{\text{block}}-N_{\text{clip}}}(L-1)<br>$$</p>
-<p>对给定相机分辨率和 tile 配置，分母可视为常数。实现预先搜索常数除数 $D$ 对应的整数乘数 $M$ 与移位量 $k$，使：</p>
-<p>$$<br>\left\lfloor\frac{n}{D}\right\rfloor\approx\left\lfloor\frac{nM}{2^k}\right\rfloor<br>$$</p>
+<div class="math math-display" data-tex="T(g)%3D%5Cfrac%7B%5Coperatorname%7BCDF%7D(g)-%5Coperatorname%7BCDF%7D_%7B%5Cmin%7D%7D%7BN_%7B%5Ctext%7Bblock%7D%7D-N_%7B%5Ctext%7Bclip%7D%7D%7D(L-1)">T(g)=\frac&#123;\operatorname&#123;CDF&#125;(g)-\operatorname&#123;CDF&#125;&#95;&#123;\min&#125;&#125;&#123;N&#95;&#123;\text&#123;block&#125;&#125;-N&#95;&#123;\text&#123;clip&#125;&#125;&#125;(L-1)</div>
+
+<p>对给定相机分辨率和 tile 配置，分母可视为常数。实现预先搜索常数除数 <span class="math math-inline" data-tex="D">D</span> 对应的整数乘数 <span class="math math-inline" data-tex="M">M</span> 与移位量 <span class="math math-inline" data-tex="k">k</span>，使：</p>
+<div class="math math-display" data-tex="%5Cleft%5Clfloor%5Cfrac%7Bn%7D%7BD%7D%5Cright%5Crfloor%5Capprox%5Cleft%5Clfloor%5Cfrac%7BnM%7D%7B2%5Ek%7D%5Cright%5Crfloor">\left\lfloor\frac&#123;n&#125;&#123;D&#125;\right\rfloor\approx\left\lfloor\frac&#123;nM&#125;&#123;2^k&#125;\right\rfloor</div>
+
 <p>运行时映射为：</p>
-<p>$$<br>T(g)\approx\bigl(\operatorname{CDF}(g)-\operatorname{CDF}<em>{\min}\bigr)\cdot M</em>{\text{rom}}\gg k_{\text{rom}}<br>$$</p>
-<p>$(M,k)$ 预计算后写入 ROM。数据路径中不再实例化动态除法器，关键路径和 DSP&#x2F;Slice 占用随之降低。</p>
+<div class="math math-display" data-tex="T(g)%5Capprox%5Cbigl(%5Coperatorname%7BCDF%7D(g)-%5Coperatorname%7BCDF%7D_%7B%5Cmin%7D%5Cbigr)%5Ccdot%20M_%7B%5Ctext%7Brom%7D%7D%5Cgg%20k_%7B%5Ctext%7Brom%7D%7D">T(g)\approx\bigl(\operatorname&#123;CDF&#125;(g)-\operatorname&#123;CDF&#125;&#95;&#123;\min&#125;\bigr)\cdot M&#95;&#123;\text&#123;rom&#125;&#125;\gg k&#95;&#123;\text&#123;rom&#125;&#125;</div>
+
+<p><span class="math math-inline" data-tex="(M%2Ck)">(M,k)</span> 预计算后写入 ROM。数据路径中不再实例化动态除法器，关键路径和 DSP&#x2F;Slice 占用随之降低。</p>
 <h4 id="4-5-3-可分离定点双线性插值"><a href="#4-5-3-可分离定点双线性插值" class="headerlink" title="4.5.3 可分离定点双线性插值"></a>4.5.3 可分离定点双线性插值</h4><p>四邻域 tile 的二维双线性插值直接实现时，需要多路乘法和较长组合路径。将其展开为横向、纵向两步：</p>
-<p>$$<br>\begin{aligned}<br>R_1&amp;&#x3D;T_A(r)+\delta_x(j)\bigl(T_B(r)-T_A(r)\bigr)\<br>R_2&amp;&#x3D;T_C(r)+\delta_x(j)\bigl(T_D(r)-T_C(r)\bigr)\<br>I(i,j)&amp;&#x3D;R_1+\delta_y(i)(R_2-R_1)<br>\end{aligned}<br>$$</p>
-<p>$\delta_x$、$\delta_y$ 使用 Q0.10 定点格式，由块布局对应的计数器和比较器生成。拆分后，每一级仅包含一次乘法和少量加减法，可以深度流水化。Vivado 实现中，该结构满足 100 MHz 的时序假设，并保持活动视频区 <code>II = 1</code>。</p>
+<div class="math math-display" data-tex="%5Cbegin%7Baligned%7D%0AR_1%26%3DT_A(r)%2B%5Cdelta_x(j)%5Cbigl(T_B(r)-T_A(r)%5Cbigr)%5C%5C%0AR_2%26%3DT_C(r)%2B%5Cdelta_x(j)%5Cbigl(T_D(r)-T_C(r)%5Cbigr)%5C%5C%0AI(i%2Cj)%26%3DR_1%2B%5Cdelta_y(i)(R_2-R_1)%0A%5Cend%7Baligned%7D">\begin&#123;aligned&#125;
+R&#95;1&amp;=T&#95;A(r)+\delta&#95;x(j)\bigl(T&#95;B(r)-T&#95;A(r)\bigr)\\
+R&#95;2&amp;=T&#95;C(r)+\delta&#95;x(j)\bigl(T&#95;D(r)-T&#95;C(r)\bigr)\\
+I(i,j)&amp;=R&#95;1+\delta&#95;y(i)(R&#95;2-R&#95;1)
+\end&#123;aligned&#125;</div>
+
+<p><span class="math math-inline" data-tex="%5Cdelta_x">\delta&#95;x</span>、<span class="math math-inline" data-tex="%5Cdelta_y">\delta&#95;y</span> 使用 Q0.10 定点格式，由块布局对应的计数器和比较器生成。拆分后，每一级仅包含一次乘法和少量加减法，可以深度流水化。Vivado 实现中，该结构满足 100 MHz 的时序假设，并保持活动视频区 <code>II = 1</code>。</p>
 <h2 id="5-实验设置"><a href="#5-实验设置" class="headerlink" title="5. 实验设置"></a>5. 实验设置</h2><h3 id="5-1-数据集与训练配置"><a href="#5-1-数据集与训练配置" class="headerlink" title="5.1 数据集与训练配置"></a>5.1 数据集与训练配置</h3><p>实验集共 780 张图像，来自 Foggy Cityscapes、LOL 和 Dark Face 等公开数据集，人工筛除近重复样本与明显离群样本后，按场景划分如下：</p>
 <table>
 <thead>
@@ -481,7 +501,7 @@
 </tr>
 </tbody></table>
 <p>软件评测在原始图像分辨率上进行；FPGA 中仅控制旁路的特征流被缩放到 <code>320 × 240</code>，CLAHE 主路径仍处理原始分辨率像素流。</p>
-<p>SAC 教师使用 Adam 训练，策略网络与价值网络学习率均为 $3\times10^{-4}$，折扣因子 $\gamma&#x3D;0.99$。两名教师训练 $10^6$ 步，在约 $10^5$ 步后趋于稳定。学生网络在 Q4.12 约束下蒸馏 100 个 epoch，batch size 为 256；验证结果显示约第 80 个 epoch 取得较好的质量与定点一致性折中。</p>
+<p>SAC 教师使用 Adam 训练，策略网络与价值网络学习率均为 <span class="math math-inline" data-tex="3%5Ctimes10%5E%7B-4%7D">3\times10^&#123;-4&#125;</span>，折扣因子 <span class="math math-inline" data-tex="%5Cgamma%3D0.99">\gamma&#x3D;0.99</span>。两名教师训练 <span class="math math-inline" data-tex="10%5E6">10^6</span> 步，在约 <span class="math math-inline" data-tex="10%5E5">10^5</span> 步后趋于稳定。学生网络在 Q4.12 约束下蒸馏 100 个 epoch，batch size 为 256；验证结果显示约第 80 个 epoch 取得较好的质量与定点一致性折中。</p>
 <h3 id="5-2-指标与基线"><a href="#5-2-指标与基线" class="headerlink" title="5.2 指标与基线"></a>5.2 指标与基线</h3><p>BRISQUE 与 NIQE 作为主要 NR-IQA 指标，均为越低越好。两者只用于离线教师训练、模型选择和评测，不在 FPGA 部署时计算。补充统计包括 Shannon 熵、RMS 对比度、平均梯度和局部对比度。</p>
 <p>除均值外，论文引入失败敏感分布指标：P90、P95 与最差 10% 样本均值。对于 BRISQUE、NIQE，数值越大表示质量越差，因此上尾统计可以直接描述过增强、欠增强等严重退化的风险。</p>
 <p>对比方法包括：</p>
@@ -575,7 +595,7 @@
 <p>扫描结果表明，没有固定参数同时占优。<code>CL=1.5</code> 的 BRISQUE 均值最好，而较大的 CL 对 NIQE 均值略有帮助；但是上尾质量并不随均值同步改善。DT–QAT 的均值与强固定基线接近，其主要收益是将 BRISQUE P95 降至 32.40，并将最差 10% 的 BRISQUE 均值降至 33.79。</p>
 <h3 id="6-2-总体指标与场景差异"><a href="#6-2-总体指标与场景差异" class="headerlink" title="6.2 总体指标与场景差异"></a>6.2 总体指标与场景差异</h3><p>相对于输入图像，DT–QAT 将 BRISQUE 均值从 29.67 降至 23.39，将 NIQE 均值从 4.13 降至 3.59。固定 <code>CL=2.0</code> 已经达到 BRISQUE 23.52、NIQE 3.65，因此这里不应把很小的均值差距包装为对固定 CLAHE 的全面替代。</p>
 <p>规则自适应方法和全局直方图均衡化能显著提高部分对比度、梯度或熵统计，但 BRISQUE 明显变差。这说明过于激进的增强容易偏离自然场景统计并引入伪影。DT–QAT 的控制策略更倾向于回避过大的 Clip Limit，使结果保持较为保守的增强强度。</p>
-<p>按场景看，DT–QAT 相较固定 <code>CL=2.0</code> 在低照度、街景、雾霾、夜景和小样本室外组上具有竞争力或更优的 BRISQUE；例如雾霾由 25.57 降至 22.58，夜景由 14.81 降至 12.89。它在过曝组上较差（23.27 上升至 28.93，$n&#x3D;5$），在室内组也略差（16.00 上升至 16.71）。因此该控制器不是所有场景下都能取代手工调好的固定参数，而是针对难例上尾风险的一种部署可行的缓解方案。</p>
+<p>按场景看，DT–QAT 相较固定 <code>CL=2.0</code> 在低照度、街景、雾霾、夜景和小样本室外组上具有竞争力或更优的 BRISQUE；例如雾霾由 25.57 降至 22.58，夜景由 14.81 降至 12.89。它在过曝组上较差（23.27 上升至 28.93，<span class="math math-inline" data-tex="n%3D5">n&#x3D;5</span>），在室内组也略差（16.00 上升至 16.71）。因此该控制器不是所有场景下都能取代手工调好的固定参数，而是针对难例上尾风险的一种部署可行的缓解方案。</p>
 <p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163119292.png?imageSlim" alt="image.png"></p>
 <h3 id="6-3-消融实验"><a href="#6-3-消融实验" class="headerlink" title="6.3 消融实验"></a>6.3 消融实验</h3><p>消融实验分别移除 Rich Teacher、PTS 与 QAT。均值指标如下：</p>
 <table>
@@ -734,7 +754,8 @@
 <p>上述功耗与能量来自工具报告和指定的活动假设，不应解释为板级实测结果。</p>
 <p>100 MHz 单时钟域下，CLAHE 主路径在活动视频区维持一拍一个有效像素。相对直通路径，CLAHE 增加固定 44 周期延迟。控制旁路的缩放、统计特征提取约使用 96,200 个周期，学生 MLP 单帧更新预算为 800 个周期；二者并行于像素路径执行。</p>
 <p>对 <code>2048 × 1200</code> 的 packed stream，若不计同一时钟域内的消隐和外部接口反压，<code>II=1</code> 对应的上限为：</p>
-<p>$$<br>\frac{100\ \text{MHz}}{2048\times1200}&#x3D;40.68\ \text{FPS}<br>$$</p>
+<div class="math math-display" data-tex="%5Cfrac%7B100%5C%20%5Ctext%7BMHz%7D%7D%7B2048%5Ctimes1200%7D%3D40.68%5C%20%5Ctext%7BFPS%7D">\frac&#123;100\ \text&#123;MHz&#125;&#125;&#123;2048\times1200&#125;=40.68\ \text&#123;FPS&#125;</div>
+
 <p>实际视频帧率还取决于接口 blanking 和外部链路。五步控制时域不增加每帧像素工作量：每帧只进行一次 CLAHE，控制器也只进行一次参数更新。</p>
 <!-- 可在此处补充：Vivado 资源、时序和功耗报告截图；或板端视频流诊断结果 -->
 
@@ -781,7 +802,7 @@
                     <a class="tag-none-link" href="/tags/CLAHE/" rel="tag">CLAHE</a>, <a class="tag-none-link" href="/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/tags/SAC/" rel="tag">SAC</a>, <a class="tag-none-link" href="/tags/SystemVerilog/" rel="tag">SystemVerilog</a>, <a class="tag-none-link" href="/tags/%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/" rel="tag">图像增强</a>, <a class="tag-none-link" href="/tags/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/" rel="tag">强化学习</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-09-13T09:17:36.750Z" itemprop="dateModified">最后编辑：2026-09-13</time>
+                    <time datetime="2026-09-13T09:35:58.109Z" itemprop="dateModified">最后编辑：2026-09-13</time>
                 </div>
             </div>
         </footer>
@@ -1155,6 +1176,10 @@
   #kr-share-modal .ori-share-link{flex-direction:column;align-items:stretch;}
   #kr-share-modal .ori-share-copy{width:100%;}
 }
+.math-display{max-width:100%;margin:1rem 0;overflow-x:auto;overflow-y:hidden;padding:.35rem .15rem;text-align:center;}
+.math-display>.katex-display{margin:0;}
+.math-inline{display:inline;}
+.math .katex{font-size:1.04em;}
 </style>
 <script>
 window.__COMMENTS_ENABLED=false;
@@ -1391,6 +1416,68 @@ window.__COMMENTS_ENABLED=false;
   }
   function setup(){
     if (document.querySelector('.mermaid[data-code]')) { watchTheme(); renderPending(); }
+  }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });
+})();
+</script>
+<script>
+(function(){
+  var KATEX_ROOT = window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/';
+  var KATEX_CSS = KATEX_ROOT + 'css/vendor/katex.min.css';
+  var KATEX_JS = KATEX_ROOT + 'js/vendor/katex.min.js';
+  var stylePromise = null;
+  var scriptPromise = null;
+  function ensureStyle(){
+    if (stylePromise !== null) return stylePromise;
+    stylePromise = new Promise(function(resolve, reject){
+      var existing = document.getElementById('ori-katex-css');
+      if (existing) { resolve(); return; }
+      var link = document.createElement('link');
+      link.id = 'ori-katex-css';
+      link.rel = 'stylesheet';
+      link.href = KATEX_CSS;
+      link.onload = resolve;
+      link.onerror = function(){ stylePromise = null; reject(new Error('KaTeX stylesheet load failed')); };
+      document.head.appendChild(link);
+    });
+    return stylePromise;
+  }
+  function ensureKaTeX(){
+    if (window.katex) return Promise.resolve(window.katex);
+    if (scriptPromise !== null) return scriptPromise;
+    scriptPromise = new Promise(function(resolve, reject){
+      var script = document.createElement('script');
+      script.src = KATEX_JS;
+      script.onload = function(){ resolve(window.katex); };
+      script.onerror = function(){ scriptPromise = null; reject(new Error('KaTeX script load failed')); };
+      document.head.appendChild(script);
+    });
+    return scriptPromise;
+  }
+  function renderPending(){
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.math[data-tex]'));
+    nodes = nodes.filter(function(node){ return node.getAttribute('data-rendered') !== 'true'; });
+    if (nodes.length === 0) return;
+    Promise.all([ensureStyle(), ensureKaTeX()]).then(function(results){
+      var katex = results[1];
+      nodes.forEach(function(node){
+        try {
+          katex.render(decodeURIComponent(node.getAttribute('data-tex') || ''), node, {
+            displayMode: node.classList.contains('math-display'),
+            throwOnError: false,
+            strict: 'warn',
+            trust: false,
+          });
+          node.setAttribute('data-rendered', 'true');
+        } catch (error) {
+          node.classList.add('math-error');
+        }
+      });
+    }).catch(function(){ /* 资源加载失败时保留 TeX 源码 */ });
+  }
+  function setup(){
+    if (document.querySelector('.math[data-tex]')) renderPending();
   }
   document.addEventListener('DOMContentLoaded', setup);
   window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });

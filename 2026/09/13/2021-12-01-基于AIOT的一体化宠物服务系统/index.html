@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ori2333.github.io/images/theme/default-cover.webp">
 <meta property="article:published_time" content="2026-09-13T16:51:51.000Z">
-<meta property="article:modified_time" content="2026-09-13T09:17:36.749Z">
+<meta property="article:modified_time" content="2026-09-13T09:35:58.109Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="AIoT">
 <meta property="article:tag" content="嵌入式视觉">
@@ -43,7 +43,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 AIoT 的一体化宠物服务系统","description":"\n\n","image":"https://ori2333.github.io/2026/09/13/2021-12-01-%E5%9F%BA%E4%BA%8EAIOT%E7%9A%84%E4%B8%80%E4%BD%93%E5%8C%96%E5%AE%A0%E7%89%A9%E6%9C%8D%E5%8A%A1%E7%B3%BB%E7%BB%9F/images/theme/default-cover.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-09-13T16:51:51.000Z","dateModified":"2026-09-13T09:17:36.749Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/09/13/2021-12-01-%E5%9F%BA%E4%BA%8EAIOT%E7%9A%84%E4%B8%80%E4%BD%93%E5%8C%96%E5%AE%A0%E7%89%A9%E6%9C%8D%E5%8A%A1%E7%B3%BB%E7%BB%9F/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 AIoT 的一体化宠物服务系统","description":"\n\n","image":"https://ori2333.github.io/2026/09/13/2021-12-01-%E5%9F%BA%E4%BA%8EAIOT%E7%9A%84%E4%B8%80%E4%BD%93%E5%8C%96%E5%AE%A0%E7%89%A9%E6%9C%8D%E5%8A%A1%E7%B3%BB%E7%BB%9F/images/theme/default-cover.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-09-13T16:51:51.000Z","dateModified":"2026-09-13T09:35:58.109Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/09/13/2021-12-01-%E5%9F%BA%E4%BA%8EAIOT%E7%9A%84%E4%B8%80%E4%BD%93%E5%8C%96%E5%AE%A0%E7%89%A9%E6%9C%8D%E5%8A%A1%E7%B3%BB%E7%BB%9F/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -233,7 +233,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~12.97K
+                            ~13.06K
                         
                         字
                     </li>
@@ -407,7 +407,8 @@
 <li>APP 同时承担视频观察和设备参数配置。</li>
 </ul>
 <h2 id="3-AI-模型开发与部署"><a href="#3-AI-模型开发与部署" class="headerlink" title="3 AI 模型开发与部署"></a>3 AI 模型开发与部署</h2><h3 id="3-1-AI-模型训练思路"><a href="#3-1-AI-模型训练思路" class="headerlink" title="3.1 AI 模型训练思路"></a>3.1 AI 模型训练思路</h3><p>系统把视觉任务拆为检测网和分类网。检测网负责从整帧画面找出候选的猫狗目标与位置；分类网只处理裁剪后的目标区域，完成更细的猫狗类别判断。拆分后的处理链路为：</p>
-<p>$$<br>\text{Video Frame} \rightarrow \text{YOLOv2 Detection} \rightarrow \text{Crop &#x2F; Resize} \rightarrow \text{ResNet18 Classification} \rightarrow \text{Class + Box}<br>$$</p>
+<div class="math math-display" data-tex="%5Ctext%7BVideo%20Frame%7D%20%5Crightarrow%20%5Ctext%7BYOLOv2%20Detection%7D%20%5Crightarrow%20%5Ctext%7BCrop%20%2F%20Resize%7D%20%5Crightarrow%20%5Ctext%7BResNet18%20Classification%7D%20%5Crightarrow%20%5Ctext%7BClass%20%2B%20Box%7D">\text&#123;Video Frame&#125; \rightarrow \text&#123;YOLOv2 Detection&#125; \rightarrow \text&#123;Crop / Resize&#125; \rightarrow \text&#123;ResNet18 Classification&#125; \rightarrow \text&#123;Class + Box&#125;</div>
+
 <p>这种两阶段结构适合本项目的部署条件。YOLOv2 负责较快定位，ResNet18 负责对目标区域分类；分类网不必在整帧上重复计算。系统最终保留类别和坐标两个核心输出，供显示、语音、跟随和投喂规则使用。</p>
 <h4 id="3-1-1-数据集制作"><a href="#3-1-1-数据集制作" class="headerlink" title="3.1.1 数据集制作"></a>3.1.1 数据集制作</h4><p>检测网使用猫、狗两类开源数据，每类 8,000 余张。标注采用 Labelme，人工绘制矩形框后得到 JSON 文件；再使用 Python 脚本将 JSON 中的标签和坐标转换为 Darknet 所需的 TXT 标注格式。</p>
 <p>分类网使用的猫图约 11,900 张、狗图约 9,544 张。除开源数据外，项目使用 Taurus 的 Camera 录制真实部署视角的视频：录制文件先从板端取回，<code>H.264</code> 转为 <code>MP4</code>，再使用 FFmpeg 按帧抽取图片。自采集样本让训练集包含实际镜头的视角、背景和距离，而不是只使用干净的公开图片。</p>
@@ -513,7 +514,8 @@
 
 <h3 id="4-2-Hi3516-与客户端-RTSP-推流"><a href="#4-2-Hi3516-与客户端-RTSP-推流" class="headerlink" title="4.2 Hi3516 与客户端 RTSP 推流"></a>4.2 Hi3516 与客户端 RTSP 推流</h3><p>RTSP 负责客户端对实时媒体流的会话控制。Hi3516 将 Camera 帧编码为 H.264 码流，RTSP 服务端提供描述、会话建立、播放、暂停和关闭等控制能力；APP 侧使用 FFmpeg 接收并解码码流，<code>MediaCodec</code> 与 <code>SurfaceView</code> 负责显示。</p>
 <p>工程链路可简化为：</p>
-<p>$$<br>\text{Camera} \rightarrow \text{H.264 Encoder} \rightarrow \text{RTSP Server} \rightarrow \text{Wi-Fi&#x2F;TCP} \rightarrow \text{FFmpeg Decoder} \rightarrow \text{SurfaceView}<br>$$</p>
+<div class="math math-display" data-tex="%5Ctext%7BCamera%7D%20%5Crightarrow%20%5Ctext%7BH.264%20Encoder%7D%20%5Crightarrow%20%5Ctext%7BRTSP%20Server%7D%20%5Crightarrow%20%5Ctext%7BWi-Fi%2FTCP%7D%20%5Crightarrow%20%5Ctext%7BFFmpeg%20Decoder%7D%20%5Crightarrow%20%5Ctext%7BSurfaceView%7D">\text&#123;Camera&#125; \rightarrow \text&#123;H.264 Encoder&#125; \rightarrow \text&#123;RTSP Server&#125; \rightarrow \text&#123;Wi-Fi/TCP&#125; \rightarrow \text&#123;FFmpeg Decoder&#125; \rightarrow \text&#123;SurfaceView&#125;</div>
+
 <p>视频端设置缓存以缓冲网络抖动。使用 TCP 有利于传输可靠性，但可能增加延迟；该取舍适用于本项目的远程观察和控制场景。视频流不与 CoAP 控制消息共用一条业务链路，避免码流带宽影响投喂和云台指令。</p>
 <!--
 配图 13
@@ -739,7 +741,7 @@
                     <a class="tag-none-link" href="/tags/AIoT/" rel="tag">AIoT</a>, <a class="tag-none-link" href="/tags/Hi3516DV300/" rel="tag">Hi3516DV300</a>, <a class="tag-none-link" href="/tags/Hi3861/" rel="tag">Hi3861</a>, <a class="tag-none-link" href="/tags/YOLOv2/" rel="tag">YOLOv2</a>, <a class="tag-none-link" href="/tags/Zigbee/" rel="tag">Zigbee</a>, <a class="tag-none-link" href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%A7%86%E8%A7%89/" rel="tag">嵌入式视觉</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-09-13T09:17:36.749Z" itemprop="dateModified">最后编辑：2026-09-13</time>
+                    <time datetime="2026-09-13T09:35:58.109Z" itemprop="dateModified">最后编辑：2026-09-13</time>
                 </div>
             </div>
         </footer>
@@ -1109,6 +1111,10 @@
   #kr-share-modal .ori-share-link{flex-direction:column;align-items:stretch;}
   #kr-share-modal .ori-share-copy{width:100%;}
 }
+.math-display{max-width:100%;margin:1rem 0;overflow-x:auto;overflow-y:hidden;padding:.35rem .15rem;text-align:center;}
+.math-display>.katex-display{margin:0;}
+.math-inline{display:inline;}
+.math .katex{font-size:1.04em;}
 </style>
 <script>
 window.__COMMENTS_ENABLED=false;
@@ -1345,6 +1351,68 @@ window.__COMMENTS_ENABLED=false;
   }
   function setup(){
     if (document.querySelector('.mermaid[data-code]')) { watchTheme(); renderPending(); }
+  }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });
+})();
+</script>
+<script>
+(function(){
+  var KATEX_ROOT = window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/';
+  var KATEX_CSS = KATEX_ROOT + 'css/vendor/katex.min.css';
+  var KATEX_JS = KATEX_ROOT + 'js/vendor/katex.min.js';
+  var stylePromise = null;
+  var scriptPromise = null;
+  function ensureStyle(){
+    if (stylePromise !== null) return stylePromise;
+    stylePromise = new Promise(function(resolve, reject){
+      var existing = document.getElementById('ori-katex-css');
+      if (existing) { resolve(); return; }
+      var link = document.createElement('link');
+      link.id = 'ori-katex-css';
+      link.rel = 'stylesheet';
+      link.href = KATEX_CSS;
+      link.onload = resolve;
+      link.onerror = function(){ stylePromise = null; reject(new Error('KaTeX stylesheet load failed')); };
+      document.head.appendChild(link);
+    });
+    return stylePromise;
+  }
+  function ensureKaTeX(){
+    if (window.katex) return Promise.resolve(window.katex);
+    if (scriptPromise !== null) return scriptPromise;
+    scriptPromise = new Promise(function(resolve, reject){
+      var script = document.createElement('script');
+      script.src = KATEX_JS;
+      script.onload = function(){ resolve(window.katex); };
+      script.onerror = function(){ scriptPromise = null; reject(new Error('KaTeX script load failed')); };
+      document.head.appendChild(script);
+    });
+    return scriptPromise;
+  }
+  function renderPending(){
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.math[data-tex]'));
+    nodes = nodes.filter(function(node){ return node.getAttribute('data-rendered') !== 'true'; });
+    if (nodes.length === 0) return;
+    Promise.all([ensureStyle(), ensureKaTeX()]).then(function(results){
+      var katex = results[1];
+      nodes.forEach(function(node){
+        try {
+          katex.render(decodeURIComponent(node.getAttribute('data-tex') || ''), node, {
+            displayMode: node.classList.contains('math-display'),
+            throwOnError: false,
+            strict: 'warn',
+            trust: false,
+          });
+          node.setAttribute('data-rendered', 'true');
+        } catch (error) {
+          node.classList.add('math-error');
+        }
+      });
+    }).catch(function(){ /* 资源加载失败时保留 TeX 源码 */ });
+  }
+  function setup(){
+    if (document.querySelector('.math[data-tex]')) renderPending();
   }
   document.addEventListener('DOMContentLoaded', setup);
   window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });
