@@ -1,14 +1,1404 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+  <!-- 元数据 -->
   <meta charset="utf-8">
-  <meta name="robots" content="noindex">
-  <link rel="canonical" href="/2021/12/01/2021-12-01-基于AIOT的一体化宠物服务系统/">
-  <meta http-equiv="refresh" content="0;url=/2021/12/01/2021-12-01-基于AIOT的一体化宠物服务系统/">
-  <title>正在打开文章…</title>
-</head>
-<body>
-  <p>正在打开文章。如果没有自动跳转，请<a href="/2021/12/01/2021-12-01-基于AIOT的一体化宠物服务系统/">点击这里</a>。</p>
-  <script>location.replace("/2021/12/01/2021-12-01-基于AIOT的一体化宠物服务系统/" + location.search + location.hash);</script>
-</body>
+  
+    <link rel="icon" href="/images/theme/头像.jpg?v=20260329">
+  
+  
+  <title>基于 AIoT 的一体化宠物服务系统 | ORI2333&#39;s Blog</title>
+  <link rel="canonical" href="https://ori2333.github.io/s/0dsptm5/">
+  <meta name="author" content="ORI2333" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="AIoT, Hi3516DV300, Hi3861, YOLOv2, Zigbee, 嵌入式视觉" />
+  
+  <meta name="description" content="摘要宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台跟随和远程交互。本项目围绕这一问题，实现了一套由 AI 子系统、IoT 子系统、电源子系统、Android APP 和喂食器实体组成的 AIoT 宠物服务系统。 AI 子系统以 Hi3516DV300 为核心，运行 Ubuntu，使用 YOL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于 AIoT 的一体化宠物服务系统">
+<meta property="og:url" content="https://ori2333.github.io/s/0dsptm5/index.html">
+<meta property="og:site_name" content="ORI2333&#39;s Blog">
+<meta property="og:description" content="摘要宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台跟随和远程交互。本项目围绕这一问题，实现了一套由 AI 子系统、IoT 子系统、电源子系统、Android APP 和喂食器实体组成的 AIoT 宠物服务系统。 AI 子系统以 Hi3516DV300 为核心，运行 Ubuntu，使用 YOL">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ori2333.github.io/images/theme/default-cover.webp">
+<meta property="article:published_time" content="2021-12-01T16:51:51.000Z">
+<meta property="article:modified_time" content="2026-09-13T10:28:34.634Z">
+<meta property="article:author" content="ORI2333">
+<meta property="article:tag" content="AIoT">
+<meta property="article:tag" content="嵌入式视觉">
+<meta property="article:tag" content="Hi3516DV300">
+<meta property="article:tag" content="Hi3861">
+<meta property="article:tag" content="YOLOv2">
+<meta property="article:tag" content="Zigbee">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ori2333.github.io/images/theme/default-cover.webp">
+  
+  <!-- JSON-LD 结构化数据 -->
+  
+  
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 AIoT 的一体化宠物服务系统","description":"摘要宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台...","image":"https://ori2333.github.io/s/0dsptm5/images/theme/default-cover.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2021-12-01T16:51:51.000Z","dateModified":"2026-09-13T10:28:34.634Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/s/0dsptm5/"}}
+    </script>
+  
+  <!-- 关键 CSS 预加载 -->
+  <link rel="preload" href="/css/kr-core.min.css" as="style" crossorigin>
+  <link rel="preload" href="/css/kr-theme/light.min.css" as="style" crossorigin>
+  <link rel="preload" href="/css/kr-theme/dark.min.css" as="style" crossorigin>
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kr-core.min.css" media="all">
+  <link rel="stylesheet" id="theme-light-css" href="/css/kr-theme/light.min.css" media="all">
+  <link rel="stylesheet" id="theme-dark-css" href="/css/kr-theme/dark.min.css" media="(prefers-color-scheme: dark)">
+  
+    <link rel="stylesheet"  id="highlight-css" href="/css/highlight/highlight.js/night-eighties.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/css/highlight/highlight.js/night-eighties.min.css"></noscript>
+  
+  <script src="/js/kr-theme.min.js"></script>
+  <link rel="stylesheet"  id="fontawe-css" href="/vendors/font-awesome@4.7.0/css/font-awesome.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/vendors/font-awesome@4.7.0/css/font-awesome.min.css"></noscript>
+  
+    <link rel="stylesheet"  id="nprogress-css" href="/vendors/nprogress@0.2.0/nprogress.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/vendors/nprogress@0.2.0/nprogress.css"></noscript>
+  
+  
+    <link rel="stylesheet"  href="/vendors/viewerjs@1.11.6/dist/viewer.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/vendors/viewerjs@1.11.6/dist/viewer.min.css"></noscript>
+  
+  <!-- 预先加载的JS文件 -->
+  
+    <script src="/vendors/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  
+  <!-- 自定义站点横幅和背景 -->
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/theme/banner-light.webp');
+      }
+      html[data-theme="dark"] .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/theme/banner-dark.webp');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/images/theme/bg-light.webp');
+        }
+        html[data-theme="dark"] body.custom-background {
+          background-image: url('/images/theme/bg-dark.webp');
+        }
+      }
+    
+    
+      .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+      html[data-theme="dark"] .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+    
+  </style>
+
+  <!-- 额外的追加注入项 -->
+  
+    <style>.kratos-cover.kratos-cover-2{background-position:center center!important;background-repeat:no-repeat!important;background-size:cover!important;}.widget-kratos-about .about-contact-icons{display:flex;justify-content:space-evenly;align-items:center;max-width:240px;margin:14px auto 0;}.widget-kratos-about .about-contact-icons a{line-height:1;color:inherit;display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;}.widget-kratos-about .about-contact-icons a i{font-size:24px;}.widget-kratos-about .about-contact-icons a img{width:24px;height:24px;object-fit:contain;display:block;}.widget-kratos-about .about-contact-icons a img[alt='Email']{width:27px;height:27px;opacity:.98;}html[data-theme='dark'] .widget-kratos-about .about-contact-icons a img[alt='GitHub']{filter:brightness(0) invert(1);opacity:.98;}.widget-kratos-about .about-contact-icons a:hover{transform:translateY(-1px);}#footer .kratos-social-icons li a{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;}#footer .kratos-social-icons li a .footer-social-icon{width:34px;height:34px;object-fit:contain;display:block;}#footer .kratos-social-icons li a .footer-icon-email{filter:brightness(0) invert(1);opacity:.94;}#footer .kratos-social-icons li a .footer-icon-github{filter:brightness(0) invert(1);opacity:.95;}.kr-comments-disabled{margin:16px 0;padding:12px 14px;border:1px dashed rgba(160,160,160,.45);border-radius:10px;color:#9aa3b7;background:rgba(90,98,120,.08);text-align:center;}@font-face{font-family:'Noto Sans SC Black';src:url('/images/theme/noto-sans-sc-900.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap;}.kratos-cover .desc.desc2{top:50%;margin-top:0;transform:translateY(-50%);}.kratos-cover .desc h2{font-family:'Noto Sans SC Black','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;font-weight:900;font-size:clamp(64px,7.5vw,128px);letter-spacing:.02em;line-height:1.08;text-shadow:0 2px 5px rgba(0,0,0,.5),0 14px 34px rgba(0,0,0,.3);}.color-logo a{font-family:'Noto Sans SC Black','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;font-weight:900;letter-spacing:.02em;}@media(min-width:768px){.kratos-start.kratos-hero-2{height:auto!important;}.kratos-cover.kratos-cover-2{height:auto!important;aspect-ratio:3840/1217;}.kratos-cover.kratos-cover-2::before{content:'';position:absolute;left:0;top:0;right:0;bottom:0;z-index:0;pointer-events:none;background:rgba(245,245,245,.16);}html[data-theme='dark'] .kratos-cover.kratos-cover-2::before{background:rgba(24,28,39,.14);}.kratos-cover.kratos-cover-2::after{content:'';position:absolute;left:0;right:0;bottom:0;height:42%;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(245,245,245,0) 0,rgba(245,245,245,.07) 28%,rgba(245,245,245,.24) 52%,rgba(245,245,245,.56) 76%,rgba(245,245,245,.86) 92%,#f5f5f5 100%);}html[data-theme='dark'] .kratos-cover.kratos-cover-2::after{background:linear-gradient(180deg,rgba(24,28,39,0) 0,rgba(24,28,39,.07) 28%,rgba(24,28,39,.24) 52%,rgba(24,28,39,.56) 76%,rgba(24,28,39,.86) 92%,#181c27 100%);}#kratos-blog-post{position:relative;background:linear-gradient(180deg,#f5f5f5 0,rgba(245,245,245,.9) 20%,rgba(245,245,245,.62) 44%,rgba(245,245,245,.3) 70%,rgba(245,245,245,.08) 90%,rgba(245,245,245,0) 100%) no-repeat;background-size:100% 360px;}html[data-theme='dark'] #kratos-blog-post{background:linear-gradient(180deg,#181c27 0,rgba(24,28,39,.9) 20%,rgba(24,28,39,.62) 44%,rgba(24,28,39,.3) 70%,rgba(24,28,39,.08) 90%,rgba(24,28,39,0) 100%) no-repeat;background-size:100% 360px;}body.custom-background::before{content:'';position:fixed;left:0;top:0;right:0;bottom:0;z-index:-1;pointer-events:none;background:rgba(245,245,245,.34);}html[data-theme='dark'] body.custom-background::before{background:rgba(24,28,39,.26);}}#kratos-desktop-topnav{background:rgba(20,22,28,.5);-webkit-backdrop-filter:blur(18px) saturate(1.7);backdrop-filter:blur(18px) saturate(1.7);box-shadow:inset 0 -1px 0 rgba(255,255,255,.07),0 6px 20px rgba(0,0,0,.16);}html[data-theme='light'] #kratos-desktop-topnav{background:rgba(255,255,255,.6);box-shadow:inset 0 -1px 0 rgba(0,0,0,.07),0 6px 20px rgba(0,0,0,.08);}html[data-theme='light'] #kratos-menu-wrap .sf-menu a{color:#2b2e35;}html[data-theme='light'] #kratos-menu-wrap .sf-menu>li:hover>a{color:#000;background:rgba(0,0,0,.07);}html[data-theme='light'] .kratos-hentry,html[data-theme='light'] #kratos-widget-area .widget{background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(16px) saturate(1.6);backdrop-filter:blur(16px) saturate(1.6);box-shadow:0 4px 18px rgba(31,38,51,.09),0 1px 3px rgba(31,38,51,.06);}html[data-theme='dark'] .kratos-hentry,html[data-theme='dark'] #kratos-widget-area .widget{background:rgba(30,35,47,.68);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 4px 18px rgba(0,0,0,.32),0 1px 3px rgba(0,0,0,.22);}.kratos-hentry{border-radius:12px;}#kratos-widget-area .widget{border-radius:12px;}.kratos-entry-border .kratos-entry-post-meta{border-radius:0 0 12px 12px;}.kratos-entry-thumb{border-radius:12px;overflow:hidden;}.kratos-entry-thumb img{transition:transform .5s ease;}.kratos-hentry:hover .kratos-entry-thumb-img{transform:scale(1.05);}.container article.kratos-hentry:hover{transform:translateY(-2px);}html[data-theme='light'] .container article.kratos-hentry:hover{box-shadow:0 12px 28px rgba(31,38,51,.16),0 2px 6px rgba(31,38,51,.08);}html[data-theme='dark'] .container article.kratos-hentry:hover{box-shadow:0 12px 28px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.3);}.pagination .page-number,.pagination .extend,.pagination .space{border-radius:8px;}.kr-tool .box{background:rgba(38,42,52,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:10px;opacity:.9;}.kr-tool .box:hover{background:rgba(38,42,52,.8);opacity:1;}html[data-theme='light'] .kr-tool .box{background:rgba(255,255,255,.62);box-shadow:0 2px 10px rgba(0,0,0,.14);}html[data-theme='light'] .kr-tool .box span{color:#3a3f4a;}html[data-theme='light'] .kr-tool .box:hover{background:rgba(255,255,255,.88);}h1.kratos-page-title{border-left:none!important;font-size:clamp(26px,2.6vw,40px)!important;font-weight:800!important;line-height:1.32!important;position:relative;padding:10px 24px 26px!important;letter-spacing:.01em;}h1.kratos-page-title:after{content:'';position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:132px;height:3px;border-radius:3px;background:linear-gradient(90deg,rgba(81,173,237,0),#51aded 28%,#78ce79 72%,rgba(120,206,121,0));}ul.kratos-page-meta>li{font-size:13px;opacity:.78;}ul.kratos-page-meta>li i{color:#51aded;opacity:1;}.kratos-page-inner .kratos-copyright{background:rgba(255,255,255,.5)!important;border-left:3px solid #51aded;border-radius:12px!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(31,38,51,.06);}html[data-theme='dark'] .kratos-page-inner .kratos-copyright{background:rgba(37,45,56,.5)!important;box-shadow:0 2px 10px rgba(0,0,0,.25);}.navigation .nav-previous a,.navigation .nav-next a{background:rgba(255,255,255,.58);border:1px solid rgba(31,38,51,.08);border-radius:12px;padding:12px 20px;color:#55606f;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 2px 8px rgba(31,38,51,.06);transition:transform .2s,box-shadow .2s,background .2s,color .2s;}html[data-theme='dark'] .navigation .nav-previous a,html[data-theme='dark'] .navigation .nav-next a{background:rgba(37,45,56,.58);border-color:rgba(255,255,255,.08);color:#c6cdd8;}.navigation .nav-previous a:hover,.navigation .nav-next a:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(81,173,237,.2);background:rgba(255,255,255,.85);color:#51aded;}html[data-theme='dark'] .navigation .nav-previous a:hover,html[data-theme='dark'] .navigation .nav-next a:hover{background:rgba(45,54,68,.85);color:#7cc5f0;}footer{position:relative;}footer:before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(81,173,237,.5) 30%,rgba(120,206,121,.5) 70%,transparent);z-index:1;}#footer{position:relative;overflow:hidden;}#footer:before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(81,173,237,.1),transparent 130px);pointer-events:none;}#footer .kratos-social-icons li a{transition:transform .25s,filter .25s;}#footer .kratos-social-icons li a:hover{transform:translateY(-4px) scale(1.08);filter:drop-shadow(0 4px 10px rgba(81,173,237,.45));}#kratos-widget-area .widget.widget-kratos-about .photo-wrapper-tip{width:98px;height:98px;margin:-54px auto 0;border-radius:50%;background:conic-gradient(from 210deg,#51aded,#78ce79,#a4e0a5,#51aded);padding:3px;box-shadow:0 8px 20px rgba(31,38,51,.22);transition:transform .45s ease;}#kratos-widget-area .widget.widget-kratos-about .photo-wrapper-tip:hover{transform:rotate(8deg) scale(1.05);}#kratos-widget-area .widget.widget-kratos-about .photo-wrapper img{margin:0!important;width:92px!important;height:92px!important;border:2px solid rgba(255,255,255,.85)!important;}#kratos-widget-area .widget.widget-kratos-tags .tag-clouds a{border-radius:999px!important;border:1px solid rgba(81,173,237,.25)!important;background:rgba(255,255,255,.5)!important;color:#5a6c80!important;padding:4px 14px!important;transition:all .25s!important;}html[data-theme='dark'] #kratos-widget-area .widget.widget-kratos-tags .tag-clouds a{background:rgba(37,45,56,.6)!important;border-color:rgba(81,173,237,.3)!important;color:#b9c4d4!important;}#kratos-widget-area .widget.widget-kratos-tags .tag-clouds a:hover{background:linear-gradient(90deg,#51aded,#6cc2ef)!important;color:#fff!important;border-color:transparent!important;transform:translateY(-2px);box-shadow:0 4px 12px rgba(81,173,237,.35);}#kratos-widget-area .widget.widget-kratos-categories .category-list-item .category-list-count{background:linear-gradient(90deg,rgba(81,173,237,.18),rgba(120,206,121,.18))!important;color:#4a90c2!important;border-radius:999px!important;}html[data-theme='dark'] #kratos-widget-area .widget.widget-kratos-categories .category-list-item .category-list-count{color:#9fd4ef!important;}.widget-kratos-toc .toc{font-size:13.5px;}.widget-kratos-toc .toc a{color:#5a6c80;display:block;padding:3px 0;transition:color .2s,transform .2s;}.widget-kratos-toc .toc a:hover{color:#51aded;transform:translateX(3px);}.widget-kratos-toc .toc li.active>a{color:#51aded;font-weight:600;}html[data-theme='dark'] .widget-kratos-toc .toc a{color:#b9c4d4;}html[data-theme='dark'] .widget-kratos-toc .toc a:hover,html[data-theme='dark'] .widget-kratos-toc .toc li.active>a{color:#7cc5f0;}.kratos-page-content .kratos-post-inner-toc{border:1px solid rgba(81,173,237,.3)!important;border-radius:12px!important;background:rgba(81,173,237,.05);padding:15px 15px 8px!important;}#ori-reading-progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:1001;background:linear-gradient(90deg,#51aded,#78ce79);box-shadow:0 0 8px rgba(81,173,237,.6);pointer-events:none;}html.ori-anim .kratos-hentry{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease;}html.ori-anim .kratos-hentry.in-view{opacity:1;transform:translateY(0);}@media (prefers-reduced-motion: reduce){html.ori-anim .kratos-hentry{opacity:1;transform:none;transition:none;}}.mermaid{margin:1.2em 0;padding:18px 14px;text-align:center;white-space:pre-wrap;background:rgba(255,255,255,.62);border:1px solid rgba(31,38,51,.08);border-radius:12px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow-x:auto;}html[data-theme='dark'] .mermaid{background:rgba(30,35,47,.62);border-color:rgba(255,255,255,.09);}.mermaid svg{max-width:100%;height:auto;}.mermaid-error{color:#c0392b;white-space:pre-wrap;text-align:left;font-size:13px;margin:0;}</style>
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    <li>
+                                        
+                                            <a href="/">
+                                        
+                                            
+                                                <i class="fa fa-home"></i>
+                                            
+                                            首页
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/archives/">
+                                        
+                                            
+                                                <i class="fa fa-archive"></i>
+                                            
+                                            归档
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/categories/">
+                                        
+                                            
+                                                <i class="fa fa-folder-open"></i>
+                                            
+                                            分类
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/tags/">
+                                        
+                                            
+                                                <i class="fa fa-tags"></i>
+                                            
+                                            标签
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/about/">
+                                        
+                                            
+                                                <i class="fa fa-user"></i>
+                                            
+                                            关于
+                                        </a>
+                                        
+                                    </li>
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">ORI2333&#39;s Blog</a></div>
+                    <div id="kratos-nav-toggle-wrapper" class="nav-toggle">
+                        <a id="kratos-nav-toggle" class="kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>ORI2333&#39;s Blog</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+
+
+        
+
+            
+
+            <section class="kr-main-col col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://ori2333.github.io/s/0dsptm5/">
+    <div class="kratos-hentry kratos-page-inner clearfix">
+        <header class="kratos-page-header">
+            
+                <h1 class="kratos-page-title text-center" itemprop="name headline">基于 AIoT 的一体化宠物服务系统</h1>
+            
+            <ul class="kratos-page-meta text-center">
+                <li><time datetime="2021-12-01T16:51:51.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2021-12-01</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
+                </li>
+                
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~13.51K
+                        
+                        字
+                    </li>
+                
+                
+                
+            </ul>
+        </header>
+        <div class="kratos-page-content kr-post">
+            
+            
+            
+                <div class="kratos-post-inner-toc toc-div-class" >
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.</span> <span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%BB%AA%E8%AE%BA"><span class="toc-number">2.</span> <span class="toc-text">1 绪论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF%E4%B8%8E%E6%84%8F%E4%B9%89"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 研究背景与意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%9B%BD%E5%86%85%E5%A4%96%E7%A0%94%E7%A9%B6%E7%8E%B0%E7%8A%B6"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 国内外研究现状</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%9C%AC%E6%96%87%E7%BB%93%E6%9E%84"><span class="toc-number">2.3.</span> <span class="toc-text">1.3 本文结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%B3%BB%E7%BB%9F%E6%80%BB%E4%BD%93%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.</span> <span class="toc-text">2 系统总体方案设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 需求分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%8F%AF%E8%A1%8C%E6%80%A7%E5%88%86%E6%9E%90"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 可行性分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 总体架构分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-1-%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84"><span class="toc-number">3.3.1.</span> <span class="toc-text">2.3.1 系统结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-2-%E7%B3%BB%E7%BB%9F%E6%95%B4%E4%BD%93%E5%AE%9E%E7%8E%B0%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.3.2.</span> <span class="toc-text">2.3.2 系统整体实现设计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-3-%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E8%AE%BE%E8%AE%A1%EF%BC%88%E7%94%B5%E8%B7%AF%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-number">3.3.3.</span> <span class="toc-text">2.3.3 系统模块设计（电路连接）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E5%88%9B%E6%96%B0%E7%82%B9"><span class="toc-number">3.4.</span> <span class="toc-text">2.4 创新点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-AI-%E6%A8%A1%E5%9E%8B%E5%BC%80%E5%8F%91%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="toc-number">4.</span> <span class="toc-text">3 AI 模型开发与部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-AI-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E6%80%9D%E8%B7%AF"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 AI 模型训练思路</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-1-%E6%95%B0%E6%8D%AE%E9%9B%86%E5%88%B6%E4%BD%9C"><span class="toc-number">4.1.1.</span> <span class="toc-text">3.1.1 数据集制作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-2-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="toc-number">4.1.2.</span> <span class="toc-text">3.1.2 模型训练</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-3-%E6%A8%A1%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-number">4.1.3.</span> <span class="toc-text">3.1.3 模型转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-4-%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96"><span class="toc-number">4.1.4.</span> <span class="toc-text">3.1.4 模型量化</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 模型应用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-YOLOv2-%E5%8D%95%E7%8B%AC%E6%A3%80%E6%B5%8B"><span class="toc-number">4.2.1.</span> <span class="toc-text">3.2.1 YOLOv2 单独检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-YOLOv2-%E4%B8%8E-ResNet18-%E8%81%94%E5%90%88%E5%88%A4%E6%96%AD"><span class="toc-number">4.2.2.</span> <span class="toc-text">3.2.2 YOLOv2 与 ResNet18 联合判断</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E8%BE%B9%E7%95%8C"><span class="toc-number">4.2.3.</span> <span class="toc-text">3.2.3 应用场景边界</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-AI-Plugin-%E5%BC%80%E5%8F%91%E4%B8%8E%E6%9D%BF%E7%AB%AF%E9%83%A8%E7%BD%B2"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 AI Plugin 开发与板端部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-NNIE-%E6%9D%BF%E7%AB%AF%E6%8E%A8%E7%90%86"><span class="toc-number">4.4.</span> <span class="toc-text">3.4 NNIE 板端推理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-AI-%E5%AD%90%E7%B3%BB%E7%BB%9F%E5%BA%94%E7%94%A8%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.</span> <span class="toc-text">4 AI 子系统应用设计与实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-AI-%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 AI 应用框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-Hi3516-%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF-RTSP-%E6%8E%A8%E6%B5%81"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 Hi3516 与客户端 RTSP 推流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%BA%94%E7%94%A8%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.3.</span> <span class="toc-text">4.3 应用功能实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-1-%E8%A7%86%E8%A7%89%E6%84%9F%E7%9F%A5%E5%88%A4%E6%96%AD"><span class="toc-number">5.3.1.</span> <span class="toc-text">4.3.1 视觉感知判断</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-2-%E8%AF%AD%E9%9F%B3%E5%8A%9F%E8%83%BD"><span class="toc-number">5.3.2.</span> <span class="toc-text">4.3.2 语音功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-3-%E7%9B%AE%E6%A0%87%E8%B7%9F%E9%9A%8F"><span class="toc-number">5.3.3.</span> <span class="toc-text">4.3.3 目标跟随</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-4-%E5%A4%9C%E9%97%B4%E8%AF%86%E5%88%AB"><span class="toc-number">5.3.4.</span> <span class="toc-text">4.3.4 夜间识别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-5-%E6%9D%BF%E7%AB%AF%E6%8B%8D%E7%85%A7"><span class="toc-number">5.3.5.</span> <span class="toc-text">4.3.5 板端拍照</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-IoT-%E5%AD%90%E7%B3%BB%E7%BB%9F%E5%BA%94%E7%94%A8%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="toc-number">6.</span> <span class="toc-text">5 IoT 子系统应用设计与实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%A4%9A%E8%AE%BE%E5%A4%87%E5%8D%8F%E5%90%8C%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 多设备协同设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%A4%9A%E8%AE%BE%E5%A4%87%E9%80%9A%E4%BF%A1%E5%AE%9E%E7%8E%B0"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 多设备通信实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-Hi3516-%E4%B8%8E-Hi3861-%E9%80%9A%E4%BF%A1"><span class="toc-number">6.2.1.</span> <span class="toc-text">5.2.1 Hi3516 与 Hi3861 通信</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-Hi3861-%E4%B8%8E-Zigbee-%E9%80%9A%E4%BF%A1"><span class="toc-number">6.2.2.</span> <span class="toc-text">5.2.2 Hi3861 与 Zigbee 通信</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-3-Zigbee-%E7%BB%84%E7%BD%91%E9%80%9A%E4%BF%A1"><span class="toc-number">6.2.3.</span> <span class="toc-text">5.2.3 Zigbee 组网通信</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-4-Hi3861-%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF-CoAP-%E9%80%9A%E4%BF%A1"><span class="toc-number">6.2.4.</span> <span class="toc-text">5.2.4 Hi3861 与客户端 CoAP 通信</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E5%BA%94%E7%94%A8%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0"><span class="toc-number">6.3.</span> <span class="toc-text">5.3 应用功能实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-1-%E7%A7%B0%E9%87%8D%E9%97%AD%E7%8E%AF%E6%8A%95%E5%96%82"><span class="toc-number">6.3.1.</span> <span class="toc-text">5.3.1 称重闭环投喂</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-2-%E4%BA%91%E5%8F%B0%E8%87%AA%E8%BD%AC%E5%8A%9F%E8%83%BD"><span class="toc-number">6.3.2.</span> <span class="toc-text">5.3.2 云台自转功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-3-%E5%AE%A0%E7%89%A9%E6%8B%93%E5%B1%95%E6%8C%89%E9%94%AE%E5%8A%9F%E8%83%BD"><span class="toc-number">6.3.3.</span> <span class="toc-text">5.3.3 宠物拓展按键功能</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E7%94%B5%E6%BA%90%E5%AD%90%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="toc-number">7.</span> <span class="toc-text">6 电源子系统设计与实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E7%94%B5%E6%BA%90%E8%AE%BE%E8%AE%A1"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 电源设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E4%BD%8E%E5%8A%9F%E8%80%97%E6%A8%A1%E5%BC%8F"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 低功耗模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91"><span class="toc-number">8.</span> <span class="toc-text">7 客户端设计与开发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-APP-%E6%A6%82%E8%BF%B0"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 APP 概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 操作流程与功能模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-APP-%E7%95%8C%E9%9D%A2"><span class="toc-number">8.3.</span> <span class="toc-text">7.3 APP 界面</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E7%B3%BB%E7%BB%9F%E6%B5%8B%E8%AF%95%E4%B8%8E%E5%B1%95%E7%A4%BA"><span class="toc-number">9.</span> <span class="toc-text">8 系统测试与展示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E8%AF%86%E5%88%AB%E6%8A%95%E5%96%82%E5%9C%BA%E6%99%AF"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 识别投喂场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-APP-%E4%B8%8E%E8%AE%BE%E5%A4%87%E4%BA%A4%E4%BA%92%E5%9C%BA%E6%99%AF"><span class="toc-number">9.2.</span> <span class="toc-text">8.2 APP 与设备交互场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E6%97%A0%E7%BA%BF%E5%AE%A0%E7%89%A9%E6%8C%89%E9%94%AE%E5%9C%BA%E6%99%AF"><span class="toc-number">9.3.</span> <span class="toc-text">8.3 无线宠物按键场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-APP-%E8%AE%BE%E7%BD%AE%E5%8F%82%E6%95%B0%E5%9C%BA%E6%99%AF"><span class="toc-number">9.4.</span> <span class="toc-text">8.4 APP 设置参数场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-%E5%A4%9C%E9%97%B4%E8%AF%86%E5%88%AB%E5%9C%BA%E6%99%AF"><span class="toc-number">9.5.</span> <span class="toc-text">8.5 夜间识别场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-6-%E6%9D%BF%E7%AB%AF%E6%8B%8D%E7%85%A7%E5%9C%BA%E6%99%AF"><span class="toc-number">9.6.</span> <span class="toc-text">8.6 板端拍照场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E7%BB%93%E6%9D%9F%E8%AF%AD"><span class="toc-number">10.</span> <span class="toc-text">9 结束语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E4%B8%8E%E5%A4%8D%E7%8E%B0%E8%AF%B4%E6%98%8E"><span class="toc-number">11.</span> <span class="toc-text">代码与复现说明</span></a></li></ol>
+                </div>
+            
+            <hr />
+            <div itemprop="articleBody"><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台跟随和远程交互。本项目围绕这一问题，实现了一套由 AI 子系统、IoT 子系统、电源子系统、Android APP 和喂食器实体组成的 AIoT 宠物服务系统。</p>
+<p>AI 子系统以 Hi3516DV300 为核心，运行 Ubuntu，使用 YOLOv2 检测网和 ResNet18 分类网识别猫狗；模型经过 Caffe 转换、RuyiStudio 量化后，以 NNIE 可执行的 <code>.wk</code> 文件部署到板端。系统在识别结果基础上完成视觉感知、语音引导、目标跟随、夜间识别、RTSP 推流和本地拍照。IoT 子系统以 Hi3861V100 为核心，运行 LiteOS，负责称重投喂、二维云台、Zigbee 宠物按键、CoAP 控制和显示等任务。Hi3516 与 Hi3861 以 UART + HiSignalling 协议互联，APP 分别通过 RTSP 获取实时视频、通过 CoAP 下发控制命令。</p>
+<table>
+<thead>
+<tr>
+<th>项目项</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>项目名称</td>
+<td>基于 AIoT 的一体化宠物服务系统</td>
+</tr>
+<tr>
+<td>项目角色</td>
+<td>独立开发</td>
+</tr>
+<tr>
+<td>AI 平台</td>
+<td>Hi3516DV300 &#x2F; Ubuntu &#x2F; NNIE</td>
+</tr>
+<tr>
+<td>IoT 平台</td>
+<td>Hi3861V100 &#x2F; LiteOS</td>
+</tr>
+<tr>
+<td>视觉模型</td>
+<td>YOLOv2 检测 + ResNet18 分类</td>
+</tr>
+<tr>
+<td>通信</td>
+<td>RTSP、UART + HiSignalling、CoAP、Zigbee &#x2F; Z-Stack</td>
+</tr>
+<tr>
+<td>项目代码</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/ORI2333/PFS_BOEMV">ORI2333&#x2F;PFS_BOEMV</a></td>
+</tr>
+</tbody></table>
+<span id="more"></span>
+
+<h2 id="1-绪论"><a href="#1-绪论" class="headerlink" title="1 绪论"></a>1 绪论</h2><h3 id="1-1-研究背景与意义"><a href="#1-1-研究背景与意义" class="headerlink" title="1.1 研究背景与意义"></a>1.1 研究背景与意义</h3><p>宠物逐渐从“看家护院的动物”变成家庭成员，陪伴和照护需求随之增加。但主人上班、加班或出差时，定时定量喂食只能解决最基础的供食问题：它无法确认宠物是否出现，无法区分猫狗，无法实时查看状态，也无法处理夜间活动、宠物自主触发等场景。</p>
+<p>传统智能喂食设备往往采用单一控制器加定时器的方式。它们能根据预设时间启动电机，却没有感知链路，也没有把“看见宠物”与“实际投喂多少克”连成闭环。要让设备从“定时开闸”变成“根据状态提供服务”，至少需要解决四类问题：</p>
+<ol>
+<li><strong>视觉感知</strong>：实时从视频中识别目标，输出类别和位置；</li>
+<li><strong>执行反馈</strong>：按实际重量而不是电机转动时间完成投喂；</li>
+<li><strong>远程交互</strong>：用户可看视频、改参数、手动干预；</li>
+<li><strong>能耗与扩展</strong>：高算力视觉节点不能全天候空转，低功耗节点需要维持按键和基础服务。</li>
+</ol>
+<p>因此，本项目并未将所有模块堆在一块主板上，而是将视觉推理与外设控制拆分为 AI 和 IoT 两个子系统。前者负责“看见并判断”，后者负责“可靠执行”，再通过通信协议与电源策略把二者接成完整服务链路。</p>
+<h3 id="1-2-国内外研究现状"><a href="#1-2-国内外研究现状" class="headerlink" title="1.2 国内外研究现状"></a>1.2 国内外研究现状</h3><p>宠物智能硬件的基础形态长期以定时、定量投喂为主，随后逐步加入 Wi-Fi 连接、远程查看和设备控制。此类设备解决了主人不在场时的基本喂食需求，但对“宠物是否到场、是什么宠物、应否触发某项服务”缺乏感知能力。</p>
+<p>机器视觉宠物监护和自动喂食是两个已有方向：前者强调视频采集、目标识别和远程观察，后者强调投喂执行、定时控制和计量。毕业论文的切入点是将二者与低功耗物联网控制结合：视觉主机负责识别与视频，IoT 主控负责称重、舵机和无线扩展，APP 提供控制入口。这样，视觉结果不是只留在屏幕上的检测框，而能进入投喂、语音和云台的服务闭环。</p>
+<h3 id="1-3-本文结构"><a href="#1-3-本文结构" class="headerlink" title="1.3 本文结构"></a>1.3 本文结构</h3><p>文章按毕业论文原有的实现顺序组织：第 2 节给出总体方案；第 3 节说明视觉模型训练、转换、量化与部署；第 4 节说明 Hi3516 上的 AI 应用；第 5 节说明 Hi3861、Zigbee 和称重投喂；第 6 节说明供电和低功耗；第 7 节说明 Android APP；第 8 节以真实场景验证各条服务链路。</p>
+<h2 id="2-系统总体方案设计"><a href="#2-系统总体方案设计" class="headerlink" title="2 系统总体方案设计"></a>2 系统总体方案设计</h2><h3 id="2-1-需求分析"><a href="#2-1-需求分析" class="headerlink" title="2.1 需求分析"></a>2.1 需求分析</h3><p>论文将需求拆为七项功能，并在实现中对应到具体模块：</p>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>对应实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>视觉感知</td>
+<td>Camera、YOLOv2、ResNet18、NNIE</td>
+</tr>
+<tr>
+<td>主人声音引导</td>
+<td>扬声器、类别对应音频、播放限流</td>
+</tr>
+<tr>
+<td>远程控制</td>
+<td>Android APP、CoAP、云台控制</td>
+</tr>
+<tr>
+<td>自定义投喂</td>
+<td>APP 参数、Hi3861、舵机、HX711</td>
+</tr>
+<tr>
+<td>实时视频监控</td>
+<td>H.264 编码、RTSP、APP 解码显示</td>
+</tr>
+<tr>
+<td>目标跟随</td>
+<td>检测框坐标、UART、二维云台</td>
+</tr>
+<tr>
+<td>宠物自主按键</td>
+<td>感应开关、CC2530、Zigbee、Hi3861</td>
+</tr>
+</tbody></table>
+<p>这些需求并非彼此独立。比如目标跟随需要 AI 子系统输出坐标、UART 将坐标或方向命令交给 Hi3861、IoT 子系统再控制云台；无线按键则需要 Zigbee 节点、路由器、Hi3861 的命令解析以及投喂闭环共同工作。系统设计的重点不只是“每个模块能跑”，而是接口之间的责任边界清晰。</p>
+<h3 id="2-2-可行性分析"><a href="#2-2-可行性分析" class="headerlink" title="2.2 可行性分析"></a>2.2 可行性分析</h3><p><strong>技术可行性。</strong> Hi3516DV300 提供视频采集、编解码和 NNIE 推理能力，能够承担 Camera 画面的处理与模型部署；Hi3861 运行 LiteOS，适合长时间处理 GPIO、PWM、称重、Wi-Fi 和协议消息；CC2530 与 Z-Stack 则为低功耗多节点按键扩展提供基础。三类平台按任务拆分，避免单一控制器同时处理视频推理与实时外设控制。</p>
+<p><strong>经济可行性。</strong> 系统使用成熟的开发板、常见的舵机、HX711、光敏模块和 Zigbee 节点。工程成本主要来自视觉主机、供电、机械结构和开发时间；功能设计优先复用模块化接口，便于单独替换和后续迭代，而不是在原型阶段设计不可维护的一体化硬件。</p>
+<p><strong>应用可行性。</strong> APP 提供用户可理解的投喂、视频、云台和开关配置；宠物按键提供低功耗下的自主触发入口；称重反馈限制单次投喂结果。系统服务的对象是家庭宠物照护，视觉识别仅用于猫狗类别和位置判断，不替代健康诊断或兽医判断。</p>
+<h3 id="2-3-总体架构分析"><a href="#2-3-总体架构分析" class="headerlink" title="2.3 总体架构分析"></a>2.3 总体架构分析</h3><h4 id="2-3-1-系统结构"><a href="#2-3-1-系统结构" class="headerlink" title="2.3.1 系统结构"></a>2.3.1 系统结构</h4><p>系统由 AI 子系统、IoT 子系统、电源子系统、APP 和喂食器实体组成。Taurus 开发套件以 Hi3516DV300 为核心，Pegasus 开发套件以 Hi3861V100 为核心。Taurus 负责视频、模型和语音；Pegasus 负责称重、舵机、云台、OLED、Zigbee 和参数控制。</p>
+<div class="mermaid" data-code="flowchart%20LR%0A%20%20%20%20CAM%5BIMX335%20Camera%5D%20--%3E%20AI%5BHi3516DV300%20%2F%20NNIE%5D%0A%20%20%20%20LIGHT%5B%E5%85%89%E6%95%8F%E4%BC%A0%E6%84%9F%E5%99%A8%20%2B%20%E7%BA%A2%E5%A4%96%E8%A1%A5%E5%85%89%5D%20--%3E%20AI%0A%20%20%20%20AI%20--%3E%20LCD%5BLCD%20%2F%20%E6%9D%BF%E7%AB%AF%20UI%5D%0A%20%20%20%20AI%20--%3E%20AUDIO%5B%E6%89%AC%E5%A3%B0%E5%99%A8%5D%0A%20%20%20%20AI%20--%3E%7CRTSP%20%2F%20H.264%7C%20APP%5BAndroid%20APP%5D%0A%20%20%20%20AI%20--%3E%7CHiSignalling%20%2F%20UART%5Cn%E7%B1%BB%E5%88%AB%E4%B8%8E%E5%9D%90%E6%A0%87%7C%20IOT%5BHi3861V100%20%2F%20LiteOS%5D%0A%20%20%20%20APP%20--%3E%7CCoAP%5Cn%E5%8F%82%E6%95%B0%E4%B8%8E%E6%8E%A7%E5%88%B6%7C%20IOT%0A%20%20%20%20IOT%20--%3E%20FEED%5BSG90%20%E9%97%B8%E6%9C%BA%20%2B%20HX711%20%E7%A7%B0%E9%87%8D%5D%0A%20%20%20%20IOT%20--%3E%20PTZ%5B%E4%BA%8C%E7%BB%B4%E4%BA%91%E5%8F%B0%5D%0A%20%20%20%20IOT%20--%3E%20OLED%5BOLED%20%E7%8A%B6%E6%80%81%E6%98%BE%E7%A4%BA%5D%0A%20%20%20%20IOT%20--%3E%7CUART%7C%20ZB%5BCC2530%20Zigbee%20%E8%B7%AF%E7%94%B1%E5%99%A8%5D%0A%20%20%20%20ZB%20%3C--%3E%20BTN%5B%E6%97%A0%E7%BA%BF%E5%AE%A0%E7%89%A9%E6%8C%89%E9%94%AE%E7%BB%88%E7%AB%AF%5D">flowchart LR
+    CAM[IMX335 Camera] --&gt; AI[Hi3516DV300 / NNIE]
+    LIGHT[光敏传感器 + 红外补光] --&gt; AI
+    AI --&gt; LCD[LCD / 板端 UI]
+    AI --&gt; AUDIO[扬声器]
+    AI --&gt;|RTSP / H.264| APP[Android APP]
+    AI --&gt;|HiSignalling / UART\n类别与坐标| IOT[Hi3861V100 / LiteOS]
+    APP --&gt;|CoAP\n参数与控制| IOT
+    IOT --&gt; FEED[SG90 闸机 + HX711 称重]
+    IOT --&gt; PTZ[二维云台]
+    IOT --&gt; OLED[OLED 状态显示]
+    IOT --&gt;|UART| ZB[CC2530 Zigbee 路由器]
+    ZB &lt;--&gt; BTN[无线宠物按键终端]</div>
+![系统结构图](https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913171912372.png?imageSlim)
+
+
+<h4 id="2-3-2-系统整体实现设计"><a href="#2-3-2-系统整体实现设计" class="headerlink" title="2.3.2 系统整体实现设计"></a>2.3.2 系统整体实现设计</h4><p>从软件和硬件两侧看，系统有两条主数据流：</p>
+<ol>
+<li><strong>视频流</strong>：Camera 采集图像 → Hi3516 编码&#x2F;推理 → RTSP 推给 APP，同时在 LCD 上显示；</li>
+<li><strong>控制流</strong>：识别结果或 APP 指令 → Hi3861 → 舵机、称重、云台、Zigbee 与显示模块。</li>
+</ol>
+<p>Hi3516 侧的视频处理不是孤立的模型 demo。检测和分类结果会以类别、置信度、边界框等形式参与后续逻辑：类别用于区分猫粮&#x2F;狗粮和语音文件，目标框坐标用于云台跟随。Hi3861 侧也不只是“收命令转 PWM”，它在投喂过程中持续读取 HX711，根据实际重量决定闸机关闭时机。</p>
+<p>APP 同时连接两个逻辑服务：RTSP 客户端获取 Hi3516 输出的视频；CoAP 客户端向 Hi3861 设置克数、投喂间隔、自动跟随和宠物按键等参数。视频流和控制流分开，避免带宽与控制消息相互干扰。<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913171933097.png?imageSlim" alt="系统实现框架图"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913171955784.png?imageSlim" alt="系统结构图"></p>
+<h4 id="2-3-3-系统模块设计（电路连接）"><a href="#2-3-3-系统模块设计（电路连接）" class="headerlink" title="2.3.3 系统模块设计（电路连接）"></a>2.3.3 系统模块设计（电路连接）</h4><p>电路上，AI、IoT、电源和喂食器实体独立成块。Taurus 连接 Camera、扬声器、光敏与红外补光、LCD；Pegasus 连接 OLED、两个投喂通道、称重模块、云台和 Zigbee 路由器。Taurus 与 Pegasus 使用 UART 互联；Zigbee 路由器同样通过 UART 接入 Pegasus。</p>
+<p>模块化连接的好处是故障定位相对直接：视频识别异常优先检查 Taurus 与模型，重量不准优先检查 HX711 和闸机，远程控制失效则检查 CoAP、Wi-Fi 和 Hi3861。相比所有功能共享一套不可替换的板级逻辑，模块边界更适合后续维护。</p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913172947762.png?imageSlim" alt="电路结构示意图"></p>
+<h3 id="2-4-创新点"><a href="#2-4-创新点" class="headerlink" title="2.4 创新点"></a>2.4 创新点</h3><p>系统的特点不是单独采用了某个深度学习模型，而是把模型结果放进实际服务闭环：</p>
+<ul>
+<li>YOLOv2 与 ResNet18 结合，完成目标位置和类别判断；</li>
+<li>识别类别可触发对应主人语音；</li>
+<li>识别框坐标驱动云台跟随；</li>
+<li>识别、无线按键和 APP 三种触发方式共用称重投喂闭环；</li>
+<li>Zigbee 让宠物在低功耗模式下仍有自主触发入口；</li>
+<li>APP 同时承担视频观察和设备参数配置。</li>
+</ul>
+<h2 id="3-AI-模型开发与部署"><a href="#3-AI-模型开发与部署" class="headerlink" title="3 AI 模型开发与部署"></a>3 AI 模型开发与部署</h2><h3 id="3-1-AI-模型训练思路"><a href="#3-1-AI-模型训练思路" class="headerlink" title="3.1 AI 模型训练思路"></a>3.1 AI 模型训练思路</h3><p>系统把视觉任务拆为检测网和分类网。检测网负责从整帧画面找出候选的猫狗目标与位置；分类网只处理裁剪后的目标区域，完成更细的猫狗类别判断。拆分后的处理链路为：</p>
+<div class="math math-display" data-tex="%5Ctext%7BVideo%20Frame%7D%20%5Crightarrow%20%5Ctext%7BYOLOv2%20Detection%7D%20%5Crightarrow%20%5Ctext%7BCrop%20%2F%20Resize%7D%20%5Crightarrow%20%5Ctext%7BResNet18%20Classification%7D%20%5Crightarrow%20%5Ctext%7BClass%20%2B%20Box%7D">\text&#123;Video Frame&#125; \rightarrow \text&#123;YOLOv2 Detection&#125; \rightarrow \text&#123;Crop / Resize&#125; \rightarrow \text&#123;ResNet18 Classification&#125; \rightarrow \text&#123;Class + Box&#125;</div>
+
+<p>这种两阶段结构适合本项目的部署条件。YOLOv2 负责较快定位，ResNet18 负责对目标区域分类；分类网不必在整帧上重复计算。系统最终保留类别和坐标两个核心输出，供显示、语音、跟随和投喂规则使用。</p>
+<h4 id="3-1-1-数据集制作"><a href="#3-1-1-数据集制作" class="headerlink" title="3.1.1 数据集制作"></a>3.1.1 数据集制作</h4><p>检测网使用猫、狗两类开源数据，每类 8,000 余张。标注采用 Labelme，人工绘制矩形框后得到 JSON 文件；再使用 Python 脚本将 JSON 中的标签和坐标转换为 Darknet 所需的 TXT 标注格式。</p>
+<p>分类网使用的猫图约 11,900 张、狗图约 9,544 张。除开源数据外，项目使用 Taurus 的 Camera 录制真实部署视角的视频：录制文件先从板端取回，<code>H.264</code> 转为 <code>MP4</code>，再使用 FFmpeg 按帧抽取图片。自采集样本让训练集包含实际镜头的视角、背景和距离，而不是只使用干净的公开图片。</p>
+<p>数据清理中会排除主体不明确、包含大量人类或其它动物、难以区分猫狗脸部的样本。分类任务中，脸部区域通常比全身区域带来更稳定的分类结果，因此数据制作会尽量保证裁剪区域与部署时检测框的输入分布接近。<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173021358.png?imageSlim" alt="训练流程图"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173038558.png?imageSlim" alt="Labelme 标注软件"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173103168.png?imageSlim" alt="录制视频"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173117330.png?imageSlim" alt="ffmpeg 逐帧截取"></p>
+<h4 id="3-1-2-模型训练"><a href="#3-1-2-模型训练" class="headerlink" title="3.1.2 模型训练"></a>3.1.2 模型训练</h4><p>检测网采用 YOLOv2，训练环境为 Darknet，训练算力使用 NVIDIA Tesla V100。YOLO 训练输出中的 <code>Region Avg IOU</code> 用于描述预测框和真实框的重合程度；<code>Class</code>、<code>Obj</code>、<code>No Obj</code> 和 <code>Avg Recall</code> 分别反映类别、目标置信度、背景预测和召回等训练状态。论文记录的检测网训练时长约 30 小时，最终检测准确率约为 94%。该结果是训练实验中的检测指标，不应外推为所有家庭环境下的端到端服务成功率。</p>
+<p>分类网采用 ResNet18，训练时将猫狗脸部区域作为重点输入。YOLOv2 擅长从整帧找出目标位置，但对复杂背景或目标细节的类别判断存在边界；ResNet18 在裁剪区域上提供额外的类别判断。部署时并非让两个网络平行处理整帧，而是先检测、再裁剪、最后分类。</p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173147529.png?imageSlim" alt="YOLO 网络部分结构"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173204636.png?imageSlim" alt="训练过程"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173221350.png?imageSlim" alt="检测网训练完成"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173233703.png?imageSlim" alt="ResNet 模型部分网络结构"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173257039.png?imageSlim" alt="分类网训练结果"></p>
+<h4 id="3-1-3-模型转换"><a href="#3-1-3-模型转换" class="headerlink" title="3.1.3 模型转换"></a>3.1.3 模型转换</h4><p>NNIE 部署环境以 Caffe 模型作为输入，因此训练模型需要完成框架转换：</p>
+<ul>
+<li>YOLOv2 的 Darknet <code>.cfg</code> 与 <code>.weights</code> 通过 <code>YOLOv2_to_Caffe</code> 转为 <code>.prototxt</code> 和 <code>.caffemodel</code>；</li>
+<li>ResNet18 的 PyTorch 模型通过 Pytorch2Caffe 转为 Caffe；</li>
+<li>转换后需要检查输入尺寸、网络层和权重参数是否符合 NNIE 工具链约束。</li>
+</ul>
+<p>模型转换并不是纯文件改后缀。Darknet、PyTorch 和 Caffe 的网络表达和权重格式不同，转换过程可能引入算子适配与精度变化。因此，转换完成后仍需在量化和板端推理前做仿真检查。</p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173409889.png?imageSlim" alt="Darknet 转 Caffe 模型"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173427419.png?imageSlim" alt="Pytorch 转 Caffe 模型"></p>
+<h4 id="3-1-4-模型量化"><a href="#3-1-4-模型量化" class="headerlink" title="3.1.4 模型量化"></a>3.1.4 模型量化</h4><p>量化将模型参数和激活表示从浮点形式转换为更适合嵌入式推理的定点表示，以降低模型体积、存储访问和计算开销。项目使用 RuyiStudio 对 Caffe 模型做功能仿真、指令仿真和量化，最后导出 NNIE 使用的 <code>.wk</code> 文件。</p>
+<p>量化验证关注两类问题：一是量化前后的推理输出是否保持足够一致，可用余弦相似度和最大绝对误差观察；二是量化后的模型是否满足板端内存和执行时间预算。随后可以合并可优化的激活层，减少运行时内存分配。</p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173502475.png?imageSlim" alt="NNIE 开发工具 RuyiStudio"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173515812.png?imageSlim" alt="量化生成的 WK 文件"></p>
+<h3 id="3-2-模型应用"><a href="#3-2-模型应用" class="headerlink" title="3.2 模型应用"></a>3.2 模型应用</h3><h4 id="3-2-1-YOLOv2-单独检测"><a href="#3-2-1-YOLOv2-单独检测" class="headerlink" title="3.2.1 YOLOv2 单独检测"></a>3.2.1 YOLOv2 单独检测</h4><p>YOLOv2 直接处理视频帧，输出检测框和目标类别信息。它的主要价值是实时定位：只需一次前向推理即可得到多个候选框，适合嵌入式视频流的初筛。识别结果可直接叠加到输出视频，并作为后续业务逻辑的触发条件。</p>
+<p>单独使用检测网时，分类输出可能受背景、姿态和目标尺度影响。因此，项目没有把单检测网结果直接作为全部服务决策的唯一依据，而是继续将候选目标送入分类网。</p>
+<h4 id="3-2-2-YOLOv2-与-ResNet18-联合判断"><a href="#3-2-2-YOLOv2-与-ResNet18-联合判断" class="headerlink" title="3.2.2 YOLOv2 与 ResNet18 联合判断"></a>3.2.2 YOLOv2 与 ResNet18 联合判断</h4><p>联合判断的执行过程如下：</p>
+<ol>
+<li>从当前帧中使用 YOLOv2 得到猫狗候选框；</li>
+<li>对候选框坐标做源帧到目标帧的转换；</li>
+<li>裁剪最大或有效候选区域，并缩放为分类网输入尺寸；</li>
+<li>运行 ResNet18 得到猫&#x2F;狗分类结果；</li>
+<li>将类别、置信度和坐标组合成 JSON&#x2F;消息结果；</li>
+<li>在视频帧上绘制框与类别，同时向外设控制逻辑发送结果。</li>
+</ol>
+<p>对于多目标画面，系统以较大的目标框作为主要控制对象，使用不同颜色标记主目标和其它候选目标。这样可以防止云台在多个候选框之间频繁切换，降低控制逻辑的抖动。</p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173537368.png?imageSlim" alt="YOLO 单独实现效果"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913173556787.png?imageSlim" alt="YOLO 和 ResNet 实现效果"></p>
+<h4 id="3-2-3-应用场景边界"><a href="#3-2-3-应用场景边界" class="headerlink" title="3.2.3 应用场景边界"></a>3.2.3 应用场景边界</h4><p>两网络串联适合“快速定位 + 对候选区域分类”的需求，但它并不是身份识别系统，也不是宠物健康诊断系统。系统识别的是猫狗类别和位置，不记录单只宠物的长期身份，更不应根据单帧识别结果直接推断疾病、食量是否健康等结论。这些功能需要额外数据、状态模型和长期验证。</p>
+<h3 id="3-3-AI-Plugin-开发与板端部署"><a href="#3-3-AI-Plugin-开发与板端部署" class="headerlink" title="3.3 AI Plugin 开发与板端部署"></a>3.3 AI Plugin 开发与板端部署</h3><p>板端 AI Plugin 负责接入 <code>.wk</code> 模型，并通过插件接口完成模型加载、推理、释放和应用逻辑连接。核心工作包括：</p>
+<ul>
+<li>在 <code>Load</code> 阶段加载检测网和分类网；</li>
+<li>在 <code>Cal</code> 阶段接收视频帧、调用推理并处理输出；</li>
+<li>在 <code>Unload</code> 阶段释放模型和任务缓冲；</li>
+<li>将推理结果输出给 OSD、UART 消息与其它 AI 应用模块。</li>
+</ul>
+<p>仓库的 <code>Taurus/</code> 目录提供 HiOpenAIS 的补丁、AI Plugin 源码和部署模型文件。复现需要先搭建对应的 HiOpenAIS 环境，将补丁打入 SDK 后重新构建文件系统，再将 <code>.wk</code> 文件复制到插件目录。它是面向特定 SDK 的补丁式工程，而不是普通桌面端一键运行项目。</p>
+<!--
+配图 10
+论文对应：图 3-16 PLUG 接口、图 3-17 加载模型、图 3-18 卸载检测网模型
+建议文件名：10-ai-plugin-model-lifecycle.png
+用途：建议展示接口与加载/卸载关键代码；适合放在本节末，图片应裁掉无关 IDE 边框。
+-->
+
+<h3 id="3-4-NNIE-板端推理"><a href="#3-4-NNIE-板端推理" class="headerlink" title="3.4 NNIE 板端推理"></a>3.4 NNIE 板端推理</h3><p>NNIE 的典型推理过程包含：获取 <code>.wk</code> 文件大小、申请模型缓冲、加载模型、获取任务缓冲需求、申请任务内存、准备输入帧数据、执行 <code>Forward</code>、通过 <code>Query</code> 查询任务完成状态、读取输出、卸载模型并释放缓冲。</p>
+<p>这条生命周期保证了模型内存和任务内存在板端可控。视频帧循环中，检测网先给出候选框，分类网再对目标区域推理；模型和缓冲的管理不应散落在业务逻辑中，否则长时间运行时的内存泄漏和重复加载问题会比模型精度更早出现。</p>
+<!--
+配图 11
+论文对应：图 3-19 NNIE 引擎的板端推理逻辑图
+建议文件名：11-nnie-inference-lifecycle.png
+用途：展示模型加载、缓冲分配、Forward、Query、释放资源的板端推理生命周期。
+-->
+
+<h2 id="4-AI-子系统应用设计与实现"><a href="#4-AI-子系统应用设计与实现" class="headerlink" title="4 AI 子系统应用设计与实现"></a>4 AI 子系统应用设计与实现</h2><h3 id="4-1-AI-应用框架"><a href="#4-1-AI-应用框架" class="headerlink" title="4.1 AI 应用框架"></a>4.1 AI 应用框架</h3><p>AI 子系统以 Camera、Hi3516DV300、光敏传感器、红外补光灯、扬声器和 LCD 为基础。模型推理结果驱动五项应用：视觉感知判断、语音、目标跟随、夜间识别和板端拍照。</p>
+<p>视觉感知是其余功能的起点：语音模块依据识别类别选择音频；跟随模块依据识别框位置控制云台；夜间模式确保低照度下还能获得可识别画面；拍照模块则让设备能够在本地保存当前画面。</p>
+<!--
+配图 12
+论文对应：图 4-1 AI 应用功能框架
+建议文件名：12-ai-subsystem-capability-map.png
+用途：展示 Camera、补光、扬声器、LCD 与五项 AI 应用之间的关系。
+-->
+
+<h3 id="4-2-Hi3516-与客户端-RTSP-推流"><a href="#4-2-Hi3516-与客户端-RTSP-推流" class="headerlink" title="4.2 Hi3516 与客户端 RTSP 推流"></a>4.2 Hi3516 与客户端 RTSP 推流</h3><p>RTSP 负责客户端对实时媒体流的会话控制。Hi3516 将 Camera 帧编码为 H.264 码流，RTSP 服务端提供描述、会话建立、播放、暂停和关闭等控制能力；APP 侧使用 FFmpeg 接收并解码码流，<code>MediaCodec</code> 与 <code>SurfaceView</code> 负责显示。</p>
+<p>工程链路可简化为：</p>
+<div class="math math-display" data-tex="%5Ctext%7BCamera%7D%20%5Crightarrow%20%5Ctext%7BH.264%20Encoder%7D%20%5Crightarrow%20%5Ctext%7BRTSP%20Server%7D%20%5Crightarrow%20%5Ctext%7BWi-Fi%2FTCP%7D%20%5Crightarrow%20%5Ctext%7BFFmpeg%20Decoder%7D%20%5Crightarrow%20%5Ctext%7BSurfaceView%7D">\text&#123;Camera&#125; \rightarrow \text&#123;H.264 Encoder&#125; \rightarrow \text&#123;RTSP Server&#125; \rightarrow \text&#123;Wi-Fi/TCP&#125; \rightarrow \text&#123;FFmpeg Decoder&#125; \rightarrow \text&#123;SurfaceView&#125;</div>
+
+<p>视频端设置缓存以缓冲网络抖动。使用 TCP 有利于传输可靠性，但可能增加延迟；该取舍适用于本项目的远程观察和控制场景。视频流不与 CoAP 控制消息共用一条业务链路，避免码流带宽影响投喂和云台指令。</p>
+<!--
+配图 13
+论文对应：图 4-2 RTSP 推流协议实现、图 4-3 RTSP 实现效果图
+建议文件名：13-rtsp-streaming-and-app-preview.png
+用途：以图 4-3 的 APP 实时预览效果为主图，图 4-2 作为协议流程小图。
+-->
+
+<h3 id="4-3-应用功能实现"><a href="#4-3-应用功能实现" class="headerlink" title="4.3 应用功能实现"></a>4.3 应用功能实现</h3><h4 id="4-3-1-视觉感知判断"><a href="#4-3-1-视觉感知判断" class="headerlink" title="4.3.1 视觉感知判断"></a>4.3.1 视觉感知判断</h4><p>视觉感知的主流程是：Camera 启动后，NNIE 从视频流中取帧；检测网判断是否存在猫狗；存在目标时，框出脸部&#x2F;目标区域并送入分类网；分类网输出猫或狗，系统再将类别、置信度和坐标写入视频 OSD 与控制消息。</p>
+<p>未检测到目标时，该帧不触发投喂、语音或云台动作。检测到多个目标时，系统选择主要目标用于后续控制，避免每个框都生成一套彼此冲突的舵机命令。</p>
+<!--
+配图 14
+论文对应：图 4-4 视觉感知判断逻辑流程图、图 4-5 Camera
+建议文件名：14-visual-perception-flow-and-camera.png
+用途：流程图为主，Camera 硬件实物作为角标或右侧配图。
+-->
+
+<h4 id="4-3-2-语音功能"><a href="#4-3-2-语音功能" class="headerlink" title="4.3.2 语音功能"></a>4.3.2 语音功能</h4><p>语音功能播放预先录制的主人声音，引导宠物靠近食槽。程序不会在每一帧检测到宠物时都播放音频，而是检查帧计数、置信度阈值和类别变化：只有达到设定间隔、识别分数足够且当前类别发生有效变化时，才调用播放函数。</p>
+<p>这一限流逻辑避免了高帧率视频导致反复播放。论文实现中，狗和猫使用不同的类别编号与音频文件，扬声器根据最终分类结果选择对应声音。语音的作用是引导，不是对宠物行为做强制控制；投喂仍需满足时间、按键或 APP 等业务条件。</p>
+<!--
+配图 15
+论文对应：图 4-6 扬声器
+建议文件名：15-speaker-and-voice-guidance.png
+用途：放在语音功能之后；可加一张“猫/狗识别结果 → 对应音频”的自制流程小图。
+-->
+
+<h4 id="4-3-3-目标跟随"><a href="#4-3-3-目标跟随" class="headerlink" title="4.3.3 目标跟随"></a>4.3.3 目标跟随</h4><p>目标跟随使用检测框坐标控制二维云台。系统将目标框与画面预设边界比较：目标越过左、右、上、下边界时，Hi3516 经 UART 向 Hi3861 发送方向命令；Hi3861 再控制云台的水平或俯仰舵机。目标位于稳定区域时，不额外转动云台。</p>
+<p>这种控制策略的实现重点是减少抖动：选择最大候选框作为主要目标，对其它框只做显示；控制命令由目标相对画面边界的位置产生，不需要将视频传到 APP 再由手机下发云台决策。视觉结果直接进入串口控制链路，响应路径更短。</p>
+<!--
+配图 16
+论文对应：图 4-7 目标跟随功能流程图、图 4-8 云台实物图、图 4-9 坐标示意图
+建议文件名：16-target-tracking-flow-ptz-coordinate.png
+用途：建议三图拼接：左流程，中坐标边界，右二维云台实物。
+-->
+
+<h4 id="4-3-4-夜间识别"><a href="#4-3-4-夜间识别" class="headerlink" title="4.3.4 夜间识别"></a>4.3.4 夜间识别</h4><p>夜间识别由光敏传感器和红外补光共同实现。系统读取环境亮度，并与设定阈值比较；环境较暗时开启红外补光，调整图像相关属性后继续执行同一套猫狗检测和分类；环境恢复明亮时关闭红外并切回正常模式。</p>
+<p>阈值附近的环境亮度可能波动，因此红外状态切换不应只靠单次采样。实现中使用连续计数阈值进行抖动消除，只有状态连续满足条件后才实际切换 IR-Cut 和相关图像属性，避免补光灯频繁开关。</p>
+<!--
+配图 17
+论文对应：图 4-10 夜间识别功能逻辑流程图、图 4-11 光敏传感器和红外补光灯、图 8-6 夜视效果
+建议文件名：17-night-vision-flow-hardware-result.png
+用途：三图组合，实际夜视识别结果放最大；流程和硬件图作为辅助。
+-->
+
+<h4 id="4-3-5-板端拍照"><a href="#4-3-5-板端拍照" class="headerlink" title="4.3.5 板端拍照"></a>4.3.5 板端拍照</h4><p>板端拍照基于 HiGV 图形框架完成。用户可以在 LCD&#x2F;触摸屏上进入拍照界面、触发拍照、预览、保存、浏览图库和删除图片。视频帧通过 VPSS 处理后送往 LCD 显示；触发拍照时，当前帧交由 JPEG 编码器保存到 eMMC。</p>
+<p>它与 APP 端视频预览不同：APP 负责远程实时观看，板端拍照负责本地独立保存和管理图像。两者使用不同的交互入口，但共享 Camera 产生的视频帧。</p>
+<!--
+配图 18
+论文对应：图 4-12 板端拍照功能、图 4-13 板端拍照示意图、图 8-7 板端拍照效果
+建议文件名：18-on-device-photo-capture.png
+用途：以图 8-7 的实际效果为主图，图 4-12 的状态流程为小图。
+-->
+
+<h2 id="5-IoT-子系统应用设计与实现"><a href="#5-IoT-子系统应用设计与实现" class="headerlink" title="5 IoT 子系统应用设计与实现"></a>5 IoT 子系统应用设计与实现</h2><h3 id="5-1-多设备协同设计"><a href="#5-1-多设备协同设计" class="headerlink" title="5.1 多设备协同设计"></a>5.1 多设备协同设计</h3><p>IoT 子系统需要同时接收视觉命令、APP 参数和 Zigbee 按键事件，再控制舵机、称重、云台和显示。因此，通信链路按数据性质拆分：</p>
+<table>
+<thead>
+<tr>
+<th>链路</th>
+<th>数据</th>
+<th>实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Taurus ↔ Pegasus</td>
+<td>类别、坐标、执行命令</td>
+<td>UART + HiSignalling</td>
+</tr>
+<tr>
+<td>Pegasus ↔ Zigbee 路由器</td>
+<td>按键与扩展节点消息</td>
+<td>UART</td>
+</tr>
+<tr>
+<td>Zigbee 路由器 ↔ 终端</td>
+<td>无线感应按键</td>
+<td>CC2530 + Z-Stack</td>
+</tr>
+<tr>
+<td>APP ↔ Pegasus</td>
+<td>配置与控制</td>
+<td>Wi-Fi + CoAP</td>
+</tr>
+<tr>
+<td>Taurus → APP</td>
+<td>实时视频</td>
+<td>Wi-Fi + RTSP</td>
+</tr>
+</tbody></table>
+<p>Taurus 与 Pegasus 分工明确：Taurus 负责视频理解，Pegasus 负责实际控制。即使 AI 模型更换，称重投喂和 Zigbee 链路的控制模型也无需跟着重写；即使视觉主机关闭，低功耗控制侧仍可以保持基本服务。</p>
+<!--
+配图 19
+论文对应：图 5-1 多设备通信设计方案
+建议文件名：19-multidevice-communication-topology.png
+用途：展示 UART、RTSP、CoAP 和 Zigbee 四条通信链路的分工。
+-->
+
+<h3 id="5-2-多设备通信实现"><a href="#5-2-多设备通信实现" class="headerlink" title="5.2 多设备通信实现"></a>5.2 多设备通信实现</h3><h4 id="5-2-1-Hi3516-与-Hi3861-通信"><a href="#5-2-1-Hi3516-与-Hi3861-通信" class="headerlink" title="5.2.1 Hi3516 与 Hi3861 通信"></a>5.2.1 Hi3516 与 Hi3861 通信</h4><p>Taurus 和 Pegasus 通过 UART 连接，使用 HiSignalling 协议封装控制数据。发送端将业务数据写入帧体，添加 <code>0xAA 0x55</code> 帧头、<code>0xFF</code> 帧尾并计算 CRC32；接收端完成 CRC 校验后再将命令分发给云台、投喂或其它控制模块。</p>
+<p>这种协议封装比直接发送裸字节更适合长期运行。视觉侧可能输出不同类别、不同坐标和不同控制状态，帧头、长度、帧尾与 CRC 让接收侧能够从串口字节流中识别完整消息并拒绝损坏数据。</p>
+<h4 id="5-2-2-Hi3861-与-Zigbee-通信"><a href="#5-2-2-Hi3861-与-Zigbee-通信" class="headerlink" title="5.2.2 Hi3861 与 Zigbee 通信"></a>5.2.2 Hi3861 与 Zigbee 通信</h4><p>Hi3861 与 Zigbee 路由器通过 UART 双向通信。Hi3861 发送控制或配置数据给路由器；路由器接收终端上报的按键事件后，经 UART 交给 Hi3861。路由器侧使用 TI UART 库接收字节流，再将完整消息交给 Z-Stack 的处理函数。</p>
+<p>这条链路让 Zigbee 网络与主控应用解耦：Hi3861 只需处理统一的事件数据，不需要理解每一个终端设备的无线链路细节；Zigbee 节点也不必直接承担投喂、称重等业务逻辑。</p>
+<h4 id="5-2-3-Zigbee-组网通信"><a href="#5-2-3-Zigbee-组网通信" class="headerlink" title="5.2.3 Zigbee 组网通信"></a>5.2.3 Zigbee 组网通信</h4><p>Zigbee 使用 CC2530 和 Z-Stack。一个节点承担协调&#x2F;路由角色，配置网络信道、PAN ID 等参数；两个终端节点连接非接触式感应开关，加入网络后在触发时上报状态。路由节点解析来源设备与状态，再将消息转发给 Hi3861。</p>
+<p>Zigbee 的价值并不局限于一个宠物按键。它提供的是低功耗、多节点的扩展入口：未来可以按同一模式接入饮水、照明、环境传感器或额外按键，而无需让所有外设都直接挂在主控 GPIO 上。</p>
+<h4 id="5-2-4-Hi3861-与客户端-CoAP-通信"><a href="#5-2-4-Hi3861-与客户端-CoAP-通信" class="headerlink" title="5.2.4 Hi3861 与客户端 CoAP 通信"></a>5.2.4 Hi3861 与客户端 CoAP 通信</h4><p>Hi3861 提供 Wi-Fi 接入能力，APP 与其建立 CoAP 通信。APP 发出投喂、云台或参数设置请求，Hi3861 的 CoAP 资源处理函数解析请求、执行相应动作并返回响应。控制数据的体量小、请求语义明确，适合由 MCU 常驻处理。</p>
+<p>视频没有放在 CoAP 通道中，而是由 Hi3516 的 RTSP 服务承担。这样的职责划分保证了 Hi3861 不必处理高码率视频，也使 APP 的视频播放问题不会直接影响投喂与云台命令。</p>
+<h3 id="5-3-应用功能实现"><a href="#5-3-应用功能实现" class="headerlink" title="5.3 应用功能实现"></a>5.3 应用功能实现</h3><h4 id="5-3-1-称重闭环投喂"><a href="#5-3-1-称重闭环投喂" class="headerlink" title="5.3.1 称重闭环投喂"></a>5.3.1 称重闭环投喂</h4><p>投喂支持三类触发条件：设定时段内识别到宠物靠近、设定时段内触发无线按键、或 APP 手动启动。用户通过 APP 预设单次投喂克数和投喂间隔；触发条件满足后，Hi3861 打开对应食物仓的舵机闸门，食物落入食槽，HX711 持续采样重量；达到设定值后关闭闸门。</p>
+<p>投喂控制的核心不是“让舵机转动”，而是“让食物重量收敛到目标值”。不同粮食颗粒、仓内余量、闸机机械摩擦都会影响下料速度。若只按开闸时间估计粮量，误差会累积；用 HX711 作为反馈，系统可以按实际重量决定关闭时机。OLED 用于显示实时称重等状态。</p>
+<!--
+配图 20
+论文对应：图 5-3 投喂功能流程、图 5-4 SG90 舵机、图 5-5 HX711 传感器、图 8-1 识别投喂效果
+建议文件名：20-feeding-weight-feedback-result.png
+用途：以图 5-3 流程和图 8-1 成果为主，SG90/HX711 实物做辅助；说明从触发到称重关闸的完整闭环。
+-->
+
+<h4 id="5-3-2-云台自转功能"><a href="#5-3-2-云台自转功能" class="headerlink" title="5.3.2 云台自转功能"></a>5.3.2 云台自转功能</h4><p>二维云台由两个舵机实现水平和俯仰转动。Hi3861 可以接收来自 Hi3516 的自动跟随命令，也可以接收 APP 的手动上、下、左、右和复位命令。二者应共享同一套云台状态和优先级规则，避免 APP 手动控制与自动跟随在同一时刻发送相反的方向命令。</p>
+<p>在文章对应的系统测试中，目标跟随与 APP 手动控制分别验证：前者验证视觉坐标到舵机动作的自动链路，后者验证用户通过 APP 到 CoAP 再到云台的远程链路。</p>
+<!--
+配图 21
+论文对应：图 5-6 云台、图 8-2 目标跟随功能、图 8-3 APP 查看实时视频和远程控制
+建议文件名：21-ptz-auto-and-manual-control.png
+用途：建议放成三图组合：云台实物、自动跟随、APP 手动控制。
+-->
+
+<h4 id="5-3-3-宠物拓展按键功能"><a href="#5-3-3-宠物拓展按键功能" class="headerlink" title="5.3.3 宠物拓展按键功能"></a>5.3.3 宠物拓展按键功能</h4><p>宠物拓展按键由非接触式感应开关、Zigbee 终端、路由器和 Hi3861 组成。宠物触发感应开关后，终端设备生成事件并通过 Zigbee 上报；路由器转发至 Hi3861；控制侧再根据当前投喂间隔、按键开关状态和系统模式决定是否投喂或唤醒 AI 主机。</p>
+<p>从交互角度看，这让宠物获得了在规则约束下的自主触发能力；从功耗角度看，按键可以在视觉主机休眠时维持基础服务。它仍需通过投喂间隔和称重控制约束，不能把“宠物一碰就喂”当作安全策略。</p>
+<!--
+配图 22
+论文对应：图 5-2 Zigbee、图 5-7 宠物拓展按键示意图、图 5-8 非接触式感应开关、图 8-4 Zigbee 模块和宠物无线按键
+建议文件名：22-zigbee-pet-button-system.png
+用途：以图 8-4 的真实演示为主，搭配图 5-7 的连接示意图；其余硬件图可作为小图。
+-->
+
+<h2 id="6-电源子系统设计与实现"><a href="#6-电源子系统设计与实现" class="headerlink" title="6 电源子系统设计与实现"></a>6 电源子系统设计与实现</h2><h3 id="6-1-电源设计"><a href="#6-1-电源设计" class="headerlink" title="6.1 电源设计"></a>6.1 电源设计</h3><p>系统支持外部适配器与锂电池两路供电。外部电源一方面经降压模块为系统供电，另一方面用于电池充电；电池通过 LM2596 等降压模块为 Pegasus 及外设供电。三档开关用于选择外部或内部供电路径。</p>
+<p>功耗分配决定了供电结构：Taurus 的视频采集、编码和 NNIE 推理是主要功耗来源，论文记录系统最大功率约 18 W，其中 Taurus 部分最高约 15 W。因此，电源设计不能只考虑“能点亮”，还要保证视觉主机启动、云台转动和投喂舵机同时动作时的供电稳定。</p>
+<!--
+配图 23
+论文对应：图 6-1 电源子系统设计框架、图 6-2 12V 转 5V 降压板、图 6-3 LM2596 电源模块
+建议文件名：23-power-domain-converters.png
+用途：电源框图为主，两个降压模块实物图为辅。
+-->
+
+<h3 id="6-2-低功耗模式"><a href="#6-2-低功耗模式" class="headerlink" title="6.2 低功耗模式"></a>6.2 低功耗模式</h3><p>低功耗模式的基本思路是让高功耗 AI 子系统按需启动，而让 Hi3861 和 Zigbee 节点保持低功耗常驻。夜间或不需要视觉服务时，可以通过继电器关闭 Taurus；宠物按键事件经 Zigbee → Hi3861 后，可执行基础投喂或触发 Taurus 上电。</p>
+<p>这不是把 AI 子系统完全移除，而是按业务需要调度。视觉识别、视频监控和自动跟随需要 Taurus；按键触发、状态保持和部分投喂逻辑可以由 IoT 子系统维持。电源策略建立在子系统职责拆分之上，没有这种拆分，低功耗模式只会变成“关机以后什么都不能做”。</p>
+<h2 id="7-客户端设计与开发"><a href="#7-客户端设计与开发" class="headerlink" title="7 客户端设计与开发"></a>7 客户端设计与开发</h2><h3 id="7-1-APP-概述"><a href="#7-1-APP-概述" class="headerlink" title="7.1 APP 概述"></a>7.1 APP 概述</h3><p>Android APP 名为 <code>Pet assistant</code>，是系统的用户控制中心。用户完成设备绑定后，可以在 APP 中查看实时视频、控制云台、手动投喂、设置投喂克数和投喂间隔，并配置无线宠物按键和自动跟随功能。</p>
+<p>APP 提供的不是单一遥控器界面，而是将设备接入、视频观察和参数控制组织到同一入口。设备侧的 RTSP 与 CoAP 服务分别承担视频与控制，因此 APP 可以一边显示 Camera 画面，一边下发不会被视频帧阻塞的控制请求。</p>
+<!--
+配图 24
+论文对应：图 7-1 Pet assistant
+建议文件名：24-pet-assistant-home.png
+用途：作为 APP 章节开头主图，展示软件的主界面和设备控制入口。
+-->
+
+<h3 id="7-2-操作流程与功能模块"><a href="#7-2-操作流程与功能模块" class="headerlink" title="7.2 操作流程与功能模块"></a>7.2 操作流程与功能模块</h3><p>APP 启动后先进入绑定设备流程，可通过扫描二维码或连接到同一 Wi-Fi 的方式绑定设备。绑定成功后进入设备管理页，主要功能包括：</p>
+<ul>
+<li>手动调节摄像头方向与复位；</li>
+<li>手动投放猫粮或狗粮；</li>
+<li>设置单次投喂克数，例如默认值或自定义值；</li>
+<li>设置投喂间隔，限制短时间内重复触发；</li>
+<li>开关宠物自主按键；</li>
+<li>开关摄像头自动跟随。</li>
+</ul>
+<p>这些配置经 CoAP 传给 Hi3861，后者将参数写入相应控制逻辑。APP 不应直接假设所有操作都即时成功：网络断开、设备离线、当前处于投喂间隔或称重异常时，控制侧需要返回状态并阻止不安全动作。</p>
+<!--
+配图 25
+论文对应：图 7-2 操作模块图、图 7-3 投喂设置模块和云台控制模块
+建议文件名：25-app-control-flow-and-settings.png
+用途：操作模块图解释功能分区，图 7-3 展示实际投喂与云台控制界面。
+-->
+
+<h3 id="7-3-APP-界面"><a href="#7-3-APP-界面" class="headerlink" title="7.3 APP 界面"></a>7.3 APP 界面</h3><p>论文展示了连接设备页和设备管理页。连接页解决设备加入问题；设备管理页集中呈现云台、猫粮、狗粮、投喂间隔和自动跟随模块。系统测试中的视频预览与远程控制截图可与这些界面图组合，形成“绑定 → 管理 → 观察&#x2F;控制”的完整交互说明。</p>
+<!--
+配图 26
+论文对应：图 7-4 连接设备界面、图 7-5 设备管理界面、图 8-3 APP 查看实时视频和远程控制
+建议文件名：26-app-binding-management-video.png
+用途：建议做 2×2 拼图；连接、设备管理、实时视频与远程控制分别占一个格子。
+-->
+
+<h2 id="8-系统测试与展示"><a href="#8-系统测试与展示" class="headerlink" title="8 系统测试与展示"></a>8 系统测试与展示</h2><h3 id="8-1-识别投喂场景"><a href="#8-1-识别投喂场景" class="headerlink" title="8.1 识别投喂场景"></a>8.1 识别投喂场景</h3><p>识别投喂测试验证完整自动链路：Camera 采集视频；Hi3516 识别目标并得到猫狗类别；系统满足投喂时间与状态条件后将命令交给 Hi3861；Hi3861 打开对应闸机；HX711 读取重量，达到目标值后关闭闸机。测试应同时观察识别结果、实际粮量和闸机停止状态，而不是只看画面上有没有检测框。</p>
+<h3 id="8-2-APP-与设备交互场景"><a href="#8-2-APP-与设备交互场景" class="headerlink" title="8.2 APP 与设备交互场景"></a>8.2 APP 与设备交互场景</h3><p>APP 测试覆盖实时查看视频、手动控制云台、手动投喂和参数下发。视频应能够通过 RTSP 在 APP 中显示；方向控制应经 CoAP 到达 Hi3861 并驱动云台；投喂设置应能改变后续称重闭环的目标值。该场景验证视频通道和控制通道能并行工作。</p>
+<h3 id="8-3-无线宠物按键场景"><a href="#8-3-无线宠物按键场景" class="headerlink" title="8.3 无线宠物按键场景"></a>8.3 无线宠物按键场景</h3><p>无线按键测试验证感应开关、Zigbee 终端、路由器、Hi3861 和投喂逻辑的连续性。宠物或人工触发按键后，系统应接收事件，并在按键开关状态和投喂间隔允许时执行相应动作。这个测试尤其适合验证低功耗状态下 AI 主机不参与时，基础服务是否仍能工作。</p>
+<h3 id="8-4-APP-设置参数场景"><a href="#8-4-APP-设置参数场景" class="headerlink" title="8.4 APP 设置参数场景"></a>8.4 APP 设置参数场景</h3><p>参数测试覆盖单次投喂克数、投喂间隔、无线按键启用状态和自动跟随启用状态。配置不是只在 APP 界面显示成功，而是要在 Hi3861 侧实际影响闸机、按键事件和云台逻辑；例如设定较长间隔后，重复按键不应连续触发投喂。</p>
+<h3 id="8-5-夜间识别场景"><a href="#8-5-夜间识别场景" class="headerlink" title="8.5 夜间识别场景"></a>8.5 夜间识别场景</h3><p>夜间测试在低照度条件下验证光敏触发、红外补光和模型识别链路。应观察红外是否在连续低亮度后稳定开启，画面是否具备可识别性，以及亮度恢复后是否避免频繁切换。夜视效果图只能证明代表性样本可用，不替代不同环境下的长期识别性能评测。</p>
+<h3 id="8-6-板端拍照场景"><a href="#8-6-板端拍照场景" class="headerlink" title="8.6 板端拍照场景"></a>8.6 板端拍照场景</h3><p>板端拍照测试验证 LCD&#x2F;触摸屏交互、当前帧 JPEG 编码、eMMC 存储和图库浏览。它证明系统无需依赖 APP 也能在设备端完成拍照、预览和保存，适合作为本地调试与现场记录功能。</p>
+<!--
+配图 27
+论文对应：图 8-1 识别投喂效果、图 8-2 目标跟随功能、图 8-3 APP 查看实时视频和远程控制、图 8-4 Zigbee 模块和宠物无线按键、图 8-5 APP 设置参数界面、图 8-6 夜视效果、图 8-7 板端拍照效果
+建议文件名：27-system-test-results-collage.png
+用途：这是全文最重要的成果图，建议采用 3×2 或 4×2 拼图。图 8-1、8-2、8-3 放首行且尺寸最大；其余结果图放第二行。
+-->
+
+<h2 id="9-结束语"><a href="#9-结束语" class="headerlink" title="9 结束语"></a>9 结束语</h2><p>本项目完成了从视觉识别到称重投喂、从低功耗按键到 APP 远程交互的 AIoT 宠物服务闭环。Hi3516DV300 与 NNIE 负责在视频流中完成猫狗检测和分类；Hi3861 负责执行、称重、云台和通信；Zigbee 为宠物自主按键提供低功耗扩展入口；RTSP 与 CoAP 分别处理视频与控制；电源策略让高功耗视觉主机可以按需运行。</p>
+<p>项目后续可在不推翻现有架构的基础上演进：基于历史摄食量和活动时间建立异常提醒；扩展饮水、温湿度等节点；引入单只宠物识别和更细的行为分析；接入更成熟的家庭 IoT 平台。前提是继续保留现有边界——模型负责感知，低功耗控制负责执行，协议明确传递状态，称重闭环保证投喂结果。</p>
+<h2 id="代码与复现说明"><a href="#代码与复现说明" class="headerlink" title="代码与复现说明"></a>代码与复现说明</h2><p>项目仓库：<a target="_blank" rel="noopener" href="https://github.com/ORI2333/PFS_BOEMV">https://github.com/ORI2333/PFS_BOEMV</a></p>
+<p>仓库包含三部分：</p>
+<ul>
+<li><code>Taurus/</code>：Hi3516 侧 AI Plugin、模型文件和 HiOpenAIS 补丁；</li>
+<li><code>Pegasus/</code>：Hi3861 控制侧的 SDK 补丁；</li>
+<li><code>APP/</code>：Android 控制端工程。</li>
+</ul>
+<p>Taurus 侧需要搭建相应版本的 HiOpenAIS 环境，应用补丁、重新构建并烧录文件系统；Pegasus 侧需要准备 HiHope WiFi-IoT Hi3861 SDK，将补丁覆盖后用 LiteOS Studio 编译烧录；APP 使用 Android Studio 构建。仓库描述的是面向目标开发板 SDK 的复现过程，不包含可直接替代这些 SDK 和硬件环境的桌面模拟器。</p>
+</div>
+        </div>
+        
+            <div class="kratos-copyright text-center clearfix">
+                <span itemprop="copyrightNotice">本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</span>
+            </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+            
+            
+                <div class="post-actions text-center clearfix" id="post-actions">
+                
+                    <a class="donate" href="javascript:;" onclick="krOpenDonateModal()"><i class="fa fa-bitcoin"></i> 打赏</a>
+                
+                
+                    <a class="share" href="javascript:;" onclick="krOpenShareModal()"><i class="fa fa-share-alt"></i> 分享</a>
+                
+                </div>
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    <a class="tag-none-link" href="/tags/AIoT/" rel="tag">AIoT</a>, <a class="tag-none-link" href="/tags/Hi3516DV300/" rel="tag">Hi3516DV300</a>, <a class="tag-none-link" href="/tags/Hi3861/" rel="tag">Hi3861</a>, <a class="tag-none-link" href="/tags/YOLOv2/" rel="tag">YOLOv2</a>, <a class="tag-none-link" href="/tags/Zigbee/" rel="tag">Zigbee</a>, <a class="tag-none-link" href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%A7%86%E8%A7%89/" rel="tag">嵌入式视觉</a>
+                </div>
+                <div class="pull-date">
+                    <time datetime="2026-09-13T10:28:34.634Z" itemprop="dateModified">最后编辑：2026-09-13</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            
+            <div class="nav-next clearfix">
+                <a title=" ISP之常用图像缩放算法" target="_blank" rel="noopener" href="//s/12uyz0o/">下一篇 <i class="fa fa-angle-right"></i></a>
+            </div>
+            
+        </nav>
+    
+    
+</article>
+
+        
+
+            </section>
+
+            
+                
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/theme/头像.jpg" alt="ORI2333" loading="lazy" decoding="auto" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">A blog about programming, technology, and more.<br><span class="about-contact-icons"><a href="mailto:ori2333.zh@gmail.com" title="Email"><img src="/icons/default-sites/email.svg" alt="Email"></a><a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub"><img src="/icons/default-sites/github.svg" alt="GitHub"></a><a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili"><img src="/icons/default-sites/bilibili.ico" alt="Bilibili"></a><a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu"><img src="/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu"></a></span></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/archives/">
+            <span class="title">
+                文章
+            </span>
+            <span class="count">
+                16
+            </span>
+        </a>
+        <a class="meta-item" href="/categories/">
+            <span class="title">
+                分类
+            </span>
+            <span class="count">
+                6
+            </span>
+        </a>
+        <a class="meta-item" href="/tags/">
+            <span class="title">
+                标签
+            </span>
+            <span class="count">
+                43
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix toc-div-class" >
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar" role="progressbar" aria-label="阅读进度："></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%BB%AA%E8%AE%BA"><span class="toc-text">1 绪论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF%E4%B8%8E%E6%84%8F%E4%B9%89"><span class="toc-text">1.1 研究背景与意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%9B%BD%E5%86%85%E5%A4%96%E7%A0%94%E7%A9%B6%E7%8E%B0%E7%8A%B6"><span class="toc-text">1.2 国内外研究现状</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%9C%AC%E6%96%87%E7%BB%93%E6%9E%84"><span class="toc-text">1.3 本文结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%B3%BB%E7%BB%9F%E6%80%BB%E4%BD%93%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1"><span class="toc-text">2 系统总体方案设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90"><span class="toc-text">2.1 需求分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%8F%AF%E8%A1%8C%E6%80%A7%E5%88%86%E6%9E%90"><span class="toc-text">2.2 可行性分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90"><span class="toc-text">2.3 总体架构分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-1-%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84"><span class="toc-text">2.3.1 系统结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-2-%E7%B3%BB%E7%BB%9F%E6%95%B4%E4%BD%93%E5%AE%9E%E7%8E%B0%E8%AE%BE%E8%AE%A1"><span class="toc-text">2.3.2 系统整体实现设计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-3-%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E8%AE%BE%E8%AE%A1%EF%BC%88%E7%94%B5%E8%B7%AF%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-text">2.3.3 系统模块设计（电路连接）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E5%88%9B%E6%96%B0%E7%82%B9"><span class="toc-text">2.4 创新点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-AI-%E6%A8%A1%E5%9E%8B%E5%BC%80%E5%8F%91%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="toc-text">3 AI 模型开发与部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-AI-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E6%80%9D%E8%B7%AF"><span class="toc-text">3.1 AI 模型训练思路</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-1-%E6%95%B0%E6%8D%AE%E9%9B%86%E5%88%B6%E4%BD%9C"><span class="toc-text">3.1.1 数据集制作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-2-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="toc-text">3.1.2 模型训练</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-3-%E6%A8%A1%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-text">3.1.3 模型转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-4-%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96"><span class="toc-text">3.1.4 模型量化</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8"><span class="toc-text">3.2 模型应用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-YOLOv2-%E5%8D%95%E7%8B%AC%E6%A3%80%E6%B5%8B"><span class="toc-text">3.2.1 YOLOv2 单独检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-YOLOv2-%E4%B8%8E-ResNet18-%E8%81%94%E5%90%88%E5%88%A4%E6%96%AD"><span class="toc-text">3.2.2 YOLOv2 与 ResNet18 联合判断</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E8%BE%B9%E7%95%8C"><span class="toc-text">3.2.3 应用场景边界</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-AI-Plugin-%E5%BC%80%E5%8F%91%E4%B8%8E%E6%9D%BF%E7%AB%AF%E9%83%A8%E7%BD%B2"><span class="toc-text">3.3 AI Plugin 开发与板端部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-NNIE-%E6%9D%BF%E7%AB%AF%E6%8E%A8%E7%90%86"><span class="toc-text">3.4 NNIE 板端推理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-AI-%E5%AD%90%E7%B3%BB%E7%BB%9F%E5%BA%94%E7%94%A8%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="toc-text">4 AI 子系统应用设计与实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-AI-%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6"><span class="toc-text">4.1 AI 应用框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-Hi3516-%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF-RTSP-%E6%8E%A8%E6%B5%81"><span class="toc-text">4.2 Hi3516 与客户端 RTSP 推流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%BA%94%E7%94%A8%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0"><span class="toc-text">4.3 应用功能实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-1-%E8%A7%86%E8%A7%89%E6%84%9F%E7%9F%A5%E5%88%A4%E6%96%AD"><span class="toc-text">4.3.1 视觉感知判断</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-2-%E8%AF%AD%E9%9F%B3%E5%8A%9F%E8%83%BD"><span class="toc-text">4.3.2 语音功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-3-%E7%9B%AE%E6%A0%87%E8%B7%9F%E9%9A%8F"><span class="toc-text">4.3.3 目标跟随</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-4-%E5%A4%9C%E9%97%B4%E8%AF%86%E5%88%AB"><span class="toc-text">4.3.4 夜间识别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-5-%E6%9D%BF%E7%AB%AF%E6%8B%8D%E7%85%A7"><span class="toc-text">4.3.5 板端拍照</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-IoT-%E5%AD%90%E7%B3%BB%E7%BB%9F%E5%BA%94%E7%94%A8%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="toc-text">5 IoT 子系统应用设计与实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%A4%9A%E8%AE%BE%E5%A4%87%E5%8D%8F%E5%90%8C%E8%AE%BE%E8%AE%A1"><span class="toc-text">5.1 多设备协同设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%A4%9A%E8%AE%BE%E5%A4%87%E9%80%9A%E4%BF%A1%E5%AE%9E%E7%8E%B0"><span class="toc-text">5.2 多设备通信实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-Hi3516-%E4%B8%8E-Hi3861-%E9%80%9A%E4%BF%A1"><span class="toc-text">5.2.1 Hi3516 与 Hi3861 通信</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-Hi3861-%E4%B8%8E-Zigbee-%E9%80%9A%E4%BF%A1"><span class="toc-text">5.2.2 Hi3861 与 Zigbee 通信</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-3-Zigbee-%E7%BB%84%E7%BD%91%E9%80%9A%E4%BF%A1"><span class="toc-text">5.2.3 Zigbee 组网通信</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-4-Hi3861-%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF-CoAP-%E9%80%9A%E4%BF%A1"><span class="toc-text">5.2.4 Hi3861 与客户端 CoAP 通信</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E5%BA%94%E7%94%A8%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0"><span class="toc-text">5.3 应用功能实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-1-%E7%A7%B0%E9%87%8D%E9%97%AD%E7%8E%AF%E6%8A%95%E5%96%82"><span class="toc-text">5.3.1 称重闭环投喂</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-2-%E4%BA%91%E5%8F%B0%E8%87%AA%E8%BD%AC%E5%8A%9F%E8%83%BD"><span class="toc-text">5.3.2 云台自转功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-3-%E5%AE%A0%E7%89%A9%E6%8B%93%E5%B1%95%E6%8C%89%E9%94%AE%E5%8A%9F%E8%83%BD"><span class="toc-text">5.3.3 宠物拓展按键功能</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E7%94%B5%E6%BA%90%E5%AD%90%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="toc-text">6 电源子系统设计与实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E7%94%B5%E6%BA%90%E8%AE%BE%E8%AE%A1"><span class="toc-text">6.1 电源设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E4%BD%8E%E5%8A%9F%E8%80%97%E6%A8%A1%E5%BC%8F"><span class="toc-text">6.2 低功耗模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91"><span class="toc-text">7 客户端设计与开发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-APP-%E6%A6%82%E8%BF%B0"><span class="toc-text">7.1 APP 概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97"><span class="toc-text">7.2 操作流程与功能模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-APP-%E7%95%8C%E9%9D%A2"><span class="toc-text">7.3 APP 界面</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E7%B3%BB%E7%BB%9F%E6%B5%8B%E8%AF%95%E4%B8%8E%E5%B1%95%E7%A4%BA"><span class="toc-text">8 系统测试与展示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E8%AF%86%E5%88%AB%E6%8A%95%E5%96%82%E5%9C%BA%E6%99%AF"><span class="toc-text">8.1 识别投喂场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-APP-%E4%B8%8E%E8%AE%BE%E5%A4%87%E4%BA%A4%E4%BA%92%E5%9C%BA%E6%99%AF"><span class="toc-text">8.2 APP 与设备交互场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E6%97%A0%E7%BA%BF%E5%AE%A0%E7%89%A9%E6%8C%89%E9%94%AE%E5%9C%BA%E6%99%AF"><span class="toc-text">8.3 无线宠物按键场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-APP-%E8%AE%BE%E7%BD%AE%E5%8F%82%E6%95%B0%E5%9C%BA%E6%99%AF"><span class="toc-text">8.4 APP 设置参数场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-%E5%A4%9C%E9%97%B4%E8%AF%86%E5%88%AB%E5%9C%BA%E6%99%AF"><span class="toc-text">8.5 夜间识别场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-6-%E6%9D%BF%E7%AB%AF%E6%8B%8D%E7%85%A7%E5%9C%BA%E6%99%AF"><span class="toc-text">8.6 板端拍照场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E7%BB%93%E6%9D%9F%E8%AF%AD"><span class="toc-text">9 结束语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E4%B8%8E%E5%A4%8D%E7%8E%B0%E8%AF%B4%E6%98%8E"><span class="toc-text">代码与复现说明</span></a></li></ol>
+    </div>
+</aside>
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类列表</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B0%8F%E5%88%B6%E4%BD%9C/">小制作</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8E%A5%E5%8D%95/">接单</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BA%E6%96%87/">论文</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AF%B4%E6%98%8E%E6%89%8B%E5%86%8C/">说明手册</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%A1%B9%E7%9B%AE/">项目</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%A1%B9%E7%9B%AE/%E8%AE%BA%E6%96%87/">论文</a><span class="category-list-count">1</span></li></ul></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/tags/4G/" style="font-size: 0.6em;">4G</a> <a href="/tags/AIoT/" style="font-size: 0.6em;">AIoT</a> <a href="/tags/AMQP/" style="font-size: 0.6em;">AMQP</a> <a href="/tags/CLAHE/" style="font-size: 0.6em;">CLAHE</a> <a href="/tags/FPGA/" style="font-size: 0.8em;">FPGA</a> <a href="/tags/Hi3516DV300/" style="font-size: 0.6em;">Hi3516DV300</a> <a href="/tags/Hi3861/" style="font-size: 0.6em;">Hi3861</a> <a href="/tags/ISP/" style="font-size: 0.73em;">ISP</a> <a href="/tags/IoT/" style="font-size: 0.6em;">IoT</a> <a href="/tags/LaTeX/" style="font-size: 0.6em;">LaTeX</a> <a href="/tags/MQTT/" style="font-size: 0.6em;">MQTT</a> <a href="/tags/MathType/" style="font-size: 0.6em;">MathType</a> <a href="/tags/Python/" style="font-size: 0.67em;">Python</a> <a href="/tags/RK3588/" style="font-size: 0.6em;">RK3588</a> <a href="/tags/RKNN/" style="font-size: 0.6em;">RKNN</a> <a href="/tags/RS485/" style="font-size: 0.6em;">RS485</a> <a href="/tags/SAC/" style="font-size: 0.6em;">SAC</a> <a href="/tags/STM32/" style="font-size: 0.6em;">STM32</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/s/1y7lhe2/"><i class="fa fa-book"></i> 烟支外观缺陷实时检测</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/s/1utta7k/"><i class="fa fa-book"></i> 基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/s/0yea71p/"><i class="fa fa-book"></i> 全流程自动化智能网球陪练机器</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/s/0qnft6m/"><i class="fa fa-book"></i> 【论文中稿！】中稿CCF-B</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/s/07hu4oi/"><i class="fa fa-book"></i> 快速将 Word 中 LaTeX 公式批量转为 MathType 的脚本与方法（Python）</a>
+            
+          
+        
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+            
+
+        
+
+                </div>
+    </div>
+</div>
+
+<footer>
+    <div id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                            <li>
+                                <a href="mailto:ori2333.zh@gmail.com" title="Email">
+                                    <img class="footer-social-icon footer-icon-email" src="/icons/default-sites/email.svg" alt="Email">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub">
+                                    <img class="footer-social-icon footer-icon-github" src="/icons/default-sites/github.svg" alt="GitHub">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili">
+                                    <img class="footer-social-icon" src="/icons/default-sites/bilibili.ico" alt="Bilibili">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu">
+                                    <img class="footer-social-icon" src="/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu">
+                                </a>
+                            </li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2026 ORI2333's Blog 版权所有.</li>
+                            <li>本站已运行<span id="kr-since">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>自豪地使用 <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a> 主题</li>
+                            <li>站点由 <a href="https://github.com/ORI2333" target="_blank">ORI2333</a> 用 <i class="fa fa-heart" style="color:#d43f57"></i> 搭建</li>
+                        </div>
+                        <!-- 额外的追加注入项 -->
+                        
+                            <div>
+                                
+                                    <li>由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 驱动</li>
+                                
+                                    <li>在 <a href="https://github.com" target="_blank" rel="nofollow">GitHub</a> 托管</li>
+                                
+                            </div>
+                        
+                            <div>
+                                
+                                    <li>中国区域由 <a href="https://orizhen.xyz/" target="_blank" rel="nofollow">腾讯云 EdgeOne</a> 加速</li>
+                                
+                            </div>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                <!-- 额外的追加注入项 -->
+                
+                
+                    <div class="box search-box">
+                        <a href="/search">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                <div class="box theme-box" id="theme-toggle">
+                    <span class="fa fa-adjust"></span>
+                </div>
+            </div>
+            <div id="gotop-box" class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+
+    <div id="kr-donate-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseDonateModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-bitcoin"></i>
+            </div>
+            <div class="kr-modal-title">赞助喵</div>
+            <button class="kr-modal-close" onclick="krCloseDonateModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-donate-message">非常感谢您的喜欢！ <i class="fa fa-heart" style="color:#d43f57"></i></div>
+            <div class="kr-donate-qr" id="kr-donate-qr">
+                
+                    <img class="kr-donate-placeholder" src="https://dev.krt.moe/demo-assets/donate.webp" alt="赞助喵" />
+                
+            </div>
+            <div class="kr-donate-platforms">
+                
+                    
+                        <button class="kr-donate-platform-button" style="color: skyblue;" title="模拟支付" onclick="krDonateModalShowPlatformQR('example_payment', 'skyblue')">
+                            <i class="fa fa-credit-card"></i>
+                        </button>
+                    
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/js/kr-modal/donate.min.js"></script>
+
+
+
+
+    <div id="kr-share-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseShareModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-share-alt"></i>
+            </div>
+            <div class="kr-modal-title">分享这篇文章</div>
+            <button class="kr-modal-close" onclick="krCloseShareModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-share-message">分享链接会先进入线路选择页，读者可选择稳定访问、腾讯云 CDN 或备用镜像。</div>
+            <div class="kr-share-qr" id="kr-share-qr"></div>
+            <div class="kr-share-platforms">
+                
+                    <button class="kr-share-platform-button" style="color: #51aded;" title="选择线路" onclick="krShareModalOpenPlatform('$URL')">
+                        <i class="fa fa-share-alt"></i>
+                    </button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/js/kr-modal/share.min.js"></script>
+
+
+
+<!-- 额外的追加注入项 -->
+
+
+        <script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/";
+</script>
+
+
+  <script defer src="/vendors/nprogress@0.2.0/nprogress.js"></script>
+
+
+
+  <script defer src="/vendors/viewerjs@1.11.6/dist/viewer.min.js"></script>
+
+
+<script defer src="/js/kr-core.min.js"></script>
+
+
+  <script defer src="/js/kr-pjax.min.js"></script>
+
+
+<!-- 额外的追加注入项 -->
+
+  <style>
+#kr-share-modal .kr-modal-content{max-width:660px;max-height:560px;}
+#kr-share-modal .kr-modal-body{gap:14px;padding:1rem 2rem 1.6rem;}
+#kr-share-modal .kr-share-message{line-height:1.7;text-align:left;width:100%;}
+#kr-share-modal .kr-share-qr{width:212px;height:212px;padding:8px;background:rgba(255,255,255,.03);}
+#kr-share-modal .kr-share-qr canvas,
+#kr-share-modal .kr-share-qr svg{width:192px!important;height:192px!important;}
+#kr-share-modal .ori-share-link{width:min(100%,500px);display:flex;gap:8px;align-items:center;}
+#kr-share-modal .ori-share-input{flex:1;min-width:0;height:38px;padding:0 12px;border:1px solid rgba(120,206,121,.65);border-radius:8px;background:rgba(255,255,255,.08);color:inherit;font-size:14px;line-height:38px;outline:none;overflow:hidden;text-overflow:ellipsis;}
+#kr-share-modal .ori-share-copy{flex:0 0 auto;height:38px;padding:0 14px!important;border-radius:8px!important;background:#78ce79!important;color:#08140a!important;font-size:14px!important;font-weight:600;}
+#kr-share-modal .ori-share-copy:hover{filter:brightness(1.06);}
+@media (max-width:560px){
+  #kr-share-modal .kr-modal-content{max-height:620px;padding:12px;}
+  #kr-share-modal .kr-modal-body{padding:1rem;gap:12px;}
+  #kr-share-modal .kr-share-qr{width:196px;height:196px;}
+  #kr-share-modal .kr-share-qr canvas,
+  #kr-share-modal .kr-share-qr svg{width:176px!important;height:176px!important;}
+  #kr-share-modal .ori-share-link{flex-direction:column;align-items:stretch;}
+  #kr-share-modal .ori-share-copy{width:100%;}
+}
+.math-display{max-width:100%;margin:1rem 0;overflow-x:auto;overflow-y:hidden;padding:.35rem .15rem;text-align:center;}
+.math-display>.katex-display{margin:0;}
+.math-inline{display:inline;}
+.math .katex{font-size:1.04em;}
+</style>
+<script>
+window.__COMMENTS_ENABLED=false;
+(function(){
+  var gateway = "https://blog.orixx.xyz/";
+  function originalUrl(){
+    var meta = document.querySelector('meta[property="og:url"]');
+    return meta && meta.content ? meta.content : location.href;
+  }
+  function normalizePath(path){
+    path = "/" + String(path || "").replace(/^\/+/, "");
+    return path.replace(/\/{2,}/g, "/");
+  }
+  function stripBlogPrefix(path){
+    var normalized = normalizePath(path).replace(/\/index\.html$/i, "/");
+    if (normalized.toLowerCase().indexOf("/blog/") === 0) return normalizePath(normalized.slice(5));
+    if (normalized.toLowerCase() === "/blog") return "/";
+    return normalized;
+  }
+  function normalizeSharePath(path){
+    var normalized = stripBlogPrefix(path);
+    if (normalized !== "/" && normalized.slice(-1) !== "/") normalized += "/";
+    return normalized;
+  }
+  function utf8Bytes(value){
+    if (window.TextEncoder) return Array.prototype.slice.call(new TextEncoder().encode(value));
+    var utf8 = unescape(encodeURIComponent(value));
+    var bytes = [];
+    for (var i = 0; i < utf8.length; i += 1) bytes.push(utf8.charCodeAt(i));
+    return bytes;
+  }
+  function shortIdFromPath(path){
+    var normalized = normalizeSharePath(path);
+    var shortMatch = normalized.match(/^\/s\/([a-z0-9]+)\/$/i);
+    if (shortMatch) return shortMatch[1].toLowerCase();
+    var hash = 2166136261;
+    var bytes = utf8Bytes(normalized);
+    for (var i = 0; i < bytes.length; i += 1) {
+      hash ^= bytes[i];
+      hash = Math.imul(hash, 16777619) >>> 0;
+    }
+    var id = hash.toString(36);
+    while (id.length < 7) id = "0" + id;
+    return id;
+  }
+  function sharePath(){
+    try {
+      return normalizeSharePath(decodeURI(new URL(originalUrl(), location.href).pathname || "/"));
+    } catch (error) {
+      return normalizeSharePath(decodeURI(location.pathname || "/"));
+    }
+  }
+  function shareUrl(){
+    return location.origin.replace(/\/+$/, "") + "/s/" + shortIdFromPath(sharePath());
+  }
+  window.__oriShortUrl = shareUrl;
+  function metaContent(selector){
+    var node = document.querySelector(selector);
+    return node && node.content ? node.content : "";
+  }
+  function replaceToken(value, token, replacement){
+    return String(value).split(token).join(replacement);
+  }
+  function renderShareQr(){
+    var box = document.getElementById("kr-share-qr");
+    if (!box || !window.QRCodeStyling) return;
+    box.innerHTML = "";
+    new QRCodeStyling({
+      width: 192,
+      height: 192,
+      data: shareUrl(),
+      image: (document.querySelector('link[rel="icon"]') || {}).href,
+      dotsOptions: { color: "#78ce79", type: "extra-rounded" },
+      backgroundOptions: { color: "transparent" },
+      imageOptions: { crossOrigin: "anonymous", margin: 1 }
+    }).append(box);
+    updateShareLinkBox();
+  }
+  function ensureShareLinkBox(){
+    var body = document.querySelector("#kr-share-modal .kr-modal-body");
+    if (!body) return null;
+    var box = body.querySelector(".ori-share-link");
+    if (box) return box;
+    box = document.createElement("div");
+    box.className = "ori-share-link";
+    box.innerHTML = '<input class="ori-share-input" type="text" readonly aria-label="分享链接"><button class="ori-share-copy" type="button">复制链接</button>';
+    var platforms = body.querySelector(".kr-share-platforms");
+    body.insertBefore(box, platforms || null);
+    var input = box.querySelector(".ori-share-input");
+    var button = box.querySelector(".ori-share-copy");
+    input.addEventListener("focus", function(){ input.select(); });
+    button.addEventListener("click", function(){
+      var link = input.value;
+      function done(){
+        button.textContent = "已复制";
+        setTimeout(function(){ button.textContent = "复制链接"; }, 1400);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(done).catch(function(){ input.select(); document.execCommand("copy"); done(); });
+      } else {
+        input.select();
+        document.execCommand("copy");
+        done();
+      }
+    });
+    return box;
+  }
+  function updateShareLinkBox(){
+    var box = ensureShareLinkBox();
+    if (!box) return;
+    var input = box.querySelector(".ori-share-input");
+    if (input) input.value = shareUrl();
+  }
+  function installShareOverride(){
+    ensureShareLinkBox();
+    updateShareLinkBox();
+    window.krShareModalOpenPlatform = function(template){
+      var link = String(template || "$URL");
+      link = replaceToken(link, "$URL", shareUrl());
+      link = replaceToken(link, "$TITLE", metaContent('meta[property="og:title"]'));
+      link = replaceToken(link, "$SUMMARY", metaContent('meta[property="og:description"]'));
+      link = replaceToken(link, "$SITE", metaContent('meta[property="og:site_name"]'));
+      window.open(link, "_blank");
+    };
+    window.initQRCode = renderShareQr;
+    if (window.krOpenShareModal && !window.krOpenShareModal.__oriWrapped) {
+      var open = window.krOpenShareModal;
+      window.krOpenShareModal = function(){
+        open();
+        setTimeout(renderShareQr, 50);
+      };
+      window.krOpenShareModal.__oriWrapped = true;
+    }
+    renderShareQr();
+  }
+  document.addEventListener("DOMContentLoaded", installShareOverride);
+  window.addEventListener("load", installShareOverride);
+  window.addEventListener("pjax:complete", function(){ setTimeout(installShareOverride, 50); });
+})();
+</script>
+<script>
+(function(){
+  var copyConfig = null;
+  function configUrl(){
+    var root = window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/';
+    return root + 'config.json';
+  }
+  function loadConfig(){
+    fetch(configUrl(), {cache: 'no-store'})
+      .then(function(response){ if (!response.ok) throw new Error('copy config load failed'); return response.json(); })
+      .then(function(config){ copyConfig = config.copyrightNoticeForCopy || null; })
+      .catch(function(){ copyConfig = null; });
+  }
+  function meta(selector){
+    var node = document.querySelector(selector);
+    return node && node.content ? node.content : '';
+  }
+  function copyNotice(){
+    if (!copyConfig || !copyConfig.template) return '';
+    var link = window.__oriShortUrl ? window.__oriShortUrl() : location.origin.replace(/\/+$/, '') + '/s/';
+    return String(copyConfig.template)
+      .split('$NEWLINE').join('\n')
+      .split('$AUTHOR').join(meta('meta[name="author"]'))
+      .split('$TITLE').join(document.title)
+      .split('$LINK').join(link);
+  }
+  document.addEventListener('copy', function(event){
+    if (!copyConfig || !copyConfig.enable || !event.clipboardData) return;
+    var selected = window.getSelection ? window.getSelection().toString() : '';
+    if (selected.length <= Number(copyConfig.threshold || 0)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.clipboardData.setData('text/plain', selected + copyNotice());
+  }, true);
+  loadConfig();
+})();
+</script>
+<script>
+(function(){
+  var io = null;
+  function setupProgress(){
+    var bar = document.getElementById('ori-reading-progress');
+    var isPost = document.querySelector('.kratos-page-content.kr-post') !== null;
+    if (!isPost) { if (bar) bar.style.display = 'none'; return; }
+    if (!bar) { bar = document.createElement('div'); bar.id = 'ori-reading-progress'; document.body.appendChild(bar); }
+    bar.style.display = '';
+    var raf = null;
+    function update(){
+      raf = null;
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - window.innerHeight;
+      bar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0).toFixed(2) + '%';
+    }
+    if (!window.__oriProgressBound) {
+      window.addEventListener('scroll', function(){ if (raf === null) raf = requestAnimationFrame(update); }, {passive:true});
+      window.addEventListener('resize', function(){ if (raf === null) raf = requestAnimationFrame(update); }, {passive:true});
+      window.__oriProgressBound = true;
+    }
+    update();
+  }
+  function setupReveal(){
+    document.documentElement.classList.add('ori-anim');
+    var items = document.querySelectorAll('.kratos-hentry');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function(el){ el.classList.add('in-view'); });
+      return;
+    }
+    if (io) io.disconnect();
+    io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('in-view'); io.unobserve(en.target); } });
+    }, {threshold:.06});
+    items.forEach(function(el){ el.classList.remove('in-view'); io.observe(el); });
+    setTimeout(function(){
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      items.forEach(function(el){
+        if (el.classList.contains('in-view')) return;
+        var r = el.getBoundingClientRect();
+        if (r.top < vh && r.bottom > 0) { el.classList.add('in-view'); io.unobserve(el); }
+      });
+    }, 1200);
+  }
+  function setup(){ setupProgress(); setupReveal(); }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 60); });
+})();
+</script>
+<script>
+(function(){
+  var MERMAID_SRC = (window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/') + 'js/vendor/mermaid.min.js';
+  var loadPromise = null;
+  var seq = 0;
+  function ensureMermaid(){
+    if (window.mermaid) return Promise.resolve(window.mermaid);
+    if (loadPromise === null) {
+      loadPromise = new Promise(function(resolve, reject){
+        var s = document.createElement('script');
+        s.src = MERMAID_SRC;
+        s.onload = function(){ resolve(window.mermaid); };
+        s.onerror = function(){ loadPromise = null; reject(new Error('mermaid load failed')); };
+        document.head.appendChild(s);
+      });
+    }
+    return loadPromise;
+  }
+  function currentTheme(){
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default';
+  }
+  function renderPending(){
+    var theme = currentTheme();
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.mermaid[data-code]'));
+    nodes = nodes.filter(function(n){ return n.getAttribute('data-rendered') !== theme; });
+    if (nodes.length === 0) return;
+    ensureMermaid().then(function(mermaid){
+      mermaid.initialize({ startOnLoad: false, theme: theme, fontFamily: 'inherit' });
+      nodes.forEach(function(node){
+        var code = decodeURIComponent(node.getAttribute('data-code') || '');
+        seq += 1;
+        mermaid.render('ori-mermaid-' + seq + '-' + Date.now(), code).then(function(res){
+          node.innerHTML = res.svg;
+          node.setAttribute('data-rendered', theme);
+        }).catch(function(err){
+          node.setAttribute('data-rendered', theme);
+          node.innerHTML = '<pre class="mermaid-error">' + String(err && err.message ? err.message : err) + '</pre>';
+        });
+      });
+    }).catch(function(){ /* 加载失败时保留源码文本 */ });
+  }
+  function watchTheme(){
+    if (window.__oriMermaidThemeWatched) return;
+    window.__oriMermaidThemeWatched = true;
+    if ('MutationObserver' in window) {
+      new MutationObserver(function(){ renderPending(); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+  }
+  function setup(){
+    if (document.querySelector('.mermaid[data-code]')) { watchTheme(); renderPending(); }
+  }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });
+})();
+</script>
+<script>
+(function(){
+  var KATEX_ROOT = window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/';
+  var KATEX_CSS = KATEX_ROOT + 'css/vendor/katex.min.css';
+  var KATEX_JS = KATEX_ROOT + 'js/vendor/katex.min.js';
+  var stylePromise = null;
+  var scriptPromise = null;
+  function ensureStyle(){
+    if (stylePromise !== null) return stylePromise;
+    stylePromise = new Promise(function(resolve, reject){
+      var existing = document.getElementById('ori-katex-css');
+      if (existing) { resolve(); return; }
+      var link = document.createElement('link');
+      link.id = 'ori-katex-css';
+      link.rel = 'stylesheet';
+      link.href = KATEX_CSS;
+      link.onload = resolve;
+      link.onerror = function(){ stylePromise = null; reject(new Error('KaTeX stylesheet load failed')); };
+      document.head.appendChild(link);
+    });
+    return stylePromise;
+  }
+  function ensureKaTeX(){
+    if (window.katex) return Promise.resolve(window.katex);
+    if (scriptPromise !== null) return scriptPromise;
+    scriptPromise = new Promise(function(resolve, reject){
+      var script = document.createElement('script');
+      script.src = KATEX_JS;
+      script.onload = function(){ resolve(window.katex); };
+      script.onerror = function(){ scriptPromise = null; reject(new Error('KaTeX script load failed')); };
+      document.head.appendChild(script);
+    });
+    return scriptPromise;
+  }
+  function renderPending(){
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.math[data-tex]'));
+    nodes = nodes.filter(function(node){ return node.getAttribute('data-rendered') !== 'true'; });
+    if (nodes.length === 0) return;
+    Promise.all([ensureStyle(), ensureKaTeX()]).then(function(results){
+      var katex = results[1];
+      nodes.forEach(function(node){
+        try {
+          katex.render(decodeURIComponent(node.getAttribute('data-tex') || ''), node, {
+            displayMode: node.classList.contains('math-display'),
+            throwOnError: false,
+            strict: 'warn',
+            trust: false,
+          });
+          node.setAttribute('data-rendered', 'true');
+        } catch (error) {
+          node.classList.add('math-error');
+        }
+      });
+    }).catch(function(){ /* 资源加载失败时保留 TeX 源码 */ });
+  }
+  function setup(){
+    if (document.querySelector('.math[data-tex]')) renderPending();
+  }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });
+})();
+</script>
+
+
+
+    </body>
 </html>

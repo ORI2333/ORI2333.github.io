@@ -478,8 +478,11 @@ window.__COMMENTS_ENABLED=false;
     return bytes;
   }
   function shortIdFromPath(path){
+    var normalized = normalizeSharePath(path);
+    var shortMatch = normalized.match(/^\/s\/([a-z0-9]+)\/$/i);
+    if (shortMatch) return shortMatch[1].toLowerCase();
     var hash = 2166136261;
-    var bytes = utf8Bytes(normalizeSharePath(path));
+    var bytes = utf8Bytes(normalized);
     for (var i = 0; i < bytes.length; i += 1) {
       hash ^= bytes[i];
       hash = Math.imul(hash, 16777619) >>> 0;

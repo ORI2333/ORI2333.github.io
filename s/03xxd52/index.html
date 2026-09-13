@@ -1,14 +1,1305 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+  <!-- 元数据 -->
   <meta charset="utf-8">
-  <meta name="robots" content="noindex">
-  <link rel="canonical" href="/2026/04/29/Proteus仿真+STM32+云平台/">
-  <meta http-equiv="refresh" content="0;url=/2026/04/29/Proteus仿真+STM32+云平台/">
-  <title>正在打开文章…</title>
-</head>
-<body>
-  <p>正在打开文章。如果没有自动跳转，请<a href="/2026/04/29/Proteus仿真+STM32+云平台/">点击这里</a>。</p>
-  <script>location.replace("/2026/04/29/Proteus仿真+STM32+云平台/" + location.search + location.hash);</script>
-</body>
+  
+    <link rel="icon" href="/images/theme/头像.jpg?v=20260329">
+  
+  
+  <title>Proteus仿真+STM32+云平台 | ORI2333&#39;s Blog</title>
+  <link rel="canonical" href="https://ori2333.github.io/s/03xxd52/">
+  <meta name="author" content="ORI2333" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="MQTT, STM32, proteus, 云平台, 接单" />
+  
+  <meta name="description" content="前言此项目为接单项目，负责数据上云和下发数据部分 碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发展快还是成长了，现在一个人两三小时就搞定了~，还是ai发展太快啦，很多需要查手册一点点写的，现在都全自动喽 需求温室的功能需求包括加热、制冷、加湿、光照等部分,作为温室的核心,需要保证设备达到课题的需求,能实现温度、湿度、光照等的调节,以及达到对当地气候进">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Proteus仿真+STM32+云平台">
+<meta property="og:url" content="https://ori2333.github.io/s/03xxd52/index.html">
+<meta property="og:site_name" content="ORI2333&#39;s Blog">
+<meta property="og:description" content="前言此项目为接单项目，负责数据上云和下发数据部分 碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发展快还是成长了，现在一个人两三小时就搞定了~，还是ai发展太快啦，很多需要查手册一点点写的，现在都全自动喽 需求温室的功能需求包括加热、制冷、加湿、光照等部分,作为温室的核心,需要保证设备达到课题的需求,能实现温度、湿度、光照等的调节,以及达到对当地气候进">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ori2333.github.io/images/posts/huawieyun.webp">
+<meta property="article:published_time" content="2026-04-29T00:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-13T10:28:34.635Z">
+<meta property="article:author" content="ORI2333">
+<meta property="article:tag" content="接单">
+<meta property="article:tag" content="STM32">
+<meta property="article:tag" content="proteus">
+<meta property="article:tag" content="云平台">
+<meta property="article:tag" content="MQTT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ori2333.github.io/images/posts/huawieyun.webp">
+  
+  <!-- JSON-LD 结构化数据 -->
+  
+  
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"Proteus仿真+STM32+云平台","description":"前言此项目为接单项目，负责数据上云和下发数据部分\n碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发...","image":"https://ori2333.github.io/s/03xxd52/images/posts/huawieyun.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-04-29T00:00:00.000Z","dateModified":"2026-09-13T10:28:34.635Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/s/03xxd52/"}}
+    </script>
+  
+  <!-- 关键 CSS 预加载 -->
+  <link rel="preload" href="/css/kr-core.min.css" as="style" crossorigin>
+  <link rel="preload" href="/css/kr-theme/light.min.css" as="style" crossorigin>
+  <link rel="preload" href="/css/kr-theme/dark.min.css" as="style" crossorigin>
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kr-core.min.css" media="all">
+  <link rel="stylesheet" id="theme-light-css" href="/css/kr-theme/light.min.css" media="all">
+  <link rel="stylesheet" id="theme-dark-css" href="/css/kr-theme/dark.min.css" media="(prefers-color-scheme: dark)">
+  
+    <link rel="stylesheet"  id="highlight-css" href="/css/highlight/highlight.js/night-eighties.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/css/highlight/highlight.js/night-eighties.min.css"></noscript>
+  
+  <script src="/js/kr-theme.min.js"></script>
+  <link rel="stylesheet"  id="fontawe-css" href="/vendors/font-awesome@4.7.0/css/font-awesome.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/vendors/font-awesome@4.7.0/css/font-awesome.min.css"></noscript>
+  
+    <link rel="stylesheet"  id="nprogress-css" href="/vendors/nprogress@0.2.0/nprogress.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/vendors/nprogress@0.2.0/nprogress.css"></noscript>
+  
+  
+    <link rel="stylesheet"  href="/vendors/viewerjs@1.11.6/dist/viewer.min.css" media="print" onload="this.media='all'" onerror="this.media='all'"><noscript><link rel="stylesheet" href="/vendors/viewerjs@1.11.6/dist/viewer.min.css"></noscript>
+  
+  <!-- 预先加载的JS文件 -->
+  
+    <script src="/vendors/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  
+  <!-- 自定义站点横幅和背景 -->
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/theme/banner-light.webp');
+      }
+      html[data-theme="dark"] .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/theme/banner-dark.webp');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/images/theme/bg-light.webp');
+        }
+        html[data-theme="dark"] body.custom-background {
+          background-image: url('/images/theme/bg-dark.webp');
+        }
+      }
+    
+    
+      .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+      html[data-theme="dark"] .widget-kratos-about .photo-background {
+        background-image: url('/images/default.webp');
+      }
+    
+  </style>
+
+  <!-- 额外的追加注入项 -->
+  
+    <style>.kratos-cover.kratos-cover-2{background-position:center center!important;background-repeat:no-repeat!important;background-size:cover!important;}.widget-kratos-about .about-contact-icons{display:flex;justify-content:space-evenly;align-items:center;max-width:240px;margin:14px auto 0;}.widget-kratos-about .about-contact-icons a{line-height:1;color:inherit;display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;}.widget-kratos-about .about-contact-icons a i{font-size:24px;}.widget-kratos-about .about-contact-icons a img{width:24px;height:24px;object-fit:contain;display:block;}.widget-kratos-about .about-contact-icons a img[alt='Email']{width:27px;height:27px;opacity:.98;}html[data-theme='dark'] .widget-kratos-about .about-contact-icons a img[alt='GitHub']{filter:brightness(0) invert(1);opacity:.98;}.widget-kratos-about .about-contact-icons a:hover{transform:translateY(-1px);}#footer .kratos-social-icons li a{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;}#footer .kratos-social-icons li a .footer-social-icon{width:34px;height:34px;object-fit:contain;display:block;}#footer .kratos-social-icons li a .footer-icon-email{filter:brightness(0) invert(1);opacity:.94;}#footer .kratos-social-icons li a .footer-icon-github{filter:brightness(0) invert(1);opacity:.95;}.kr-comments-disabled{margin:16px 0;padding:12px 14px;border:1px dashed rgba(160,160,160,.45);border-radius:10px;color:#9aa3b7;background:rgba(90,98,120,.08);text-align:center;}@font-face{font-family:'Noto Sans SC Black';src:url('/images/theme/noto-sans-sc-900.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap;}.kratos-cover .desc.desc2{top:50%;margin-top:0;transform:translateY(-50%);}.kratos-cover .desc h2{font-family:'Noto Sans SC Black','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;font-weight:900;font-size:clamp(64px,7.5vw,128px);letter-spacing:.02em;line-height:1.08;text-shadow:0 2px 5px rgba(0,0,0,.5),0 14px 34px rgba(0,0,0,.3);}.color-logo a{font-family:'Noto Sans SC Black','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;font-weight:900;letter-spacing:.02em;}@media(min-width:768px){.kratos-start.kratos-hero-2{height:auto!important;}.kratos-cover.kratos-cover-2{height:auto!important;aspect-ratio:3840/1217;}.kratos-cover.kratos-cover-2::before{content:'';position:absolute;left:0;top:0;right:0;bottom:0;z-index:0;pointer-events:none;background:rgba(245,245,245,.16);}html[data-theme='dark'] .kratos-cover.kratos-cover-2::before{background:rgba(24,28,39,.14);}.kratos-cover.kratos-cover-2::after{content:'';position:absolute;left:0;right:0;bottom:0;height:42%;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(245,245,245,0) 0,rgba(245,245,245,.07) 28%,rgba(245,245,245,.24) 52%,rgba(245,245,245,.56) 76%,rgba(245,245,245,.86) 92%,#f5f5f5 100%);}html[data-theme='dark'] .kratos-cover.kratos-cover-2::after{background:linear-gradient(180deg,rgba(24,28,39,0) 0,rgba(24,28,39,.07) 28%,rgba(24,28,39,.24) 52%,rgba(24,28,39,.56) 76%,rgba(24,28,39,.86) 92%,#181c27 100%);}#kratos-blog-post{position:relative;background:linear-gradient(180deg,#f5f5f5 0,rgba(245,245,245,.9) 20%,rgba(245,245,245,.62) 44%,rgba(245,245,245,.3) 70%,rgba(245,245,245,.08) 90%,rgba(245,245,245,0) 100%) no-repeat;background-size:100% 360px;}html[data-theme='dark'] #kratos-blog-post{background:linear-gradient(180deg,#181c27 0,rgba(24,28,39,.9) 20%,rgba(24,28,39,.62) 44%,rgba(24,28,39,.3) 70%,rgba(24,28,39,.08) 90%,rgba(24,28,39,0) 100%) no-repeat;background-size:100% 360px;}body.custom-background::before{content:'';position:fixed;left:0;top:0;right:0;bottom:0;z-index:-1;pointer-events:none;background:rgba(245,245,245,.34);}html[data-theme='dark'] body.custom-background::before{background:rgba(24,28,39,.26);}}#kratos-desktop-topnav{background:rgba(20,22,28,.5);-webkit-backdrop-filter:blur(18px) saturate(1.7);backdrop-filter:blur(18px) saturate(1.7);box-shadow:inset 0 -1px 0 rgba(255,255,255,.07),0 6px 20px rgba(0,0,0,.16);}html[data-theme='light'] #kratos-desktop-topnav{background:rgba(255,255,255,.6);box-shadow:inset 0 -1px 0 rgba(0,0,0,.07),0 6px 20px rgba(0,0,0,.08);}html[data-theme='light'] #kratos-menu-wrap .sf-menu a{color:#2b2e35;}html[data-theme='light'] #kratos-menu-wrap .sf-menu>li:hover>a{color:#000;background:rgba(0,0,0,.07);}html[data-theme='light'] .kratos-hentry,html[data-theme='light'] #kratos-widget-area .widget{background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(16px) saturate(1.6);backdrop-filter:blur(16px) saturate(1.6);box-shadow:0 4px 18px rgba(31,38,51,.09),0 1px 3px rgba(31,38,51,.06);}html[data-theme='dark'] .kratos-hentry,html[data-theme='dark'] #kratos-widget-area .widget{background:rgba(30,35,47,.68);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 4px 18px rgba(0,0,0,.32),0 1px 3px rgba(0,0,0,.22);}.kratos-hentry{border-radius:12px;}#kratos-widget-area .widget{border-radius:12px;}.kratos-entry-border .kratos-entry-post-meta{border-radius:0 0 12px 12px;}.kratos-entry-thumb{border-radius:12px;overflow:hidden;}.kratos-entry-thumb img{transition:transform .5s ease;}.kratos-hentry:hover .kratos-entry-thumb-img{transform:scale(1.05);}.container article.kratos-hentry:hover{transform:translateY(-2px);}html[data-theme='light'] .container article.kratos-hentry:hover{box-shadow:0 12px 28px rgba(31,38,51,.16),0 2px 6px rgba(31,38,51,.08);}html[data-theme='dark'] .container article.kratos-hentry:hover{box-shadow:0 12px 28px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.3);}.pagination .page-number,.pagination .extend,.pagination .space{border-radius:8px;}.kr-tool .box{background:rgba(38,42,52,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:10px;opacity:.9;}.kr-tool .box:hover{background:rgba(38,42,52,.8);opacity:1;}html[data-theme='light'] .kr-tool .box{background:rgba(255,255,255,.62);box-shadow:0 2px 10px rgba(0,0,0,.14);}html[data-theme='light'] .kr-tool .box span{color:#3a3f4a;}html[data-theme='light'] .kr-tool .box:hover{background:rgba(255,255,255,.88);}h1.kratos-page-title{border-left:none!important;font-size:clamp(26px,2.6vw,40px)!important;font-weight:800!important;line-height:1.32!important;position:relative;padding:10px 24px 26px!important;letter-spacing:.01em;}h1.kratos-page-title:after{content:'';position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:132px;height:3px;border-radius:3px;background:linear-gradient(90deg,rgba(81,173,237,0),#51aded 28%,#78ce79 72%,rgba(120,206,121,0));}ul.kratos-page-meta>li{font-size:13px;opacity:.78;}ul.kratos-page-meta>li i{color:#51aded;opacity:1;}.kratos-page-inner .kratos-copyright{background:rgba(255,255,255,.5)!important;border-left:3px solid #51aded;border-radius:12px!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(31,38,51,.06);}html[data-theme='dark'] .kratos-page-inner .kratos-copyright{background:rgba(37,45,56,.5)!important;box-shadow:0 2px 10px rgba(0,0,0,.25);}.navigation .nav-previous a,.navigation .nav-next a{background:rgba(255,255,255,.58);border:1px solid rgba(31,38,51,.08);border-radius:12px;padding:12px 20px;color:#55606f;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 2px 8px rgba(31,38,51,.06);transition:transform .2s,box-shadow .2s,background .2s,color .2s;}html[data-theme='dark'] .navigation .nav-previous a,html[data-theme='dark'] .navigation .nav-next a{background:rgba(37,45,56,.58);border-color:rgba(255,255,255,.08);color:#c6cdd8;}.navigation .nav-previous a:hover,.navigation .nav-next a:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(81,173,237,.2);background:rgba(255,255,255,.85);color:#51aded;}html[data-theme='dark'] .navigation .nav-previous a:hover,html[data-theme='dark'] .navigation .nav-next a:hover{background:rgba(45,54,68,.85);color:#7cc5f0;}footer{position:relative;}footer:before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(81,173,237,.5) 30%,rgba(120,206,121,.5) 70%,transparent);z-index:1;}#footer{position:relative;overflow:hidden;}#footer:before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(81,173,237,.1),transparent 130px);pointer-events:none;}#footer .kratos-social-icons li a{transition:transform .25s,filter .25s;}#footer .kratos-social-icons li a:hover{transform:translateY(-4px) scale(1.08);filter:drop-shadow(0 4px 10px rgba(81,173,237,.45));}#kratos-widget-area .widget.widget-kratos-about .photo-wrapper-tip{width:98px;height:98px;margin:-54px auto 0;border-radius:50%;background:conic-gradient(from 210deg,#51aded,#78ce79,#a4e0a5,#51aded);padding:3px;box-shadow:0 8px 20px rgba(31,38,51,.22);transition:transform .45s ease;}#kratos-widget-area .widget.widget-kratos-about .photo-wrapper-tip:hover{transform:rotate(8deg) scale(1.05);}#kratos-widget-area .widget.widget-kratos-about .photo-wrapper img{margin:0!important;width:92px!important;height:92px!important;border:2px solid rgba(255,255,255,.85)!important;}#kratos-widget-area .widget.widget-kratos-tags .tag-clouds a{border-radius:999px!important;border:1px solid rgba(81,173,237,.25)!important;background:rgba(255,255,255,.5)!important;color:#5a6c80!important;padding:4px 14px!important;transition:all .25s!important;}html[data-theme='dark'] #kratos-widget-area .widget.widget-kratos-tags .tag-clouds a{background:rgba(37,45,56,.6)!important;border-color:rgba(81,173,237,.3)!important;color:#b9c4d4!important;}#kratos-widget-area .widget.widget-kratos-tags .tag-clouds a:hover{background:linear-gradient(90deg,#51aded,#6cc2ef)!important;color:#fff!important;border-color:transparent!important;transform:translateY(-2px);box-shadow:0 4px 12px rgba(81,173,237,.35);}#kratos-widget-area .widget.widget-kratos-categories .category-list-item .category-list-count{background:linear-gradient(90deg,rgba(81,173,237,.18),rgba(120,206,121,.18))!important;color:#4a90c2!important;border-radius:999px!important;}html[data-theme='dark'] #kratos-widget-area .widget.widget-kratos-categories .category-list-item .category-list-count{color:#9fd4ef!important;}.widget-kratos-toc .toc{font-size:13.5px;}.widget-kratos-toc .toc a{color:#5a6c80;display:block;padding:3px 0;transition:color .2s,transform .2s;}.widget-kratos-toc .toc a:hover{color:#51aded;transform:translateX(3px);}.widget-kratos-toc .toc li.active>a{color:#51aded;font-weight:600;}html[data-theme='dark'] .widget-kratos-toc .toc a{color:#b9c4d4;}html[data-theme='dark'] .widget-kratos-toc .toc a:hover,html[data-theme='dark'] .widget-kratos-toc .toc li.active>a{color:#7cc5f0;}.kratos-page-content .kratos-post-inner-toc{border:1px solid rgba(81,173,237,.3)!important;border-radius:12px!important;background:rgba(81,173,237,.05);padding:15px 15px 8px!important;}#ori-reading-progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:1001;background:linear-gradient(90deg,#51aded,#78ce79);box-shadow:0 0 8px rgba(81,173,237,.6);pointer-events:none;}html.ori-anim .kratos-hentry{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease;}html.ori-anim .kratos-hentry.in-view{opacity:1;transform:translateY(0);}@media (prefers-reduced-motion: reduce){html.ori-anim .kratos-hentry{opacity:1;transform:none;transition:none;}}.mermaid{margin:1.2em 0;padding:18px 14px;text-align:center;white-space:pre-wrap;background:rgba(255,255,255,.62);border:1px solid rgba(31,38,51,.08);border-radius:12px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow-x:auto;}html[data-theme='dark'] .mermaid{background:rgba(30,35,47,.62);border-color:rgba(255,255,255,.09);}.mermaid svg{max-width:100%;height:auto;}.mermaid-error{color:#c0392b;white-space:pre-wrap;text-align:left;font-size:13px;margin:0;}</style>
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    <li>
+                                        
+                                            <a href="/">
+                                        
+                                            
+                                                <i class="fa fa-home"></i>
+                                            
+                                            首页
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/archives/">
+                                        
+                                            
+                                                <i class="fa fa-archive"></i>
+                                            
+                                            归档
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/categories/">
+                                        
+                                            
+                                                <i class="fa fa-folder-open"></i>
+                                            
+                                            分类
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/tags/">
+                                        
+                                            
+                                                <i class="fa fa-tags"></i>
+                                            
+                                            标签
+                                        </a>
+                                        
+                                    </li>
+                                
+                                    <li>
+                                        
+                                            <a href="/about/">
+                                        
+                                            
+                                                <i class="fa fa-user"></i>
+                                            
+                                            关于
+                                        </a>
+                                        
+                                    </li>
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">ORI2333&#39;s Blog</a></div>
+                    <div id="kratos-nav-toggle-wrapper" class="nav-toggle">
+                        <a id="kratos-nav-toggle" class="kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>ORI2333&#39;s Blog</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+
+
+        
+
+            
+
+            <section class="kr-main-col col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://ori2333.github.io/s/03xxd52/">
+    <div class="kratos-hentry kratos-page-inner clearfix">
+        <header class="kratos-page-header">
+            
+                <h1 class="kratos-page-title text-center" itemprop="name headline">Proteus仿真+STM32+云平台</h1>
+            
+            <ul class="kratos-page-meta text-center">
+                <li><time datetime="2026-04-29T00:00:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-04-29</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
+                </li>
+                
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~6.28K
+                        
+                        字
+                    </li>
+                
+                
+                
+            </ul>
+        </header>
+        <div class="kratos-page-content kr-post">
+            
+            
+            
+                <div class="kratos-post-inner-toc toc-div-class" >
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9C%80%E6%B1%82"><span class="toc-number">2.</span> <span class="toc-text">需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-number">3.</span> <span class="toc-text">工具链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%BF%E7%9C%9F%E5%99%A8%E4%BB%B6%E5%88%97%E8%A1%A8"><span class="toc-number">4.</span> <span class="toc-text">仿真器件列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A3%80%E6%B5%8B%E6%95%B0%E6%8D%AE"><span class="toc-number">5.</span> <span class="toc-text">检测数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%91%E5%B9%B3%E5%8F%B0"><span class="toc-number">6.</span> <span class="toc-text">云平台</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E4%BA%A7%E5%93%81"><span class="toc-number">6.1.</span> <span class="toc-text">创建产品</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%A8%A1%E5%9E%8B"><span class="toc-number">6.2.</span> <span class="toc-text">创建模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E8%AE%BE%E5%A4%87"><span class="toc-number">6.3.</span> <span class="toc-text">注册设备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E5%AF%86%E9%92%A5"><span class="toc-number">6.4.</span> <span class="toc-text">保存密钥</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%85%A5%E4%BF%A1%E6%81%AF"><span class="toc-number">6.5.</span> <span class="toc-text">接入信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%8D%A2%E5%8D%8E%E4%B8%BA%E4%BA%91%E8%B4%A6%E5%8F%B7-%E6%96%B0%E5%BB%BA%E4%BA%A7%E5%93%81%E5%92%8C%E8%AE%BE%E5%A4%87%E5%90%8E%E9%9C%80%E4%BF%AE%E6%94%B9%E7%9A%84%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E"><span class="toc-number">7.</span> <span class="toc-text">更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9B%B4%E6%8D%A2%E5%8D%8E%E4%B8%BA%E4%BA%91%E8%B4%A6%E5%8F%B7-%E6%96%B0%E5%BB%BA%E4%BA%A7%E5%93%81%E5%92%8C%E8%AE%BE%E5%A4%87%E5%90%8E%E9%9C%80%E4%BF%AE%E6%94%B9%E7%9A%84%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E-1"><span class="toc-number"></span> <span class="toc-text">更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81host-env-%E2%80%94-Web-%E7%9C%8B%E6%9D%BF%E4%B8%8E%E4%BA%91%E7%AB%AF%E8%BF%9E%E6%8E%A5%E7%9A%84%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">0.1.</span> <span class="toc-text">一、host&#x2F;.env — Web 看板与云端连接的核心配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%AE%BE%E5%A4%87-MQTT-%E8%BF%9E%E6%8E%A5%E9%85%8D%E7%BD%AE%EF%BC%88%E5%BF%85%E5%A1%AB%EF%BC%89"><span class="toc-number">0.1.1.</span> <span class="toc-text">1. 设备 MQTT 连接配置（必填）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-AMQP-%E6%A8%A1%E5%BC%8F%E9%85%8D%E7%BD%AE%EF%BC%88%E4%BB%85%E5%BD%93-HUAWEI-BACKEND-MODE-amqp-%E6%97%B6%E9%9C%80%E8%A6%81%EF%BC%89"><span class="toc-number">0.1.2.</span> <span class="toc-text">2. AMQP 模式配置（仅当 HUAWEI_BACKEND_MODE&#x3D;amqp 时需要）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE"><span class="toc-number">0.1.3.</span> <span class="toc-text">3. 其他配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81host-qt-py-%E2%80%94-Qt-%E6%A1%8C%E9%9D%A2%E7%A8%8B%E5%BA%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC"><span class="toc-number">0.2.</span> <span class="toc-text">二、host&#x2F;qt.py — Qt 桌面程序的默认值</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9C%80%E8%A6%81%E4%BF%AE%E6%94%B9%E7%9A%84%E5%AD%97%E6%AE%B5%EF%BC%88%E7%AC%AC-59-73-%E8%A1%8C%EF%BC%89"><span class="toc-number">0.2.1.</span> <span class="toc-text">需要修改的字段（第 59-73 行）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E"><span class="toc-number">0.2.2.</span> <span class="toc-text">关键字段说明</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81host-web-dashboard-py-%E2%80%94-Web-%E7%9C%8B%E6%9D%BF%E7%A8%8B%E5%BA%8F"><span class="toc-number">0.3.</span> <span class="toc-text">三、host&#x2F;web_dashboard.py — Web 看板程序</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#web-dashboard-py-%E6%94%AF%E6%8C%81%E7%9A%84%E4%B8%89%E7%A7%8D%E5%90%8E%E7%AB%AF%E6%A8%A1%E5%BC%8F"><span class="toc-number">0.3.1.</span> <span class="toc-text">web_dashboard.py 支持的三种后端模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81host-run-all-py-%E2%80%94-%E5%90%AF%E5%8A%A8%E5%99%A8"><span class="toc-number">0.4.</span> <span class="toc-text">四、host&#x2F;run_all.py — 启动器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%96%B0%E8%B4%A6%E5%8F%B7%E6%9B%B4%E6%8D%A2%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4%E6%B1%87%E6%80%BB"><span class="toc-number">0.5.</span> <span class="toc-text">五、新账号更换操作步骤汇总</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-1%EF%BC%9A%E5%9C%A8%E5%8D%8E%E4%B8%BA%E4%BA%91-IoTDA-%E6%8E%A7%E5%88%B6%E5%8F%B0%E6%93%8D%E4%BD%9C"><span class="toc-number">0.5.1.</span> <span class="toc-text">步骤 1：在华为云 IoTDA 控制台操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-2%EF%BC%9A%E4%BF%AE%E6%94%B9-host-env"><span class="toc-number">0.5.2.</span> <span class="toc-text">步骤 2：修改 host&#x2F;.env</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-3%EF%BC%9A%E4%BF%AE%E6%94%B9-host-qt-py-%E9%BB%98%E8%AE%A4%E5%80%BC%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="toc-number">0.5.3.</span> <span class="toc-text">步骤 3：修改 host&#x2F;qt.py 默认值（可选）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-4%EF%BC%9A%E5%90%AF%E5%8A%A8%E5%B9%B6%E9%AA%8C%E8%AF%81"><span class="toc-number">0.5.4.</span> <span class="toc-text">步骤 4：启动并验证</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">0.6.</span> <span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">使用教程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number">2.</span> <span class="toc-text">代码</span></a></li></ol>
+                </div>
+            
+            <hr />
+            <div itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此项目为接单项目，负责数据上云和下发数据部分</p>
+<p>碎碎念念：之前本科大二那会做过类似硬件的，4g上云的，当时三个人做了一个月，现在不知道是ai发展快还是成长了，现在一个人两三小时就搞定了~，还是ai发展太快啦，很多需要查手册一点点写的，现在都全自动喽</p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>温室的功能需求包括加热、制冷、加湿、光照等部分,作为温室的核心,需要保证设备达到课题的需求,能实现温度、湿度、光照等的调节,以及达到对当地气候进行模拟。<br>a.选择合适的环境传感器，能够检测环境温湿度、光照强度、土壤湿度、二氧化碳浓度等；<br>b.温度调节采用PTC加热器升温与半导体制冷器降温；<br>c.湿度调节采用超声波雾化加湿器加湿；<br>d.光强调节采用LED补光灯和遮阳帘调节；<br>e.CO2浓度采用负压风机调节；<br>f.水肥采用水肥一体化系统进行调节，水肥一体化系统包括水泵、电磁阀、水箱、营养箱和混合箱,水泵进行水肥的抽取,电磁阀控制水肥抽取的时间,通过改变水肥的输送比例进行灌溉作业；</p>
+<p>g.可通过连接WIFI进行远程监控,实现手机端实时查看微型温室内各个环境的数据,对环境信息的远距离监</p>
+<p>提醒功能，当测的环境参数超过设定阈值就提醒</p>
+<h2 id="工具链"><a href="#工具链" class="headerlink" title="工具链"></a>工具链</h2><p><strong>软件：</strong></p>
+<ul>
+<li><p>proteus8.15.SP1：<a target="_blank" rel="noopener" href="https://blog.csdn.net/xiaoningaijishu/article/details/147325475">参考这个文章就行</a></p>
+</li>
+<li><p>keil5</p>
+</li>
+<li><p>vscode</p>
+</li>
+<li><p>Configure Virtual Serial Port Driver（虚拟串口软件）</p>
+</li>
+<li><p>安卓webview</p>
+</li>
+</ul>
+<p><strong>环境依赖：</strong></p>
+<ul>
+<li>Python3.12及其以上</li>
+<li>PyQt5 5.15.11</li>
+<li>pyserial 3.5</li>
+<li>paho-mqtt 1.6.1</li>
+<li>qrcode 7.4.2</li>
+<li>fastapi 0.115.12</li>
+<li>uvicorn 0.34.2</li>
+</ul>
+<h2 id="仿真器件列表"><a href="#仿真器件列表" class="headerlink" title="仿真器件列表"></a>仿真器件列表</h2><p>如下图<br>ps：proteus此仿真并非笔者所设计，进攻参考<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429001152511.png?imageSlim" alt="image.png"></p>
+<h2 id="检测数据"><a href="#检测数据" class="headerlink" title="检测数据"></a>检测数据</h2><p>STM32中的数据都是无符号16位<br>示例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;light&quot;</span><span class="punctuation">:</span><span class="number">36</span><span class="punctuation">,</span><span class="attr">&quot;co2&quot;</span><span class="punctuation">:</span><span class="number">54</span><span class="punctuation">,</span><span class="attr">&quot;air1&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;t&quot;</span><span class="punctuation">:</span><span class="number">30</span><span class="punctuation">,</span><span class="attr">&quot;h&quot;</span><span class="punctuation">:</span><span class="number">35</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;air2&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;t&quot;</span><span class="punctuation">:</span><span class="number">27</span><span class="punctuation">,</span><span class="attr">&quot;h&quot;</span><span class="punctuation">:</span><span class="number">41</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;soil&quot;</span><span class="punctuation">:</span><span class="number">41</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>linght：光照强度（ADC in2）</li>
+<li>co2：二氧化碳浓度（ADC in4）</li>
+<li>air1_h：湿度（DHT11_1）</li>
+<li>air1_t：温度(DHT11_1)</li>
+<li>air2_h:土壤湿度(DHT11_2)</li>
+<li>air2_t:土壤温度(DHT11_2)</li>
+<li>soil：土壤湿度(DHT11_2)</li>
+</ul>
+<h2 id="云平台"><a href="#云平台" class="headerlink" title="云平台"></a>云平台</h2><p><a target="_blank" rel="noopener" href="https://iot.console.aliyun.com/lk/vpc/instance/detail_s">阿里云物联网云平台</a><br>更新为华为云，阿里云新用户不支持使用公共免费实例，切换华为云<br><a target="_blank" rel="noopener" href="https://console.huaweicloud.com/iotdm/?region=cn-east-3&locale=zh-cn#/dm-dev/all-product">华为云物联网控制台</a></p>
+<h3 id="创建产品"><a href="#创建产品" class="headerlink" title="创建产品"></a>创建产品</h3><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425164401369.png?imageSlim" alt="image.png"><br>使用MQTT协议、JSON格式</p>
+<h3 id="创建模型"><a href="#创建模型" class="headerlink" title="创建模型"></a>创建模型</h3><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425164502436.png?imageSlim" alt="image.png"><br>服务：</p>
+<ul>
+<li><code>env_monitor</code>（环境监测）<br>属性与单位建议：</li>
+</ul>
+<ol>
+<li><code>soil_moisture</code><ul>
+<li>中文：土壤湿度</li>
+<li>单位：<code>%</code>（体积含水率或相对湿度百分比）</li>
+<li>数据类型建议：&#96;int，看传感器精度）</li>
+<li>典型范围：<code>0 ~ 100</code></li>
+</ul>
+</li>
+<li><code>current_humidity</code><ul>
+<li>中文：当前空气湿度</li>
+<li>单位：<code>%RH</code></li>
+<li>数据类型建议：int</li>
+<li>典型范围：<code>0 ~ 100</code></li>
+</ul>
+</li>
+<li><code>current_temperature</code><ul>
+<li>中文：当前温度</li>
+<li>单位：<code>℃</code></li>
+<li>数据类型建议：<code>int</code></li>
+<li>典型范围：<code>-40 ~ 125</code>（按你传感器能力可缩小）</li>
+</ul>
+</li>
+<li><code>co2</code><ul>
+<li>中文：二氧化碳浓度</li>
+<li>单位：<code>ppm</code></li>
+<li>数据类型建议：</li>
+<li>典型范围：<code>0 ~ 10000</code>（室内常用 400~5000）</li>
+</ul>
+</li>
+<li><code>light_lux</code><ul>
+<li>中文：光照度</li>
+<li>单位：<code>lx</code></li>
+<li>数据类型建议：<code>int</code></li>
+<li>典型范围：<code>0 ~ 100000</code></li>
+</ul>
+</li>
+<li>中文显示名分别配成土壤湿度、当前湿度、当前温度、二氧化碳、光照值<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425165046365.png?imageSlim" alt="image.png"></li>
+</ol>
+<h3 id="注册设备"><a href="#注册设备" class="headerlink" title="注册设备"></a>注册设备</h3><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425165152324.png?imageSlim" alt="image.png"></p>
+<h3 id="保存密钥"><a href="#保存密钥" class="headerlink" title="保存密钥"></a>保存密钥</h3><p>设备id：69ec7ee918855b39c5128106_QT_test1<br>设备密钥：266e1cde <del>隐藏</del> 5c0212b9a18f<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425165249794.png?imageSlim" alt="image.png"></p>
+<h3 id="接入信息"><a href="#接入信息" class="headerlink" title="接入信息"></a>接入信息</h3><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260425175630846.png?imageSlim" alt="image.png"><br>获得：<br>{<br>    “access_key”: “DSYC9gpR”,<br>    “access_code”: “9KGfv8oPIU<del>隐藏</del>uudzqAKcUGs6”,<br>    “type”: “AMQP”<br>}</p>
+<h2 id="更换华为云账号-新建产品和设备后需修改的配置说明"><a href="#更换华为云账号-新建产品和设备后需修改的配置说明" class="headerlink" title="更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明"></a>更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明</h2><h1 id="更换华为云账号-新建产品和设备后需修改的配置说明-1"><a href="#更换华为云账号-新建产品和设备后需修改的配置说明-1" class="headerlink" title="更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明"></a>更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明</h1><p>本文档说明在华为云 IoTDA 控制台新建（或切换）产品与设备后，项目中需要同步修改的配置文件和代码位置。</p>
+<hr>
+<h3 id="一、host-env-—-Web-看板与云端连接的核心配置文件"><a href="#一、host-env-—-Web-看板与云端连接的核心配置文件" class="headerlink" title="一、host/.env — Web 看板与云端连接的核心配置文件"></a>一、<code>host/.env</code> — Web 看板与云端连接的核心配置文件</h3><p><strong>文件路径：</strong> <a href="host/.env">host&#x2F;.env</a><br>这是最核心的配置文件，被 <a href="qt.py">qt.py</a> 和 <a href="web_dashboard.py">web_dashboard.py</a> 共同读取。更换账号后，以下字段需要填写新值：</p>
+<h4 id="1-设备-MQTT-连接配置（必填）"><a href="#1-设备-MQTT-连接配置（必填）" class="headerlink" title="1. 设备 MQTT 连接配置（必填）"></a>1. 设备 MQTT 连接配置（必填）</h4><table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>说明</th>
+<th>在华为云控制台的位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>HUAWEI_DEVICE_NAME</code></td>
+<td>设备名称</td>
+<td>IoTDA 控制台 → 设备 → 设备详情</td>
+</tr>
+<tr>
+<td><code>HUAWEI_DEVICE_SECRET</code></td>
+<td>设备密钥</td>
+<td>注册设备时生成的密钥</td>
+</tr>
+<tr>
+<td><code>HUAWEI_MQTT_HOST</code></td>
+<td>MQTT 接入地址</td>
+<td>IoTDA 控制台 → 总览 → 接入信息 → MQTT 设备接入地址</td>
+</tr>
+<tr>
+<td><code>HUAWEI_MQTT_PORT</code></td>
+<td>MQTT 端口</td>
+<td>固定 <code>8883</code>（TLS）</td>
+</tr>
+<tr>
+<td><code>HUAWEI_MQTT_TLS</code></td>
+<td>是否启用 TLS</td>
+<td>固定 <code>1</code></td>
+</tr>
+<tr>
+<td><code>HUAWEI_REGION</code></td>
+<td>区域</td>
+<td>如 <code>cn-east-3</code>、<code>cn-shanghai</code> 等</td>
+</tr>
+</tbody></table>
+<h4 id="2-AMQP-模式配置（仅当-HUAWEI-BACKEND-MODE-amqp-时需要）"><a href="#2-AMQP-模式配置（仅当-HUAWEI-BACKEND-MODE-amqp-时需要）" class="headerlink" title="2. AMQP 模式配置（仅当 HUAWEI_BACKEND_MODE=amqp 时需要）"></a>2. AMQP 模式配置（仅当 <code>HUAWEI_BACKEND_MODE=amqp</code> 时需要）</h4><table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>说明</th>
+<th>在华为云控制台的位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>HUAWEI_ACCESS_KEY_ID</code></td>
+<td>访问密钥 ID</td>
+<td>华为云控制台 → 我的凭证 → 访问密钥</td>
+</tr>
+<tr>
+<td><code>HUAWEI_ACCESS_KEY_SECRET</code></td>
+<td>访问密钥 Secret</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>HUAWEI_AMQP_ENDPOINT</code></td>
+<td>AMQP 接入端点</td>
+<td>IoTDA 控制台 → 规则 → 数据转发 → AMQP 队列</td>
+</tr>
+<tr>
+<td><code>HUAWEI_AMQP_INSTANCE_ID</code></td>
+<td>实例 ID（新版必填）</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>HUAWEI_CONSUMER_GROUP_ID</code></td>
+<td>队列名称</td>
+<td>默认 <code>DefaultQueue</code></td>
+</tr>
+</tbody></table>
+<h4 id="3-其他配置"><a href="#3-其他配置" class="headerlink" title="3. 其他配置"></a>3. 其他配置</h4><table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>HUAWEI_BACKEND_MODE</code></td>
+<td>后端模式：<code>local_relay</code>（推荐）&#x2F; <code>mqtt_ws</code> &#x2F; <code>amqp</code></td>
+</tr>
+<tr>
+<td><code>HUAWEI_PRODUCT_KEY</code></td>
+<td>产品 ProductKey（非华为云 MQTT 必填，华为云可留空）</td>
+</tr>
+<tr>
+<td><code>LOCAL_RELAY_ENABLE</code></td>
+<td>本地 UDP 转发开关，固定 <code>1</code></td>
+</tr>
+<tr>
+<td><code>WEB_HOST</code> &#x2F; <code>WEB_PORT</code></td>
+<td>Web 看板监听地址和端口</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="二、host-qt-py-—-Qt-桌面程序的默认值"><a href="#二、host-qt-py-—-Qt-桌面程序的默认值" class="headerlink" title="二、host/qt.py — Qt 桌面程序的默认值"></a>二、<code>host/qt.py</code> — Qt 桌面程序的默认值</h3><p><strong>文件路径：</strong> <a href="host/qt.py#L48-L84">host&#x2F;qt.py:48-84</a><br>在 <code>APP_CONFIG[&quot;cloud&quot;]</code> 字典中有硬编码的默认值。更换账号后建议修改以下行：</p>
+<h4 id="需要修改的字段（第-59-73-行）"><a href="#需要修改的字段（第-59-73-行）" class="headerlink" title="需要修改的字段（第 59-73 行）"></a>需要修改的字段（第 59-73 行）</h4><p>“cloud”: {<br>    “product_key”: “a17MwdB5xAq”,                                          # 改为新产品的 ProductKey<br>    “device_name”: “your_device_id”,                                       # 改为新设备名称<br>    “device_secret”: “your_device_secret”,                                 # 改为新设备密钥<br>    “platform”: “huawei”,<br>    “mqtt_host”: “your-instance.st1.iotda-device.cn-east-3.myhuaweicloud.com”,  # 改为新实例的 MQTT 接入地址<br>    “mqtt_port”: 8883,<br>    “mqtt_tls”: True,<br>    “mqtt_username”: “”,                                                   # 华为云留空即可（自动签名）<br>    “mqtt_password”: “”,<br>    “mqtt_client_id”: “”,<br>    “service_id”: “env_monitor”,<br>    “regions”: [“cn-east-3”, “cn-shanghai”, “cn-beijing”, “cn-shenzhen”, “cn-hangzhou”],<br>    “default_region”: “cn-east-3”,                                        # 改为实例所在区域<br>},</p>
+<h4 id="关键字段说明"><a href="#关键字段说明" class="headerlink" title="关键字段说明"></a>关键字段说明</h4><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>是否必改</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>product_key</code></td>
+<td><strong>是</strong></td>
+<td>华为云 IoTDA 控制台 → 产品 → ProductKey</td>
+</tr>
+<tr>
+<td><code>device_name</code></td>
+<td><strong>是</strong></td>
+<td>注册设备时的设备名称</td>
+</tr>
+<tr>
+<td><code>device_secret</code></td>
+<td><strong>是</strong></td>
+<td>设备注册时生成的密钥</td>
+</tr>
+<tr>
+<td><code>mqtt_host</code></td>
+<td><strong>是</strong></td>
+<td>IoTDA 控制台 → 总览 → MQTT 设备接入地址（格式：<code>xxx.st1.iotda-device.cn-east-3.myhuaweicloud.com</code>）</td>
+</tr>
+<tr>
+<td><code>default_region</code></td>
+<td><strong>是</strong></td>
+<td>按实例所在区域填写</td>
+</tr>
+<tr>
+<td><code>service_id</code></td>
+<td>否</td>
+<td>与产品中定义的服务 ID 一致，默认 <code>env_monitor</code></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>提示：</strong> 也可以在 Qt 程序运行后通过 UI 界面直接填入 <code>ProductKey</code>、<code>DeviceName</code>、<code>DeviceSecret</code>、<code>Region</code> 等字段，无需每次修改代码。上述修改只是更改程序<strong>启动时的默认值</strong>。UI 中填写的值还可以通过点击 <strong>“保存 .env”</strong> 按钮持久化到 <code>.env</code> 文件。</p>
+</blockquote>
+<hr>
+<h3 id="三、host-web-dashboard-py-—-Web-看板程序"><a href="#三、host-web-dashboard-py-—-Web-看板程序" class="headerlink" title="三、host/web_dashboard.py — Web 看板程序"></a>三、<code>host/web_dashboard.py</code> — Web 看板程序</h3><p><strong>文件路径：</strong> <a href="host/web_dashboard.py#L136-L150">host&#x2F;web_dashboard.py:136-150</a></p>
+<p>该文件<strong>完全从 <code>.env</code> 文件读取配置</strong>，不存在必须修改的硬编码值。唯一需要注意的是 <code>load_huawei_config()</code> 函数中有一行硬编码的默认 ProductKey（仅作为 fallback）：</p>
+<p> 第 138 行<br>product_key&#x3D;_env_cloud(“HUAWEI_PRODUCT_KEY”, “ALIYUN_PRODUCT_KEY”, “a17MwdB5xAq”),</p>
+<p>建议将最后一个默认值 <code>&quot;a17MwdB5xAq&quot;</code> 改为空字符串 <code>&quot;&quot;</code> 或新产品 Key，避免旧值残留。</p>
+<h4 id="web-dashboard-py-支持的三种后端模式"><a href="#web-dashboard-py-支持的三种后端模式" class="headerlink" title="web_dashboard.py 支持的三种后端模式"></a>web_dashboard.py 支持的三种后端模式</h4><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>配置值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>本地转发（推荐）</strong></td>
+<td><code>local_relay</code></td>
+<td>仅监听 qt.py 通过 UDP 127.0.0.1:19091 转发的数据，无需额外云配置</td>
+</tr>
+<tr>
+<td><strong>MQTT(S)</strong></td>
+<td><code>mqtt_ws</code></td>
+<td>Web 直接连接华为云 MQTT，需填写 HUAWEI_DEVICE_NAME&#x2F;SECRET 和 HUAWEI_MQTT_HOST</td>
+</tr>
+<tr>
+<td><strong>AMQP</strong></td>
+<td><code>amqp</code></td>
+<td>云平台拉取模式，需填写 AMQP 全套配置 + 安装 <code>python-qpid-proton</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="四、host-run-all-py-—-启动器"><a href="#四、host-run-all-py-—-启动器" class="headerlink" title="四、host/run_all.py — 启动器"></a>四、<code>host/run_all.py</code> — 启动器</h3><p><strong>文件路径：</strong> <a href="host/run_all.py">host&#x2F;run_all.py</a></p>
+<p>此文件是纯启动器（同时启动 qt.py 和 web_dashboard.py），<strong>不包含任何云端配置信息</strong>，更换账号无需修改。</p>
+<hr>
+<h3 id="五、新账号更换操作步骤汇总"><a href="#五、新账号更换操作步骤汇总" class="headerlink" title="五、新账号更换操作步骤汇总"></a>五、新账号更换操作步骤汇总</h3><p>按以下顺序操作：</p>
+<h4 id="步骤-1：在华为云-IoTDA-控制台操作"><a href="#步骤-1：在华为云-IoTDA-控制台操作" class="headerlink" title="步骤 1：在华为云 IoTDA 控制台操作"></a>步骤 1：在华为云 IoTDA 控制台操作</h4><ol>
+<li>登录 <strong>华为云控制台</strong> → <strong>IoTDA 设备接入</strong></li>
+<li>创建 <strong>产品</strong>（获取 ProductKey）</li>
+<li>在产品下 <strong>注册设备</strong>（获取 DeviceName、DeviceSecret）</li>
+<li>记下 <strong>MQTT 接入地址</strong>（控制台总览页 → 接入信息）</li>
+<li>如需 AMQP 模式，创建 <strong>访问密钥</strong>（我的凭证 → 访问密钥）和 <strong>AMQP 队列</strong></li>
+</ol>
+<h4 id="步骤-2：修改-host-env"><a href="#步骤-2：修改-host-env" class="headerlink" title="步骤 2：修改 host/.env"></a>步骤 2：修改 <code>host/.env</code></h4><p>HUAWEI_BACKEND_MODE&#x3D;local_relay    # 或 amqp &#x2F; mqtt_ws<br>HUAWEI_DEVICE_NAME&#x3D;新设备名称<br>HUAWEI_DEVICE_SECRET&#x3D;新设备密钥<br>HUAWEI_MQTT_HOST&#x3D;新实例的MQTT接入地址<br>HUAWEI_MQTT_PORT&#x3D;8883<br>HUAWEI_MQTT_TLS&#x3D;1<br>HUAWEI_REGION&#x3D;实例所在区域  </p>
+<p> 如果用 AMQP 模式，还需要填 AMQP 相关字段</p>
+<h4 id="步骤-3：修改-host-qt-py-默认值（可选）"><a href="#步骤-3：修改-host-qt-py-默认值（可选）" class="headerlink" title="步骤 3：修改 host/qt.py 默认值（可选）"></a>步骤 3：修改 <code>host/qt.py</code> 默认值（可选）</h4><p>修改 <a href="qt.py#L59-L73">qt.py:59-73</a> 的 <code>APP_CONFIG[&quot;cloud&quot;]</code> 字典中的默认值。如果每次都在 UI 中手动填写并保存 <code>.env</code>，则可跳过此步。</p>
+<h4 id="步骤-4：启动并验证"><a href="#步骤-4：启动并验证" class="headerlink" title="步骤 4：启动并验证"></a>步骤 4：启动并验证</h4><ol>
+<li>双击 <code>run_all.py</code> 或执行 <code>python host/run_all.py</code></li>
+<li>在 Qt 窗口中点击 <strong>“连接”</strong> 按钮，确认状态变为 <strong>“云平台已连接”</strong></li>
+<li>浏览器打开 <code>http://127.0.0.1:8000/</code> 确认 Web 看板正常显示数据</li>
+</ol>
+<hr>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li><strong>DeviceName 互斥：</strong> qt.py 和 web_dashboard.py（MQTT&#x2F;AMQP 模式）如果使用<strong>同一个</strong> DeviceName + DeviceSecret 连接华为云，云平台可能会强制断开其中一个连接。建议：<ul>
+<li>推荐使用 <code>local_relay</code> 模式（Web 从 qt.py 本地转发获取数据，不直接连云平台）</li>
+<li>如果必须两处同时连接，注册两个不同的设备</li>
+</ul>
+</li>
+<li><strong>密钥安全：</strong> <code>.env</code> 文件包含敏感信息，已被 <code>.gitignore</code> 排除，<strong>切勿提交到 Git</strong></li>
+<li><strong>区域一致性：</strong> IoTDA 实例的区域必须与 <code>.env</code> 中的 <code>HUAWEI_REGION</code> 以及 qt.py 中选择的区域一致</li>
+</ol>
+<h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p>打开proteus<br>下载.hex文件<br>设置端口号和波特率<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429152653004.png?imageSlim" alt="image.png"></p>
+<p>打开Configure Virtual Serial Port Driver<br>设置虚拟端口，如图设置com10和11<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429152739435.png?imageSlim" alt="image.png"></p>
+<p>启动仿真<br>打开vscode或者打包好的exe程序<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153052832.png?imageSlim" alt="image.png"><br>只填写图中数据即可</p>
+<p>1.选择虚拟串口<br>2.打开串口<br>3.连接云端<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153249513.png?imageSlim" alt="image.png"></p>
+<p>此时数据已经上云<br>打开华为云设备页面<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153500503.png?imageSlim" alt="image.png"><br>此时已经有数据</p>
+<p>现在下发</p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153525609.png?imageSlim" alt="image.png"></p>
+<p>本地访问这个ip进入web页面<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153645465.png?imageSlim" alt="image.png"><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153650893.png?imageSlim" alt="image.png"><br>下载专属app，确保在同一局域网内且本地web服务在运行，扫码可以进入手机页面<br>（这个app本质上是调用手机webview访问的，本质上还是浏览器）<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260429153933367.png?imageSlim" alt="50608685c684fce5a49e433b1e4d194a.jpg|400"></p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>GitHub:<a target="_blank" rel="noopener" href="https://github.com/ORI2333/stm32-QT-yun-push">https://github.com/ORI2333/stm32-QT-yun-push</a><br>如果对你有用或者喜欢，麻烦帮忙给个Star！</p>
+</div>
+        </div>
+        
+            <div class="kratos-copyright text-center clearfix">
+                <span itemprop="copyrightNotice">本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</span>
+            </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+            
+            
+                <div class="post-actions text-center clearfix" id="post-actions">
+                
+                    <a class="donate" href="javascript:;" onclick="krOpenDonateModal()"><i class="fa fa-bitcoin"></i> 打赏</a>
+                
+                
+                    <a class="share" href="javascript:;" onclick="krOpenShareModal()"><i class="fa fa-share-alt"></i> 分享</a>
+                
+                </div>
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    <a class="tag-none-link" href="/tags/MQTT/" rel="tag">MQTT</a>, <a class="tag-none-link" href="/tags/STM32/" rel="tag">STM32</a>, <a class="tag-none-link" href="/tags/proteus/" rel="tag">proteus</a>, <a class="tag-none-link" href="/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/" rel="tag">云平台</a>, <a class="tag-none-link" href="/tags/%E6%8E%A5%E5%8D%95/" rel="tag">接单</a>
+                </div>
+                <div class="pull-date">
+                    <time datetime="2026-09-13T10:28:34.635Z" itemprop="dateModified">最后编辑：2026-09-13</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            <div class="nav-previous clearfix">
+                <a title=" ODDR原语说明" target="_blank" rel="noopener" href="//s/0f5yz33/"><i class="fa fa-angle-left"></i> 上一篇</a>
+            </div>
+            
+            
+            <div class="nav-next clearfix">
+                <a title=" FPGA DDR3 + AXI4 帧缓冲控制器实现指南" target="_blank" rel="noopener" href="//s/0ezlsdq/">下一篇 <i class="fa fa-angle-right"></i></a>
+            </div>
+            
+        </nav>
+    
+    
+</article>
+
+        
+
+            </section>
+
+            
+                
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/theme/头像.jpg" alt="ORI2333" loading="lazy" decoding="auto" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">A blog about programming, technology, and more.<br><span class="about-contact-icons"><a href="mailto:ori2333.zh@gmail.com" title="Email"><img src="/icons/default-sites/email.svg" alt="Email"></a><a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub"><img src="/icons/default-sites/github.svg" alt="GitHub"></a><a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili"><img src="/icons/default-sites/bilibili.ico" alt="Bilibili"></a><a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu"><img src="/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu"></a></span></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/archives/">
+            <span class="title">
+                文章
+            </span>
+            <span class="count">
+                16
+            </span>
+        </a>
+        <a class="meta-item" href="/categories/">
+            <span class="title">
+                分类
+            </span>
+            <span class="count">
+                6
+            </span>
+        </a>
+        <a class="meta-item" href="/tags/">
+            <span class="title">
+                标签
+            </span>
+            <span class="count">
+                43
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix toc-div-class" >
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar" role="progressbar" aria-label="阅读进度："></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9C%80%E6%B1%82"><span class="toc-text">需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-text">工具链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%BF%E7%9C%9F%E5%99%A8%E4%BB%B6%E5%88%97%E8%A1%A8"><span class="toc-text">仿真器件列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A3%80%E6%B5%8B%E6%95%B0%E6%8D%AE"><span class="toc-text">检测数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%91%E5%B9%B3%E5%8F%B0"><span class="toc-text">云平台</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E4%BA%A7%E5%93%81"><span class="toc-text">创建产品</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%A8%A1%E5%9E%8B"><span class="toc-text">创建模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E8%AE%BE%E5%A4%87"><span class="toc-text">注册设备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E5%AF%86%E9%92%A5"><span class="toc-text">保存密钥</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%85%A5%E4%BF%A1%E6%81%AF"><span class="toc-text">接入信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%8D%A2%E5%8D%8E%E4%B8%BA%E4%BA%91%E8%B4%A6%E5%8F%B7-%E6%96%B0%E5%BB%BA%E4%BA%A7%E5%93%81%E5%92%8C%E8%AE%BE%E5%A4%87%E5%90%8E%E9%9C%80%E4%BF%AE%E6%94%B9%E7%9A%84%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E"><span class="toc-text">更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9B%B4%E6%8D%A2%E5%8D%8E%E4%B8%BA%E4%BA%91%E8%B4%A6%E5%8F%B7-%E6%96%B0%E5%BB%BA%E4%BA%A7%E5%93%81%E5%92%8C%E8%AE%BE%E5%A4%87%E5%90%8E%E9%9C%80%E4%BF%AE%E6%94%B9%E7%9A%84%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E-1"><span class="toc-text">更换华为云账号 &#x2F; 新建产品和设备后需修改的配置说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81host-env-%E2%80%94-Web-%E7%9C%8B%E6%9D%BF%E4%B8%8E%E4%BA%91%E7%AB%AF%E8%BF%9E%E6%8E%A5%E7%9A%84%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">一、host&#x2F;.env — Web 看板与云端连接的核心配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%AE%BE%E5%A4%87-MQTT-%E8%BF%9E%E6%8E%A5%E9%85%8D%E7%BD%AE%EF%BC%88%E5%BF%85%E5%A1%AB%EF%BC%89"><span class="toc-text">1. 设备 MQTT 连接配置（必填）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-AMQP-%E6%A8%A1%E5%BC%8F%E9%85%8D%E7%BD%AE%EF%BC%88%E4%BB%85%E5%BD%93-HUAWEI-BACKEND-MODE-amqp-%E6%97%B6%E9%9C%80%E8%A6%81%EF%BC%89"><span class="toc-text">2. AMQP 模式配置（仅当 HUAWEI_BACKEND_MODE&#x3D;amqp 时需要）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE"><span class="toc-text">3. 其他配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81host-qt-py-%E2%80%94-Qt-%E6%A1%8C%E9%9D%A2%E7%A8%8B%E5%BA%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC"><span class="toc-text">二、host&#x2F;qt.py — Qt 桌面程序的默认值</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9C%80%E8%A6%81%E4%BF%AE%E6%94%B9%E7%9A%84%E5%AD%97%E6%AE%B5%EF%BC%88%E7%AC%AC-59-73-%E8%A1%8C%EF%BC%89"><span class="toc-text">需要修改的字段（第 59-73 行）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E"><span class="toc-text">关键字段说明</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81host-web-dashboard-py-%E2%80%94-Web-%E7%9C%8B%E6%9D%BF%E7%A8%8B%E5%BA%8F"><span class="toc-text">三、host&#x2F;web_dashboard.py — Web 看板程序</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#web-dashboard-py-%E6%94%AF%E6%8C%81%E7%9A%84%E4%B8%89%E7%A7%8D%E5%90%8E%E7%AB%AF%E6%A8%A1%E5%BC%8F"><span class="toc-text">web_dashboard.py 支持的三种后端模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81host-run-all-py-%E2%80%94-%E5%90%AF%E5%8A%A8%E5%99%A8"><span class="toc-text">四、host&#x2F;run_all.py — 启动器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%96%B0%E8%B4%A6%E5%8F%B7%E6%9B%B4%E6%8D%A2%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4%E6%B1%87%E6%80%BB"><span class="toc-text">五、新账号更换操作步骤汇总</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-1%EF%BC%9A%E5%9C%A8%E5%8D%8E%E4%B8%BA%E4%BA%91-IoTDA-%E6%8E%A7%E5%88%B6%E5%8F%B0%E6%93%8D%E4%BD%9C"><span class="toc-text">步骤 1：在华为云 IoTDA 控制台操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-2%EF%BC%9A%E4%BF%AE%E6%94%B9-host-env"><span class="toc-text">步骤 2：修改 host&#x2F;.env</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-3%EF%BC%9A%E4%BF%AE%E6%94%B9-host-qt-py-%E9%BB%98%E8%AE%A4%E5%80%BC%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="toc-text">步骤 3：修改 host&#x2F;qt.py 默认值（可选）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-4%EF%BC%9A%E5%90%AF%E5%8A%A8%E5%B9%B6%E9%AA%8C%E8%AF%81"><span class="toc-text">步骤 4：启动并验证</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B"><span class="toc-text">使用教程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li></ol>
+    </div>
+</aside>
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类列表</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B0%8F%E5%88%B6%E4%BD%9C/">小制作</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8E%A5%E5%8D%95/">接单</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BA%E6%96%87/">论文</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AF%B4%E6%98%8E%E6%89%8B%E5%86%8C/">说明手册</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%A1%B9%E7%9B%AE/">项目</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%A1%B9%E7%9B%AE/%E8%AE%BA%E6%96%87/">论文</a><span class="category-list-count">1</span></li></ul></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/tags/4G/" style="font-size: 0.6em;">4G</a> <a href="/tags/AIoT/" style="font-size: 0.6em;">AIoT</a> <a href="/tags/AMQP/" style="font-size: 0.6em;">AMQP</a> <a href="/tags/CLAHE/" style="font-size: 0.6em;">CLAHE</a> <a href="/tags/FPGA/" style="font-size: 0.8em;">FPGA</a> <a href="/tags/Hi3516DV300/" style="font-size: 0.6em;">Hi3516DV300</a> <a href="/tags/Hi3861/" style="font-size: 0.6em;">Hi3861</a> <a href="/tags/ISP/" style="font-size: 0.73em;">ISP</a> <a href="/tags/IoT/" style="font-size: 0.6em;">IoT</a> <a href="/tags/LaTeX/" style="font-size: 0.6em;">LaTeX</a> <a href="/tags/MQTT/" style="font-size: 0.6em;">MQTT</a> <a href="/tags/MathType/" style="font-size: 0.6em;">MathType</a> <a href="/tags/Python/" style="font-size: 0.67em;">Python</a> <a href="/tags/RK3588/" style="font-size: 0.6em;">RK3588</a> <a href="/tags/RKNN/" style="font-size: 0.6em;">RKNN</a> <a href="/tags/RS485/" style="font-size: 0.6em;">RS485</a> <a href="/tags/SAC/" style="font-size: 0.6em;">SAC</a> <a href="/tags/STM32/" style="font-size: 0.6em;">STM32</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/s/1y7lhe2/"><i class="fa fa-book"></i> 烟支外观缺陷实时检测</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/s/1utta7k/"><i class="fa fa-book"></i> 基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/s/0yea71p/"><i class="fa fa-book"></i> 全流程自动化智能网球陪练机器</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/s/0qnft6m/"><i class="fa fa-book"></i> 【论文中稿！】中稿CCF-B</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/s/07hu4oi/"><i class="fa fa-book"></i> 快速将 Word 中 LaTeX 公式批量转为 MathType 的脚本与方法（Python）</a>
+            
+          
+        
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+            
+
+        
+
+                </div>
+    </div>
+</div>
+
+<footer>
+    <div id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                            <li>
+                                <a href="mailto:ori2333.zh@gmail.com" title="Email">
+                                    <img class="footer-social-icon footer-icon-email" src="/icons/default-sites/email.svg" alt="Email">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub">
+                                    <img class="footer-social-icon footer-icon-github" src="/icons/default-sites/github.svg" alt="GitHub">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili">
+                                    <img class="footer-social-icon" src="/icons/default-sites/bilibili.ico" alt="Bilibili">
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu">
+                                    <img class="footer-social-icon" src="/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu">
+                                </a>
+                            </li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2026 ORI2333's Blog 版权所有.</li>
+                            <li>本站已运行<span id="kr-since">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>自豪地使用 <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a> 主题</li>
+                            <li>站点由 <a href="https://github.com/ORI2333" target="_blank">ORI2333</a> 用 <i class="fa fa-heart" style="color:#d43f57"></i> 搭建</li>
+                        </div>
+                        <!-- 额外的追加注入项 -->
+                        
+                            <div>
+                                
+                                    <li>由 <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a> 驱动</li>
+                                
+                                    <li>在 <a href="https://github.com" target="_blank" rel="nofollow">GitHub</a> 托管</li>
+                                
+                            </div>
+                        
+                            <div>
+                                
+                                    <li>中国区域由 <a href="https://orizhen.xyz/" target="_blank" rel="nofollow">腾讯云 EdgeOne</a> 加速</li>
+                                
+                            </div>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                <!-- 额外的追加注入项 -->
+                
+                
+                    <div class="box search-box">
+                        <a href="/search">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                <div class="box theme-box" id="theme-toggle">
+                    <span class="fa fa-adjust"></span>
+                </div>
+            </div>
+            <div id="gotop-box" class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+
+    <div id="kr-donate-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseDonateModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-bitcoin"></i>
+            </div>
+            <div class="kr-modal-title">赞助喵</div>
+            <button class="kr-modal-close" onclick="krCloseDonateModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-donate-message">非常感谢您的喜欢！ <i class="fa fa-heart" style="color:#d43f57"></i></div>
+            <div class="kr-donate-qr" id="kr-donate-qr">
+                
+                    <img class="kr-donate-placeholder" src="https://dev.krt.moe/demo-assets/donate.webp" alt="赞助喵" />
+                
+            </div>
+            <div class="kr-donate-platforms">
+                
+                    
+                        <button class="kr-donate-platform-button" style="color: skyblue;" title="模拟支付" onclick="krDonateModalShowPlatformQR('example_payment', 'skyblue')">
+                            <i class="fa fa-credit-card"></i>
+                        </button>
+                    
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/js/kr-modal/donate.min.js"></script>
+
+
+
+
+    <div id="kr-share-modal" class="kr-modal">
+    <div class="kr-modal-bg" onclick="krCloseShareModal()"></div>
+    <div class="kr-modal-content">
+        <div class="kr-modal-header">
+            <div class="kr-modal-icon">
+                <i class="fa fa-share-alt"></i>
+            </div>
+            <div class="kr-modal-title">分享这篇文章</div>
+            <button class="kr-modal-close" onclick="krCloseShareModal()">
+                <i class="fa fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="kr-modal-body">
+            <div class="kr-share-message">分享链接会先进入线路选择页，读者可选择稳定访问、腾讯云 CDN 或备用镜像。</div>
+            <div class="kr-share-qr" id="kr-share-qr"></div>
+            <div class="kr-share-platforms">
+                
+                    <button class="kr-share-platform-button" style="color: #51aded;" title="选择线路" onclick="krShareModalOpenPlatform('$URL')">
+                        <i class="fa fa-share-alt"></i>
+                    </button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/js/kr-modal/share.min.js"></script>
+
+
+
+<!-- 额外的追加注入项 -->
+
+
+        <script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/";
+</script>
+
+
+  <script defer src="/vendors/nprogress@0.2.0/nprogress.js"></script>
+
+
+
+  <script defer src="/vendors/viewerjs@1.11.6/dist/viewer.min.js"></script>
+
+
+<script defer src="/js/kr-core.min.js"></script>
+
+
+  <script defer src="/js/kr-pjax.min.js"></script>
+
+
+<!-- 额外的追加注入项 -->
+
+  <style>
+#kr-share-modal .kr-modal-content{max-width:660px;max-height:560px;}
+#kr-share-modal .kr-modal-body{gap:14px;padding:1rem 2rem 1.6rem;}
+#kr-share-modal .kr-share-message{line-height:1.7;text-align:left;width:100%;}
+#kr-share-modal .kr-share-qr{width:212px;height:212px;padding:8px;background:rgba(255,255,255,.03);}
+#kr-share-modal .kr-share-qr canvas,
+#kr-share-modal .kr-share-qr svg{width:192px!important;height:192px!important;}
+#kr-share-modal .ori-share-link{width:min(100%,500px);display:flex;gap:8px;align-items:center;}
+#kr-share-modal .ori-share-input{flex:1;min-width:0;height:38px;padding:0 12px;border:1px solid rgba(120,206,121,.65);border-radius:8px;background:rgba(255,255,255,.08);color:inherit;font-size:14px;line-height:38px;outline:none;overflow:hidden;text-overflow:ellipsis;}
+#kr-share-modal .ori-share-copy{flex:0 0 auto;height:38px;padding:0 14px!important;border-radius:8px!important;background:#78ce79!important;color:#08140a!important;font-size:14px!important;font-weight:600;}
+#kr-share-modal .ori-share-copy:hover{filter:brightness(1.06);}
+@media (max-width:560px){
+  #kr-share-modal .kr-modal-content{max-height:620px;padding:12px;}
+  #kr-share-modal .kr-modal-body{padding:1rem;gap:12px;}
+  #kr-share-modal .kr-share-qr{width:196px;height:196px;}
+  #kr-share-modal .kr-share-qr canvas,
+  #kr-share-modal .kr-share-qr svg{width:176px!important;height:176px!important;}
+  #kr-share-modal .ori-share-link{flex-direction:column;align-items:stretch;}
+  #kr-share-modal .ori-share-copy{width:100%;}
+}
+.math-display{max-width:100%;margin:1rem 0;overflow-x:auto;overflow-y:hidden;padding:.35rem .15rem;text-align:center;}
+.math-display>.katex-display{margin:0;}
+.math-inline{display:inline;}
+.math .katex{font-size:1.04em;}
+</style>
+<script>
+window.__COMMENTS_ENABLED=false;
+(function(){
+  var gateway = "https://blog.orixx.xyz/";
+  function originalUrl(){
+    var meta = document.querySelector('meta[property="og:url"]');
+    return meta && meta.content ? meta.content : location.href;
+  }
+  function normalizePath(path){
+    path = "/" + String(path || "").replace(/^\/+/, "");
+    return path.replace(/\/{2,}/g, "/");
+  }
+  function stripBlogPrefix(path){
+    var normalized = normalizePath(path).replace(/\/index\.html$/i, "/");
+    if (normalized.toLowerCase().indexOf("/blog/") === 0) return normalizePath(normalized.slice(5));
+    if (normalized.toLowerCase() === "/blog") return "/";
+    return normalized;
+  }
+  function normalizeSharePath(path){
+    var normalized = stripBlogPrefix(path);
+    if (normalized !== "/" && normalized.slice(-1) !== "/") normalized += "/";
+    return normalized;
+  }
+  function utf8Bytes(value){
+    if (window.TextEncoder) return Array.prototype.slice.call(new TextEncoder().encode(value));
+    var utf8 = unescape(encodeURIComponent(value));
+    var bytes = [];
+    for (var i = 0; i < utf8.length; i += 1) bytes.push(utf8.charCodeAt(i));
+    return bytes;
+  }
+  function shortIdFromPath(path){
+    var normalized = normalizeSharePath(path);
+    var shortMatch = normalized.match(/^\/s\/([a-z0-9]+)\/$/i);
+    if (shortMatch) return shortMatch[1].toLowerCase();
+    var hash = 2166136261;
+    var bytes = utf8Bytes(normalized);
+    for (var i = 0; i < bytes.length; i += 1) {
+      hash ^= bytes[i];
+      hash = Math.imul(hash, 16777619) >>> 0;
+    }
+    var id = hash.toString(36);
+    while (id.length < 7) id = "0" + id;
+    return id;
+  }
+  function sharePath(){
+    try {
+      return normalizeSharePath(decodeURI(new URL(originalUrl(), location.href).pathname || "/"));
+    } catch (error) {
+      return normalizeSharePath(decodeURI(location.pathname || "/"));
+    }
+  }
+  function shareUrl(){
+    return location.origin.replace(/\/+$/, "") + "/s/" + shortIdFromPath(sharePath());
+  }
+  window.__oriShortUrl = shareUrl;
+  function metaContent(selector){
+    var node = document.querySelector(selector);
+    return node && node.content ? node.content : "";
+  }
+  function replaceToken(value, token, replacement){
+    return String(value).split(token).join(replacement);
+  }
+  function renderShareQr(){
+    var box = document.getElementById("kr-share-qr");
+    if (!box || !window.QRCodeStyling) return;
+    box.innerHTML = "";
+    new QRCodeStyling({
+      width: 192,
+      height: 192,
+      data: shareUrl(),
+      image: (document.querySelector('link[rel="icon"]') || {}).href,
+      dotsOptions: { color: "#78ce79", type: "extra-rounded" },
+      backgroundOptions: { color: "transparent" },
+      imageOptions: { crossOrigin: "anonymous", margin: 1 }
+    }).append(box);
+    updateShareLinkBox();
+  }
+  function ensureShareLinkBox(){
+    var body = document.querySelector("#kr-share-modal .kr-modal-body");
+    if (!body) return null;
+    var box = body.querySelector(".ori-share-link");
+    if (box) return box;
+    box = document.createElement("div");
+    box.className = "ori-share-link";
+    box.innerHTML = '<input class="ori-share-input" type="text" readonly aria-label="分享链接"><button class="ori-share-copy" type="button">复制链接</button>';
+    var platforms = body.querySelector(".kr-share-platforms");
+    body.insertBefore(box, platforms || null);
+    var input = box.querySelector(".ori-share-input");
+    var button = box.querySelector(".ori-share-copy");
+    input.addEventListener("focus", function(){ input.select(); });
+    button.addEventListener("click", function(){
+      var link = input.value;
+      function done(){
+        button.textContent = "已复制";
+        setTimeout(function(){ button.textContent = "复制链接"; }, 1400);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(done).catch(function(){ input.select(); document.execCommand("copy"); done(); });
+      } else {
+        input.select();
+        document.execCommand("copy");
+        done();
+      }
+    });
+    return box;
+  }
+  function updateShareLinkBox(){
+    var box = ensureShareLinkBox();
+    if (!box) return;
+    var input = box.querySelector(".ori-share-input");
+    if (input) input.value = shareUrl();
+  }
+  function installShareOverride(){
+    ensureShareLinkBox();
+    updateShareLinkBox();
+    window.krShareModalOpenPlatform = function(template){
+      var link = String(template || "$URL");
+      link = replaceToken(link, "$URL", shareUrl());
+      link = replaceToken(link, "$TITLE", metaContent('meta[property="og:title"]'));
+      link = replaceToken(link, "$SUMMARY", metaContent('meta[property="og:description"]'));
+      link = replaceToken(link, "$SITE", metaContent('meta[property="og:site_name"]'));
+      window.open(link, "_blank");
+    };
+    window.initQRCode = renderShareQr;
+    if (window.krOpenShareModal && !window.krOpenShareModal.__oriWrapped) {
+      var open = window.krOpenShareModal;
+      window.krOpenShareModal = function(){
+        open();
+        setTimeout(renderShareQr, 50);
+      };
+      window.krOpenShareModal.__oriWrapped = true;
+    }
+    renderShareQr();
+  }
+  document.addEventListener("DOMContentLoaded", installShareOverride);
+  window.addEventListener("load", installShareOverride);
+  window.addEventListener("pjax:complete", function(){ setTimeout(installShareOverride, 50); });
+})();
+</script>
+<script>
+(function(){
+  var copyConfig = null;
+  function configUrl(){
+    var root = window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/';
+    return root + 'config.json';
+  }
+  function loadConfig(){
+    fetch(configUrl(), {cache: 'no-store'})
+      .then(function(response){ if (!response.ok) throw new Error('copy config load failed'); return response.json(); })
+      .then(function(config){ copyConfig = config.copyrightNoticeForCopy || null; })
+      .catch(function(){ copyConfig = null; });
+  }
+  function meta(selector){
+    var node = document.querySelector(selector);
+    return node && node.content ? node.content : '';
+  }
+  function copyNotice(){
+    if (!copyConfig || !copyConfig.template) return '';
+    var link = window.__oriShortUrl ? window.__oriShortUrl() : location.origin.replace(/\/+$/, '') + '/s/';
+    return String(copyConfig.template)
+      .split('$NEWLINE').join('\n')
+      .split('$AUTHOR').join(meta('meta[name="author"]'))
+      .split('$TITLE').join(document.title)
+      .split('$LINK').join(link);
+  }
+  document.addEventListener('copy', function(event){
+    if (!copyConfig || !copyConfig.enable || !event.clipboardData) return;
+    var selected = window.getSelection ? window.getSelection().toString() : '';
+    if (selected.length <= Number(copyConfig.threshold || 0)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.clipboardData.setData('text/plain', selected + copyNotice());
+  }, true);
+  loadConfig();
+})();
+</script>
+<script>
+(function(){
+  var io = null;
+  function setupProgress(){
+    var bar = document.getElementById('ori-reading-progress');
+    var isPost = document.querySelector('.kratos-page-content.kr-post') !== null;
+    if (!isPost) { if (bar) bar.style.display = 'none'; return; }
+    if (!bar) { bar = document.createElement('div'); bar.id = 'ori-reading-progress'; document.body.appendChild(bar); }
+    bar.style.display = '';
+    var raf = null;
+    function update(){
+      raf = null;
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - window.innerHeight;
+      bar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0).toFixed(2) + '%';
+    }
+    if (!window.__oriProgressBound) {
+      window.addEventListener('scroll', function(){ if (raf === null) raf = requestAnimationFrame(update); }, {passive:true});
+      window.addEventListener('resize', function(){ if (raf === null) raf = requestAnimationFrame(update); }, {passive:true});
+      window.__oriProgressBound = true;
+    }
+    update();
+  }
+  function setupReveal(){
+    document.documentElement.classList.add('ori-anim');
+    var items = document.querySelectorAll('.kratos-hentry');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function(el){ el.classList.add('in-view'); });
+      return;
+    }
+    if (io) io.disconnect();
+    io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('in-view'); io.unobserve(en.target); } });
+    }, {threshold:.06});
+    items.forEach(function(el){ el.classList.remove('in-view'); io.observe(el); });
+    setTimeout(function(){
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      items.forEach(function(el){
+        if (el.classList.contains('in-view')) return;
+        var r = el.getBoundingClientRect();
+        if (r.top < vh && r.bottom > 0) { el.classList.add('in-view'); io.unobserve(el); }
+      });
+    }, 1200);
+  }
+  function setup(){ setupProgress(); setupReveal(); }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 60); });
+})();
+</script>
+<script>
+(function(){
+  var MERMAID_SRC = (window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/') + 'js/vendor/mermaid.min.js';
+  var loadPromise = null;
+  var seq = 0;
+  function ensureMermaid(){
+    if (window.mermaid) return Promise.resolve(window.mermaid);
+    if (loadPromise === null) {
+      loadPromise = new Promise(function(resolve, reject){
+        var s = document.createElement('script');
+        s.src = MERMAID_SRC;
+        s.onload = function(){ resolve(window.mermaid); };
+        s.onerror = function(){ loadPromise = null; reject(new Error('mermaid load failed')); };
+        document.head.appendChild(s);
+      });
+    }
+    return loadPromise;
+  }
+  function currentTheme(){
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default';
+  }
+  function renderPending(){
+    var theme = currentTheme();
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.mermaid[data-code]'));
+    nodes = nodes.filter(function(n){ return n.getAttribute('data-rendered') !== theme; });
+    if (nodes.length === 0) return;
+    ensureMermaid().then(function(mermaid){
+      mermaid.initialize({ startOnLoad: false, theme: theme, fontFamily: 'inherit' });
+      nodes.forEach(function(node){
+        var code = decodeURIComponent(node.getAttribute('data-code') || '');
+        seq += 1;
+        mermaid.render('ori-mermaid-' + seq + '-' + Date.now(), code).then(function(res){
+          node.innerHTML = res.svg;
+          node.setAttribute('data-rendered', theme);
+        }).catch(function(err){
+          node.setAttribute('data-rendered', theme);
+          node.innerHTML = '<pre class="mermaid-error">' + String(err && err.message ? err.message : err) + '</pre>';
+        });
+      });
+    }).catch(function(){ /* 加载失败时保留源码文本 */ });
+  }
+  function watchTheme(){
+    if (window.__oriMermaidThemeWatched) return;
+    window.__oriMermaidThemeWatched = true;
+    if ('MutationObserver' in window) {
+      new MutationObserver(function(){ renderPending(); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+  }
+  function setup(){
+    if (document.querySelector('.mermaid[data-code]')) { watchTheme(); renderPending(); }
+  }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });
+})();
+</script>
+<script>
+(function(){
+  var KATEX_ROOT = window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/';
+  var KATEX_CSS = KATEX_ROOT + 'css/vendor/katex.min.css';
+  var KATEX_JS = KATEX_ROOT + 'js/vendor/katex.min.js';
+  var stylePromise = null;
+  var scriptPromise = null;
+  function ensureStyle(){
+    if (stylePromise !== null) return stylePromise;
+    stylePromise = new Promise(function(resolve, reject){
+      var existing = document.getElementById('ori-katex-css');
+      if (existing) { resolve(); return; }
+      var link = document.createElement('link');
+      link.id = 'ori-katex-css';
+      link.rel = 'stylesheet';
+      link.href = KATEX_CSS;
+      link.onload = resolve;
+      link.onerror = function(){ stylePromise = null; reject(new Error('KaTeX stylesheet load failed')); };
+      document.head.appendChild(link);
+    });
+    return stylePromise;
+  }
+  function ensureKaTeX(){
+    if (window.katex) return Promise.resolve(window.katex);
+    if (scriptPromise !== null) return scriptPromise;
+    scriptPromise = new Promise(function(resolve, reject){
+      var script = document.createElement('script');
+      script.src = KATEX_JS;
+      script.onload = function(){ resolve(window.katex); };
+      script.onerror = function(){ scriptPromise = null; reject(new Error('KaTeX script load failed')); };
+      document.head.appendChild(script);
+    });
+    return scriptPromise;
+  }
+  function renderPending(){
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.math[data-tex]'));
+    nodes = nodes.filter(function(node){ return node.getAttribute('data-rendered') !== 'true'; });
+    if (nodes.length === 0) return;
+    Promise.all([ensureStyle(), ensureKaTeX()]).then(function(results){
+      var katex = results[1];
+      nodes.forEach(function(node){
+        try {
+          katex.render(decodeURIComponent(node.getAttribute('data-tex') || ''), node, {
+            displayMode: node.classList.contains('math-display'),
+            throwOnError: false,
+            strict: 'warn',
+            trust: false,
+          });
+          node.setAttribute('data-rendered', 'true');
+        } catch (error) {
+          node.classList.add('math-error');
+        }
+      });
+    }).catch(function(){ /* 资源加载失败时保留 TeX 源码 */ });
+  }
+  function setup(){
+    if (document.querySelector('.math[data-tex]')) renderPending();
+  }
+  document.addEventListener('DOMContentLoaded', setup);
+  window.addEventListener('pjax:complete', function(){ setTimeout(setup, 80); });
+})();
+</script>
+
+
+
+    </body>
 </html>
