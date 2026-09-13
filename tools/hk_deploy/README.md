@@ -40,13 +40,13 @@ GitHub Actions 使用 `hk-deploy` 分支作为临时静态包：服务器通过 
 
 - `https://blog.orixx.xyz/` 是站点选择页，支持黑白主题切换、中英文切换和自动推荐访问线路。
 - `https://blog.orixx.xyz/s/<短ID>` 是文章分享短链入口，会读取 `share-map.json` 并让读者选择香港、EdgeOne 或 GitHub Pages 线路打开同一篇文章。
-- `https://blog.orixx.xyz/blog/` 是香港服务器上的博客本体。
+- 文章页面 canonical 使用 `/s/<短ID>/`；香港正文因站点挂载在 `/blog/` 下，实际为 `/blog/s/<短ID>/`。旧的日期/中文路径会跳转到对应短路径。
 - `https://blog.orixx.xyz/admin/` 是私有访问统计后台，需要账号密码登录。
 - 旧的 `/hk/` 路径会重定向到 `/blog/`。
 - 选择页的三个入口在 `tools/hk_deploy/hk_deploy.config.json` 中维护：`edgeOneUrl`、`hkBlogPath`、`githubPagesUrl`。
 - HTTPS 使用 Let's Encrypt。证书有效期 90 天，服务器上需要保持 `certbot.timer` 或等效 cron 续签任务启用。
 - 香港部署会使用 `tools/hk_deploy/_config.hk.yml` 覆盖 Hexo 的 `url`，避免页面 canonical 仍指向 GitHub Pages。
-- 香港部署会自动根据 `/blog/yyyy/mm/dd/.../index.html` 生成根目录的 `share-map.json`；GitHub Pages 构建会生成同域名 `/s/<短ID>/` 入口，不要手动维护短链映射。
+- 香港部署会自动根据 `/blog/s/<短ID>/index.html` 生成根目录的 `share-map.json`；短 ID 由构建脚本生成，不要手动维护短链映射。
 
 访问统计后台：
 

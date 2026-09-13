@@ -323,12 +323,15 @@ def write_share_map(public_dir: Path, blog_path: str) -> None:
         raise RuntimeError(f"Missing HK blog output: {blog_public_dir}")
 
     posts: dict[str, dict[str, str]] = {}
-    for index_path in sorted(blog_public_dir.glob("20[0-9][0-9]/*/*/*/index.html")):
+    for index_path in sorted(blog_public_dir.glob("s/*/index.html")):
         rel_dir = index_path.parent.relative_to(blog_public_dir).as_posix()
         path = "/" + rel_dir.strip("/") + "/"
+        match = re.fullmatch(r"/s/([0-9a-z]+)/", path, re.IGNORECASE)
+        if not match:
+            continue
         content = index_path.read_text(encoding="utf-8", errors="ignore")
         title = extract_html_meta(content, "og:title") or title_from_path(path)
-        posts[share_id(path)] = {
+        posts[match.group(1).lower()] = {
             "path": path,
             "title": title,
         }
@@ -356,31 +359,6 @@ def title_from_path(path: str) -> str:
     return name or "ORI2333's Blog"
 
 
-def share_id(path: str) -> str:
-    value = normalized_share_path(path).encode("utf-8")
-    hash_value = 2166136261
-    for byte in value:
-        hash_value ^= byte
-        hash_value = (hash_value * 16777619) & 0xFFFFFFFF
-    return base36(hash_value).rjust(7, "0")
-
-
-def normalized_share_path(path: str) -> str:
-    value = "/" + str(path).strip("/")
-    value = re.sub(r"/index\.html$", "", value, flags=re.IGNORECASE)
-    value = re.sub(r"/{2,}", "/", value)
-    return value.rstrip("/") + "/"
-
-
-def base36(value: int) -> str:
-    alphabet = "0123456789abcdefghijklmnopqrstuvwxyz"
-    if value == 0:
-        return "0"
-    digits: list[str] = []
-    while value:
-        value, remainder = divmod(value, 36)
-        digits.append(alphabet[remainder])
-    return "".join(reversed(digits))
 
 
 def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str) -> str:

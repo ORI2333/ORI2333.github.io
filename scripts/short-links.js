@@ -1,17 +1,22 @@
 /*
- * 为 GitHub Pages 等根站点生成域名本地短链入口。
+ * 为文章生成不含中文的 canonical 短路径，并为旧长路径保留跳转。
  *
- * 香港站点的 /s/<id> 由根目录 gateway 解析并提供线路选择，因此 HK 构建
- * （root 为 /blog/）跳过这里；Pages 构建则生成 /s/<id>/index.html，直接
- * 跳转到同一域名下的文章。短 ID 与 HK 的 share-map.json 使用同一 FNV-1a
- * 算法，保证不同域名上的同一文章拥有相同 ID。
+ * 短 ID 取自原有日期/标题 permalink 的 FNV-1a 摘要，因此已有 share-map
+ * 和历史短链继续有效。文章正文在 /s/<id>/ 输出；旧的中文路径只负责
+ * 语义等价的跳转。香港构建仍保留根目录 gateway，文章正文位于
+ * /blog/s/<id>/；GitHub Pages 和 EdgeOne 使用 /s/<id>/。
  */
+const defaultPostPermalink = require('hexo/dist/plugins/filter/post_permalink');
 
 function normalizedPath(value) {
   let path = '/' + String(value || '').replace(/^\/+/, '');
   path = path.replace(/\/index\.html\/?$/i, '/');
   path = path.replace(/\/{2,}/g, '/');
   return path.endsWith('/') ? path : `${path}/`;
+}
+
+function legacyPath(post) {
+  return normalizedPath(defaultPostPermalink.call(hexo, post));
 }
 
 function shortId(path) {
@@ -22,6 +27,14 @@ function shortId(path) {
     hash = Math.imul(hash, 16777619) >>> 0;
   }
   return hash.toString(36).padStart(7, '0');
+}
+
+function shortPathFromLegacy(path) {
+  return `/s/${shortId(path)}/`;
+}
+
+function deployedPath(path) {
+  return normalizedPath(`${hexo.config.root || '/'}${path}`);
 }
 
 function escapeHtml(value) {
@@ -52,18 +65,22 @@ function redirectHtml(targetPath) {
 `;
 }
 
-hexo.extend.generator.register('local-short-links', function () {
-  const root = normalizedPath(hexo.config.root || '/');
-  if (root !== '/') return [];
+// Hexo 内置过滤器先生成传统路径；本过滤器再把它替换为短路径。
+hexo.extend.filter.register('post_permalink', function (path) {
+  return shortPathFromLegacy(path);
+}, 11);
 
+// 旧日期/中文路径保留入口，避免历史链接失效。
+hexo.extend.generator.register('legacy-post-redirects', function () {
   const posts = hexo.locals.get('posts');
   const routes = [];
   posts.forEach(function (post) {
-    const articlePath = normalizedPath(post.path || '');
-    if (articlePath === '/') return;
+    const oldPath = legacyPath(post);
+    const newPath = normalizedPath(post.path || '');
+    if (oldPath === newPath) return;
     routes.push({
-      path: `s/${shortId(articlePath)}/index.html`,
-      data: redirectHtml(articlePath),
+      path: `${oldPath.slice(1)}index.html`,
+      data: redirectHtml(deployedPath(newPath)),
     });
   });
   return routes;
