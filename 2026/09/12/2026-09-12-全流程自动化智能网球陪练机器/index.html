@@ -7,8 +7,8 @@
     <link rel="icon" href="/images/theme/头像.jpg?v=20260329">
   
   
-  <title>HDMI Display设计手册 | ORI2333&#39;s Blog</title>
-  <link rel="canonical" href="https://ori2333.github.io/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/">
+  <title>全流程自动化智能网球陪练机器 | ORI2333&#39;s Blog</title>
+  <link rel="canonical" href="https://ori2333.github.io/2026/09/12/2026-09-12-%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96%E6%99%BA%E8%83%BD%E7%BD%91%E7%90%83%E9%99%AA%E7%BB%83%E6%9C%BA%E5%99%A8/">
   <meta name="author" content="ORI2333" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -17,30 +17,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="FPGA, ISP, 图像处理" />
+    <meta name="keywords" content="" />
   
-  <meta name="description" content="前置原理补充SII9022这里不做详细介绍，主要侧重如何用FPGA驱动。 基于《LATTICE SiI9022A&#x2F;SiI9024A HDMI Transmitter Data Sheet 2016》 Video Input  xvYCC metadata support（和sRGB差不多，更宽广的色彩范围） BTA-T1004 video input format（没用过） Integr">
+  <meta name="description" content="这是硕士阶段带领本科打比赛的项目，斩获了多项比赛的全国一等奖，甚至有一等奖中的一等奖，受于后续改进影响，本文不会透露过多细节（当然也不排除懒得吹~），只分享专业相关的技术。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HDMI Display设计手册">
-<meta property="og:url" content="https://ori2333.github.io/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/index.html">
+<meta property="og:title" content="全流程自动化智能网球陪练机器">
+<meta property="og:url" content="https://ori2333.github.io/2026/09/12/2026-09-12-%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96%E6%99%BA%E8%83%BD%E7%BD%91%E7%90%83%E9%99%AA%E7%BB%83%E6%9C%BA%E5%99%A8/index.html">
 <meta property="og:site_name" content="ORI2333&#39;s Blog">
-<meta property="og:description" content="前置原理补充SII9022这里不做详细介绍，主要侧重如何用FPGA驱动。 基于《LATTICE SiI9022A&#x2F;SiI9024A HDMI Transmitter Data Sheet 2016》 Video Input  xvYCC metadata support（和sRGB差不多，更宽广的色彩范围） BTA-T1004 video input format（没用过） Integr">
+<meta property="og:description" content="这是硕士阶段带领本科打比赛的项目，斩获了多项比赛的全国一等奖，甚至有一等奖中的一等奖，受于后续改进影响，本文不会透露过多细节（当然也不排除懒得吹~），只分享专业相关的技术。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://ori2333.github.io/images/posts/hdmi.webp">
-<meta property="article:published_time" content="2026-04-18T00:00:00.000Z">
+<meta property="og:image" content="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913143859271.png?imageSlim">
+<meta property="article:published_time" content="2026-09-12T17:12:03.000Z">
 <meta property="article:modified_time" content="2026-09-13T07:26:57.176Z">
 <meta property="article:author" content="ORI2333">
-<meta property="article:tag" content="FPGA">
-<meta property="article:tag" content="ISP">
-<meta property="article:tag" content="图像处理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ori2333.github.io/images/posts/hdmi.webp">
+<meta name="twitter:image" content="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913143859271.png?imageSlim">
   
   <!-- JSON-LD 结构化数据 -->
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"HDMI Display设计手册","description":"前置原理补充","image":"https://ori2333.github.io/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/images/posts/hdmi.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-04-18T00:00:00.000Z","dateModified":"2026-09-13T07:26:57.176Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"全流程自动化智能网球陪练机器","description":"这是硕士阶段带领本科打比赛的项目，斩获了多项比赛的全国一等奖，甚至有一等奖中的一等奖，受于后续改进影响，本文不会透露过多细节（当然也不排除懒得吹~），只分享专业相关的技术。\n\n\n","image":"https://ori2333.github.io/2026/09/12/2026-09-12-%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96%E6%99%BA%E8%83%BD%E7%BD%91%E7%90%83%E9%99%AA%E7%BB%83%E6%9C%BA%E5%99%A8/https:/obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913143859271.png?imageSlim","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-09-12T17:12:03.000Z","dateModified":"2026-09-13T07:26:57.176Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/2026/09/12/2026-09-12-%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96%E6%99%BA%E8%83%BD%E7%BD%91%E7%90%83%E9%99%AA%E7%BB%83%E6%9C%BA%E5%99%A8/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -214,14 +211,14 @@
         
 
             <article itemscope itemtype="https://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://ori2333.github.io/2026/04/18/hdmi_display%E8%AE%BE%E8%AE%A1%E6%89%8B%E5%86%8C/">
+    <link itemprop="mainEntityOfPage" href="https://ori2333.github.io/2026/09/12/2026-09-12-%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96%E6%99%BA%E8%83%BD%E7%BD%91%E7%90%83%E9%99%AA%E7%BB%83%E6%9C%BA%E5%99%A8/">
     <div class="kratos-hentry kratos-page-inner clearfix">
         <header class="kratos-page-header">
             
-                <h1 class="kratos-page-title text-center" itemprop="name headline">HDMI Display设计手册</h1>
+                <h1 class="kratos-page-title text-center" itemprop="name headline">全流程自动化智能网球陪练机器</h1>
             
             <ul class="kratos-page-meta text-center">
-                <li><time datetime="2026-04-18T00:00:00.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-04-18</time></li>
+                <li><time datetime="2026-09-12T17:12:03.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2026-09-12</time></li>
                 <li itemprop="author" itemscope itemtype="https://schema.org/Person">
                     <i class="fa fa-user"></i> 作者 <span itemprop="name">ORI2333</span>
                 </li>
@@ -230,7 +227,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~4.65K
+                            ~2.53K
                         
                         字
                     </li>
@@ -244,139 +241,30 @@
             
             
                 <div class="kratos-post-inner-toc toc-div-class" >
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E5%8E%9F%E7%90%86%E8%A1%A5%E5%85%85"><span class="toc-number">1.</span> <span class="toc-text">前置原理补充</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SII9022"><span class="toc-number">1.1.</span> <span class="toc-text">SII9022</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VGA-LCD"><span class="toc-number">1.2.</span> <span class="toc-text">VGA &#x2F; LCD</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.2.1.</span> <span class="toc-text">接口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.2.</span> <span class="toc-text">显示原理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">工程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3-1"><span class="toc-number">2.1.</span> <span class="toc-text">接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E4%B8%8A%E7%94%B5%E6%97%B6%E9%92%9F"><span class="toc-number">2.2.</span> <span class="toc-text">系统上电时钟</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#lCD-VGA-%E9%A9%B1%E5%8A%A8"><span class="toc-number">2.3.</span> <span class="toc-text">lCD&#x2F;VGA 驱动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E9%92%9F%E8%BD%AC%E5%8F%91"><span class="toc-number">2.4.</span> <span class="toc-text">时钟转发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E6%B5%8B%E8%AF%95"><span class="toc-number">2.5.</span> <span class="toc-text">显示测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="toc-number">3.</span> <span class="toc-text">测试结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BA%90%E7%A0%81"><span class="toc-number">4.</span> <span class="toc-text">源码</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9C%81%E6%B5%81%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">省流介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E8%AF%B4%E6%98%8E"><span class="toc-number">2.</span> <span class="toc-text">核心技术说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="toc-number">2.1.</span> <span class="toc-text">整体说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">2.2.</span> <span class="toc-text">硬件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E9%80%BB%E8%BE%91"><span class="toc-number">2.3.</span> <span class="toc-text">软件逻辑</span></a></li></ol></li></ol>
                 </div>
             
             <hr />
-            <div itemprop="articleBody"><h2 id="前置原理补充"><a href="#前置原理补充" class="headerlink" title="前置原理补充"></a>前置原理补充</h2><h3 id="SII9022"><a href="#SII9022" class="headerlink" title="SII9022"></a>SII9022</h3><p>这里不做详细介绍，主要侧重如何用FPGA驱动。</p>
-<p>基于《LATTICE SiI9022A&#x2F;SiI9024A HDMI Transmitter Data Sheet 2016》</p>
-<p><strong>Video Input</strong></p>
-<ul>
-<li>xvYCC metadata support（和sRGB差不多，更宽广的色彩范围）</li>
-<li>BTA-T1004 video input format（没用过）</li>
-<li>Integrated color space converter allows direct connection to all major MPEG decoders, including those that provide only an ITU-R.656 output（单元内置的色彩空间转换器，能处理不同标准（如YUV到RGB）的转换）</li>
-<li><strong>Internal DE generator supports non-embedded sync formats（DE（数据使能）信号在数字视频中用于标识有效图像数据区域。）</strong></li>
-</ul>
-<p>这里本工程使用<strong>并行数字视频接口</strong> 24-bit RGB 4:4:4 Separate Sync 格式</p>
-<p><strong>HDMI Output</strong></p>
-<ul>
-<li>HDMI, HDCP, and DVI compatible</li>
-<li>TMDS™ core runs at &#x3D;&#x3D;165 MHz&#x3D;&#x3D;</li>
-<li>Video resolutions up to 1080p and UXGA (72-pin QFN package supports 165 MHz dual-edge mode</li>
-<li>3D-capable at 720p&#x2F;60, 1080i&#x2F;60, and 1080p&#x2F;24 frame-pack, side-by-side, L + D, and Top-and-Bottom modes</li>
-<li>HDMI Type A, Type-C, and micro-D connector support<br><strong>其它：</strong><br>支持热插拔</li>
-</ul>
-<p>型号特征：<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260416223535771.png?imageSlim" alt="image.png|700"><br><strong>功能框图：</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260416223747008.png?imageSlim" alt="image.png|700"></p>
-<p><strong>视频输入转换流程：</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260416224216955.png?imageSlim" alt="image.png|800"></p>
-<p><strong>可以倍频</strong><br>Video input formats which use a 2x clock (such as YC Mux mode) can then be transmitted across the HDMI link with a 1x clock. Similarly, 1x-to-2x, 1x-to-4x,and 2x-to-4x conversions are possible.</p>
-<p><strong>数据捕获与格式识别：</strong><br>以可配置的数据位宽（8&#x2F;10&#x2F;12&#x2F;16&#x2F;20&#x2F;24位）捕获RGB或YCbCr视频数据，并根据寄存器设置锁存数据。捕获的<strong>视频格式信息</strong>（如RGB范围、色彩imetry）会被芯片记录下来，并自动插入到后续HDMI数据包的“AVI信息帧”中，供显示设备正确解读，无需主机额外干预</p>
-<p><strong>Embedded Sync Decoding</strong><br>提供了三种生成关键时序信号（DE, HSYNC, VSYNC）的方式，以适应几乎所有视频源：</p>
-<ul>
-<li><strong>直接输入</strong>：最简单的情况，视频源直接提供独立的HSYNC、VSYNC和DE信号。</li>
-<li><strong>嵌入式同步解码</strong>：针对<strong>ITU-R BT.656</strong>等格式的数字视频流（常见于旧标清设备）。芯片能从视频数据流中内置的SAV&#x2F;EAV（有效视频开始&#x2F;结束）代码中，<strong>解码并还原出</strong>HSYNC、VSYNC和DE信号。<strong>这节省了额外的同步信号线。</strong></li>
-<li><strong>内部DE生成器</strong>：当视频源只提供HSYNC和VSYNC，却没有DE信号时，芯片可以利用这两个同步信号和像素时钟，<strong>内部生成一个精确的DE信号</strong>。用户可通过寄存器微调DE的活跃区域，以匹配CEA时序规范。<strong>这对于连接许多不输出DE的MPEG解码器至关重要。</strong></li>
-</ul>
-<p><strong>Video Input  Clock</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417180918149.png?imageSlim" alt="image.png|800"></p>
-<p><strong>Video Input Formats</strong><br>采用24bit的 RGB 444格式<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417181256092.png?imageSlim" alt="image.png|800"></p>
-<h3 id="VGA-LCD"><a href="#VGA-LCD" class="headerlink" title="VGA &#x2F; LCD"></a>VGA &#x2F; LCD</h3><p>为什么写VGA，这里VGA&#x2F;LCD封装的数据非常容易封装为24-bit RGB 4:4:4 Separate Sync 格式，因此这里再介绍一下VGA</p>
-<h4 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h4><table>
-<thead>
-<tr>
-<th>引脚编号</th>
-<th>信号名称</th>
-<th>功能说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>RED</td>
-<td>红色模拟视频信号（0 ~ 0.7V 峰峰值）</td>
-</tr>
-<tr>
-<td>2</td>
-<td>GREEN</td>
-<td>绿色模拟视频信号（0 ~ 0.7V 峰峰值）</td>
-</tr>
-<tr>
-<td>3</td>
-<td>BLUE</td>
-<td>蓝色模拟视频信号（0 ~ 0.7V 峰峰值）</td>
-</tr>
-<tr>
-<td>4</td>
-<td>ID2 &#x2F; RES</td>
-<td>显示器识别位 2（旧标准用于标识显示器类型，现代多未使用或保留）</td>
-</tr>
-<tr>
-<td>5</td>
-<td>GND (HSYNC)</td>
-<td>自测试 &#x2F; 接地（早期用于自检，现通常接地；部分设备用作 HSYNC 返回地）</td>
-</tr>
-<tr>
-<td>6</td>
-<td>RGND</td>
-<td>红色信号地（Red Ground）</td>
-</tr>
-<tr>
-<td>7</td>
-<td>GGND</td>
-<td>绿色信号地（Green Ground）</td>
-</tr>
-<tr>
-<td>8</td>
-<td>BGND</td>
-<td>蓝色信号地（Blue Ground）</td>
-</tr>
-<tr>
-<td>9</td>
-<td>+5V &#x2F; KEY</td>
-<td>+5V 电源（可选，用于为显示器 EEPROM 供电）或物理防呆键位（部分线缆为空）</td>
-</tr>
-<tr>
-<td>10</td>
-<td>GND (SYNC)</td>
-<td>数字地（同步信号公共地）</td>
-</tr>
-<tr>
-<td>11</td>
-<td>ID0 &#x2F; SDA</td>
-<td>显示器识别位 0 &#x2F; I²C 数据线（DDC 通信，用于读取 EDID 信息）</td>
-</tr>
-<tr>
-<td>12</td>
-<td>ID1 &#x2F; SCL</td>
-<td>显示器识别位 1 &#x2F; I²C 时钟线（DDC 通信）</td>
-</tr>
-<tr>
-<td>13</td>
-<td>HSYNC</td>
-<td>行同步信号（Horizontal Sync）</td>
-</tr>
-<tr>
-<td>14</td>
-<td>VSYNC</td>
-<td>场同步信号（Vertical Sync）</td>
-</tr>
-<tr>
-<td>15</td>
-<td>DDC GND</td>
-<td>DDC（显示数据通道）地，用于 I²C 通信</td>
-</tr>
-</tbody></table>
-<h4 id="显示原理"><a href="#显示原理" class="headerlink" title="显示原理"></a>显示原理</h4><p><strong>VGA时序标准</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417214859686.png?imageSlim" alt="image.png"></p>
-<p><strong>Hsync 时序</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417215007905.png?imageSlim" alt="image.png"></p>
-<p><strong>VGA时序图</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417214543829.png?imageSlim" alt="image.png|900"><br>图中的红色区域表示在一个完整的行扫描周期中，Video图像信息只在此区域有效，黄色区域表示在一个完整的场扫描周期中，Video图像信息只在此区域有效，两者相交的橙色区域，就是VGA图像的最终显示区域。</p>
-<p><strong>VGA显示模式</strong><br>这里只是放在这里，和项目无关<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260417234220162.png?imageSlim" alt="image.png"><br>行扫描周期 * 场扫描周期 * 刷新频率 &#x3D; 时钟频率</p>
-<h2 id="工程"><a href="#工程" class="headerlink" title="工程"></a>工程</h2><h3 id="接口-1"><a href="#接口-1" class="headerlink" title="接口"></a>接口</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">module hdmi_display(</span><br><span class="line">    // global clock</span><br><span class="line">    input                               clk                        ,</span><br><span class="line">    input                               rst_n                      ,</span><br><span class="line"></span><br><span class="line">    //lcd interface</span><br><span class="line">    output                              lcd_clk                    ,</span><br><span class="line">    output                              lcd_hs                     ,</span><br><span class="line">    output                              lcd_vs                     ,</span><br><span class="line">    output                              lcd_de                     ,</span><br><span class="line"></span><br><span class="line">    output               [   7: 0]      lcd_red                    ,</span><br><span class="line">    output               [   7: 0]      lcd_green                  ,</span><br><span class="line">    output               [   7: 0]      lcd_blue                    </span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+            <div itemprop="articleBody"><p>这是硕士阶段带领本科打比赛的项目，斩获了多项比赛的全国一等奖，甚至有一等奖中的一等奖，受于后续改进影响，本文不会透露过多细节（当然也不排除懒得吹~），只分享专业相关的技术。</p>
+<span id="more"></span>
 
-<h3 id="系统上电时钟"><a href="#系统上电时钟" class="headerlink" title="系统上电时钟"></a>系统上电时钟</h3><p>代码见：<code>hdmi_display\rtl\sys_clk_ctrl.sv</code><br>功能：延时50ms保证时钟稳定<br>关键时序设计：<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/wavedrom.svg?imageSlim" alt="wavedrom.svg"><br>目标分辨率为720p，这里使用74.25MHz时钟<br>这里使用了clock wizard IP核<br><strong>IP：</strong><br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260416230948486.png?imageSlim" alt="image.png|800"></p>
-<h3 id="lCD-VGA-驱动"><a href="#lCD-VGA-驱动" class="headerlink" title="lCD&#x2F;VGA 驱动"></a>lCD&#x2F;VGA 驱动</h3><p>代码见：<code>hdmi_display\rtl\lcd_driver.sv</code><br>关键时序设计：<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260418160047140.png?imageSlim" alt="image.png"></p>
-<h3 id="时钟转发"><a href="#时钟转发" class="headerlink" title="时钟转发"></a>时钟转发</h3><p>解决时钟网络无法直接连到普通 I&#x2F;O 引脚的问题<br>采用ODDR<br>参考[[ODDR（Xilinx 原语）]]说明<br>这里设计为：</p>
-<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ODDR #(</span><br><span class="line">    <span class="variable">.DDR_CLK_EDGE</span>        (<span class="string">&quot;OPPOSITE_EDGE&quot;</span>           ),<span class="comment">// &quot;OPPOSITE_EDGE&quot; or &quot;SAME_EDGE&quot; </span></span><br><span class="line">    <span class="variable">.INIT</span>                (<span class="number">1&#x27;b0</span>                      ),<span class="comment">// Initial value of Q: 1&#x27;b0 or 1&#x27;b1</span></span><br><span class="line">    <span class="variable">.SRTYPE</span>              (<span class="string">&quot;SYNC&quot;</span>                    ) <span class="comment">// Set/Reset type: &quot;SYNC&quot; or &quot;ASYNC&quot; </span></span><br><span class="line">   ) ODDR_inst (</span><br><span class="line">    <span class="variable">.Q</span>                   (lcd_dclk                  ),<span class="comment">// 1-bit DDR output</span></span><br><span class="line">    <span class="variable">.C</span>                   (lcd_dclk_reg              ),<span class="comment">// 1-bit clock input</span></span><br><span class="line">    <span class="variable">.CE</span>                  (<span class="number">1&#x27;b1</span>                      ),<span class="comment">// 1-bit clock enable input</span></span><br><span class="line">    <span class="variable">.D1</span>                  (<span class="number">1&#x27;b1</span>                      ),<span class="comment">// 1-bit data input (positive edge)</span></span><br><span class="line">    <span class="variable">.D2</span>                  (<span class="number">1&#x27;b0</span>                      ),<span class="comment">// 1-bit data input (negative edge)</span></span><br><span class="line">    <span class="variable">.R</span>                   (<span class="number">1&#x27;b0</span>                      ),<span class="comment">// 1-bit reset</span></span><br><span class="line">    <span class="variable">.S</span>                   (<span class="number">1&#x27;b0</span>                      ) <span class="comment">// 1-bit set</span></span><br><span class="line">   );</span><br></pre></td></tr></table></figure>
-<h3 id="显示测试"><a href="#显示测试" class="headerlink" title="显示测试"></a>显示测试</h3><p>使用</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Author              :       CrazyBingo</span><br><span class="line">Technology blogs    :       www.crazyfpga.com</span><br></pre></td></tr></table></figure>
-<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C.jpg?imageSlim" alt="测试结果.jpg"></p>
-<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p><a target="_blank" rel="noopener" href="https://github.com/ORI2333/FPGA_ISP/tree/main/hdmi_display">https://github.com/ORI2333/FPGA_ISP/tree/main/hdmi_display</a><br>如果对你有用，请帮忙给个Star！😘</p>
+<h2 id="省流介绍"><a href="#省流介绍" class="headerlink" title="省流介绍"></a>省流介绍</h2><p>一款融合端侧AI算法、光伏储能供电与一体化传动机械结构的产品。<br>RK3588 跑端侧视觉、STM32 跑实时电机控制，两台机器通过串口协议连起来。能自己在球场上找球、捡球、把球升到储球仓、分球、再按手势瞄准人打出去，全程不用人管。收球成功率 96.6%。</p>
+<p><strong>亮点：</strong><br>1）收—升—分—发，一体化集成。<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260912172250031.png?imageSlim" alt="image.png"><br>2）双模型视觉感知体系，实现人球双场景智能切换<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260912172400847.png?imageSlim" alt="image.png"><br>3）局部动态规划算法+异构协同架构<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260912173603735.png?imageSlim" alt="image.png"></p>
+<h2 id="核心技术说明"><a href="#核心技术说明" class="headerlink" title="核心技术说明"></a>核心技术说明</h2><h3 id="整体说明"><a href="#整体说明" class="headerlink" title="整体说明"></a>整体说明</h3><p>图已经很清晰了，文本就不吹了<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260912174100858.png?imageSlim" alt="image.png"></p>
+<h3 id="硬件系统"><a href="#硬件系统" class="headerlink" title="硬件系统"></a>硬件系统</h3><p>整体划分为环境感知采集、智能主控运算、运动驱动执行、人机通信交互、光储能源供给五大硬件单元。<br>RK3588嵌入式主控作为唯一核心算力平台。</p>
+<p>环境感知硬件单元由双路高清视觉采集设备、超声波测距传感器及音频采集模块组成。</p>
+<p>系统核心运算硬件采用RK3588智能主控平台，依托其6TOPS NPU算力资源，高效承载轻量化视觉检测、人体姿态估计、离线语音推理等端侧AI算法运行任务。</p>
+<p>运动驱动执行单元由专用底层驱动板与多类型动力执行器件组成，负责将上层智能决策指令精准转化为机械动作。整机配置多路直流减速电机、高速发球电机与步进分球电机，搭配DRV8874直流驱动芯片与TB6600步进驱动模块，实现底盘行走、自适应收球、精准分球、可控发球全机构自动化运行。底层驱动板集成高精度PWM调速、电流采样与多重硬件保护功能。</p>
+<p>人机交互与通信硬件依托BLE蓝牙模块与板载语音采集硬件构建多维度交互链路。蓝牙模块与底层驱动板协同工作，支持微信小程序远程参数配置、设备状态监测与运行模式切换，实现精细化设备管控。离线语音硬件配合主控算力，可在无网络环境下完成语音指令识别与设备调控，结合手势视觉识别硬件，构建起现场快捷操作与远程智能管控相结合的交互体系。</p>
+<p>能源供给单元采用光伏锂电自适应混合供电架构，解决户外露天球场无市电补给、续航不足的应用痛点。系统由柔性太阳能板、自研数字半桥功率变换电路、MPPT能量追踪模块与BMS电池管理系统组成，可实时追踪户外光照变化，动态优化光电转换效率，最大化利用太阳能补能。</p>
+<h3 id="软件逻辑"><a href="#软件逻辑" class="headerlink" title="软件逻辑"></a>软件逻辑</h3><p>数据流架构图<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260912174953634.png?imageSlim" alt="image.png"></p>
+<p><strong>视觉推理：</strong><br>视觉智能推理作为整机核心感知决策模块，采用双模型分时互斥加载的优化方案，解决嵌入式设备算力资源冲突问题。系统搭载两款轻量化YOLOv8系列算法模型，任意时刻仅单套模型占用NPU算力，实现算力集中高效利用。收球模式下启用前置广角摄像头，加载专项优化的网球检测模型，针对球场复杂背景、小目标网球、多球重叠场景完成精准识别，以60fps满帧率输出网球坐标信息，为寻球规划提供高频稳定的数据支撑。发球模式下自动切换后置摄像头与YOLOv8-Pose人体姿态模型，精准提取人体骨骼关键点，依托自定义手势判定逻辑，实现挥手启动、交叉停机等自定义操控功能，同时实时跟踪人体位置，动态修正设备朝向，完成定向跟随发球作业。为突破嵌入式推理性能瓶颈，系统采用多核NPU分片并行、流水线多任务调度、向量化后处理多重优化，实现图像采集、硬件推理、结果处理并行执行，彻底消除算力闲置问题。<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260912175152833.png?imageSlim" alt="image.png"></p>
+<p>环境感知与避障软件模块实现视觉与超声波数据的融合互补，提升设备户外运行稳定性。超声波采集任务独立后台线程异步运行，高频轮询双侧传感器数据，通过指数滑动平均滤波算法优化原始测距数据，有效抑制电机工况、户外环境带来的数据抖动，同时增设异常数据兜底机制，规避避障策略突变问题。基于改进APF人工势场算法构建连续平滑斥力场，划分多级避障区间，根据障碍物距离动态调节斥力大小，实现设备柔性绕行，解决传统避障算法行进顿挫的问题。同时设置硬性安全阈值，狭窄空间、近距离障碍物等高危工况下可紧急停机，全方位保障设备运行安全。<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260912180053240.png?imageSlim" alt="image.png"></p>
+<p>智能决策与路径规划模块依托代价函数择优算法与融合势场模型，实现高效自主作业。多球场景下，系统通过综合距离代价、转向代价的专属代价函数，快速筛选全局最优拾球目标，优先保障作业高效性与行进平滑性，避免设备频繁大幅转向。结合超声波避障斥力数据动态修正目标路径，形成“目标择优+动态避障”的局部路径规划体系，毫秒级输出最优运动指令。发球场景下，采用IoU与中心距离双重匹配跟踪机制，稳定锁定人体目标，避免姿态变化、画面干扰导致的跟踪中断，持续输出精准方位控制指令，保障定向发球的训练精度。<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260912180114378.png?imageSlim" alt="image.png"></p>
+<p>人机交互体系整合离线语音、手势识别、微信小程序三重交互方式，构建全场景智能操控体系。离线语音模块部署轻量化双语推理模型，在RK3588端侧CPU完成全流程解析，通过精确匹配、模糊匹配、字符重合度兜底的三级识别策略，有效解决户外噪声、模型误识别问题，实现无网环境下的模式切换与设备操控。手势识别依托视觉姿态算法实现免接触快捷操控，响应迅速、安全性高。配套微信小程序基于蓝牙BLE协议实现无线通信，可远程完成模式切换、参数调节、设备状态监测与训练数据可视化，兼顾应急快捷操作与精细化参数调试需求，三类交互方式互补协同，适配不同作业场景的操控需求。</p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913142726663.png?imageSlim" alt="image.png"></p>
+<p>上下位机采用标准化串口双向通信机制，自定义多类型数据帧协议，实现指令下发与状态回传的高效同步。系统区分视觉坐标数据帧、控制指令帧、设备状态上报帧，在单一物理串口实现多类数据稳定传输，避免数据混淆、传输冲突。上位机完成所有智能决策、路径规划、模式调度任务，底层驱动板专注于高实时性电机控制、机构驱动与闭环调速，通过100ms周期状态回传实现上下位机工况同步，形成完整的软件控制闭环。<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913143026000.png?imageSlim" alt="image.png"></p>
+<p>底层控制程序以定时器中断为核心驱动，搭载增量式PID视觉伺服控制算法，精准完成底盘调速、转向修正与执行机构驱动，同时搭建多层安全防护策略。通过通信超时检测、硬件看门狗复位、指令优先级分级管控三重防护机制，有效规避通信断连、程序异常、误触发等风险，保障设备复杂工况下的运行稳定性。整机软件通过模块化解耦设计、算力资源优化、多传感器数据融合、多重安全防护，实现了智能化、高精度、高稳定性的全流程自主作业，完全适配户外网球训练的工程应用场景。<br><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913143114002.png?imageSlim" alt="image.png"></p>
 </div>
         </div>
         
@@ -400,7 +288,7 @@
             <div class="footer-tag clearfix">
                 <div class="pull-left">
                 <i class="fa fa-tags"></i>
-                    <a class="tag-none-link" href="/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/tags/ISP/" rel="tag">ISP</a>, <a class="tag-none-link" href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag">图像处理</a>
+                    
                 </div>
                 <div class="pull-date">
                     <time datetime="2026-09-13T07:26:57.176Z" itemprop="dateModified">最后编辑：2026-09-13</time>
@@ -412,12 +300,12 @@
         <nav class="navigation post-navigation clearfix" role="navigation">
             
             <div class="nav-previous clearfix">
-                <a title=" 博客运维指南" href="/2026/03/29/博客与主题使用指南/"><i class="fa fa-angle-left"></i> 上一篇</a>
+                <a title=" 【论文中稿！】中稿CCF-B" href="/2026/08/31/2026-08-31-【论文中稿！】中稿CCF-B！/"><i class="fa fa-angle-left"></i> 上一篇</a>
             </div>
             
             
             <div class="nav-next clearfix">
-                <a title=" ODDR原语说明" href="/2026/04/18/ODDR（Xilinx 原语）/">下一篇 <i class="fa fa-angle-right"></i></a>
+                <a title=" 烟支外观缺陷实时检测" href="/2026/09/13/2026-09-13-烟支外观缺陷实时检测/">下一篇 <i class="fa fa-angle-right"></i></a>
             </div>
             
         </nav>
@@ -484,7 +372,7 @@
         <span class="toc-progress-bar" role="progressbar" aria-label="阅读进度："></span>
     </h4>
     <div class="textwidget">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E5%8E%9F%E7%90%86%E8%A1%A5%E5%85%85"><span class="toc-text">前置原理补充</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SII9022"><span class="toc-text">SII9022</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VGA-LCD"><span class="toc-text">VGA &#x2F; LCD</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3"><span class="toc-text">接口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E5%8E%9F%E7%90%86"><span class="toc-text">显示原理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E7%A8%8B"><span class="toc-text">工程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3-1"><span class="toc-text">接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E4%B8%8A%E7%94%B5%E6%97%B6%E9%92%9F"><span class="toc-text">系统上电时钟</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#lCD-VGA-%E9%A9%B1%E5%8A%A8"><span class="toc-text">lCD&#x2F;VGA 驱动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E9%92%9F%E8%BD%AC%E5%8F%91"><span class="toc-text">时钟转发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E6%B5%8B%E8%AF%95"><span class="toc-text">显示测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="toc-text">测试结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BA%90%E7%A0%81"><span class="toc-text">源码</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9C%81%E6%B5%81%E4%BB%8B%E7%BB%8D"><span class="toc-text">省流介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E8%AF%B4%E6%98%8E"><span class="toc-text">核心技术说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="toc-text">整体说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-text">硬件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E9%80%BB%E8%BE%91"><span class="toc-text">软件逻辑</span></a></li></ol></li></ol>
     </div>
 </aside>
                 
