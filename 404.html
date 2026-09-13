@@ -496,8 +496,9 @@ window.__COMMENTS_ENABLED=false;
     }
   }
   function shareUrl(){
-    return gateway + "s/" + shortIdFromPath(sharePath());
+    return location.origin.replace(/\/+$/, "") + "/s/" + shortIdFromPath(sharePath());
   }
+  window.__oriShortUrl = shareUrl;
   function metaContent(selector){
     var node = document.querySelector(selector);
     return node && node.content ? node.content : "";
@@ -580,6 +581,43 @@ window.__COMMENTS_ENABLED=false;
   document.addEventListener("DOMContentLoaded", installShareOverride);
   window.addEventListener("load", installShareOverride);
   window.addEventListener("pjax:complete", function(){ setTimeout(installShareOverride, 50); });
+})();
+</script>
+<script>
+(function(){
+  var copyConfig = null;
+  function configUrl(){
+    var root = window.kr && window.kr.siteRoot ? window.kr.siteRoot : '/';
+    return root + 'config.json';
+  }
+  function loadConfig(){
+    fetch(configUrl(), {cache: 'no-store'})
+      .then(function(response){ if (!response.ok) throw new Error('copy config load failed'); return response.json(); })
+      .then(function(config){ copyConfig = config.copyrightNoticeForCopy || null; })
+      .catch(function(){ copyConfig = null; });
+  }
+  function meta(selector){
+    var node = document.querySelector(selector);
+    return node && node.content ? node.content : '';
+  }
+  function copyNotice(){
+    if (!copyConfig || !copyConfig.template) return '';
+    var link = window.__oriShortUrl ? window.__oriShortUrl() : location.origin.replace(/\/+$/, '') + '/s/';
+    return String(copyConfig.template)
+      .split('$NEWLINE').join('\n')
+      .split('$AUTHOR').join(meta('meta[name="author"]'))
+      .split('$TITLE').join(document.title)
+      .split('$LINK').join(link);
+  }
+  document.addEventListener('copy', function(event){
+    if (!copyConfig || !copyConfig.enable || !event.clipboardData) return;
+    var selected = window.getSelection ? window.getSelection().toString() : '';
+    if (selected.length <= Number(copyConfig.threshold || 0)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.clipboardData.setData('text/plain', selected + copyNotice());
+  }, true);
+  loadConfig();
 })();
 </script>
 <script>
