@@ -250,7 +250,7 @@
                 <div class="kratos-entry-content">
                     <p itemProp="description">
                         
-                            摘要对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉和嵌入式成像。其核心参数 Clip Limit 决定局部细节增强与噪声抑制之间的平衡：阈值过大容易放大噪声、破坏自然场景统计；阈值过小则难以恢复暗部纹理。固定 Clip Limit 在经过人工调参的单一场景中可以表现良好，但面对低照度、雾霾、过曝和连续光照变化时，参数缺乏适应性。<br>本项目实现了一套面向 FPGA 部署的感知驱动自适应 CLAHE 方案。离线侧将 Clip Limit 调节建模为有限时域马尔可夫决策过程，使用 Soft Actor-Critic（SAC）训练策略；全观测教师利用 BRISQUE、NIQE 等无参考图像质量评价（NR-IQA）作为特权信息，部分观测教师只使用硬件可获得的低维统计量。后验轨迹选择（Posterior Trajectory Selection，PTS）从两类教师生成的完整轨迹中筛选监督信号，再通过 Q4.12 量化感知蒸馏导出可直接初始化 FPGA ROM&#x2F;LUT 的学生网络。<br>硬件侧采用单时钟域、流式像素架构。CLAHE 主路径与特征提取、学生网络推理、参数更新旁路解耦；主路径在活动视频区保持每周期一个有效像素，控制器仅在帧边界提交新的 Clip Limit。通过 ROM 常数倒数消除动态除法，并将二维双线性插值拆分为两级一维定点流水线，避免控制逻辑进入像素关键路径。完整设计在 Xilinx Kintex-7 XC7K325T 上完成 RTL 和实现验证。<br><br><br><br>项目项<br>内容<br><br><br><br>项目名称<br>基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现<br><br><br>项目角色<br>独立开发<br><br><br>开发周期<br>2025 年 1 月—2025 年 11 月<br><br><br>平台<br>Xilinx Kintex-7 XC7K325T<br><br><br>项目仓库<br>ORI2333&#x2F;rl-clahe-fpga-artifact<br><br><br>论文<br>Stall-Free Software–Hardware Co-Design for Perception-Driven Contrast-Limited Adaptive Histogram Equalization<br><br><br>期刊<br>ACM Transactions on Embedded Computing Systems<br><br><br>等级<br>CCF B类、SCI<br><br>
+                            本项目提出一种基于SAC双教师蒸馏的感知驱动自适应CLAHE方案，通过离线强化学习训练与量化感知蒸馏生成轻量化学生网络，解决了传统固定参数在复杂光照下适应性差的问题。硬件侧采用流式像素架构与算子优化在Xilinx Kintex-7 FPGA上实现低延迟部署，相关成果已发表于CCF B类期刊ACM TECS。
                         
                     </p>
                 </div>

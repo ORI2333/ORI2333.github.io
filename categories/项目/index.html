@@ -302,7 +302,7 @@
                 <div class="kratos-entry-content">
                     <p itemProp="description">
                         
-                            摘要对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉和嵌入式成像。其核心参数 Clip Limit 决定局部细节增强与噪声抑制之间的平衡：阈值过大容易放大噪声、破坏自然场景统计；阈值过小则难以恢复暗部纹理。固定 Clip Limit 在经过人工调参的单一场景中可以表现良好，但面对低照度、雾霾、过曝和连续光照变化时，参数缺乏适应性。<br>本项目实现了一套面向 FPGA 部署的感知驱动自适应 CLAHE 方案。离线侧将 Clip Limit 调节建模为有限时域马尔可夫决策过程，使用 Soft Actor-Critic（SAC）训练策略；全观测教师利用 BRISQUE、NIQE 等无参考图像质量评价（NR-IQA）作为特权信息，部分观测教师只使用硬件可获得的低维统计量。后验轨迹选择（Posterior Trajectory Selection，PTS）从两类教师生成的完整轨迹中筛选监督信号，再通过 Q4.12 量化感知蒸馏导出可直接初始化 FPGA ROM&#x2F;LUT 的学生网络。<br>硬件侧采用单时钟域、流式像素架构。CLAHE 主路径与特征提取、学生网络推理、参数更新旁路解耦；主路径在活动视频区保持每周期一个有效像素，控制器仅在帧边界提交新的 Clip Limit。通过 ROM 常数倒数消除动态除法，并将二维双线性插值拆分为两级一维定点流水线，避免控制逻辑进入像素关键路径。完整设计在 Xilinx Kintex-7 XC7K325T 上完成 RTL 和实现验证。<br><br><br><br>项目项<br>内容<br><br><br><br>项目名称<br>基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现<br><br><br>项目角色<br>独立开发<br><br><br>开发周期<br>2025 年 1 月—2025 年 11 月<br><br><br>平台<br>Xilinx Kintex-7 XC7K325T<br><br><br>项目仓库<br>ORI2333&#x2F;rl-clahe-fpga-artifact<br><br><br>论文<br>Stall-Free Software–Hardware Co-Design for Perception-Driven Contrast-Limited Adaptive Histogram Equalization<br><br><br>期刊<br>ACM Transactions on Embedded Computing Systems<br><br><br>等级<br>CCF B类、SCI<br><br>
+                            本项目提出一种基于SAC双教师蒸馏的感知驱动自适应CLAHE方案，通过离线强化学习训练与量化感知蒸馏生成轻量化学生网络，解决了传统固定参数在复杂光照下适应性差的问题。硬件侧采用流式像素架构与算子优化在Xilinx Kintex-7 FPGA上实现低延迟部署，相关成果已发表于CCF B类期刊ACM TECS。
                         
                     </p>
                 </div>
@@ -437,7 +437,7 @@
             
                 <div class="kratos-entry-thumb">
                     <a href="/s/0dsptm5/">
-                        <img class="kratos-entry-thumb-img" src="/images/theme/default-cover.webp" alt="基于 AIoT 的一体化宠物服务系统">
+                        <img class="kratos-entry-thumb-img" src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913182036911.png?imageSlim" alt="基于 AIoT 的一体化宠物服务系统">
                     </a>
                 </div>
             
@@ -449,7 +449,7 @@
                 <div class="kratos-entry-content">
                     <p itemProp="description">
                         
-                            摘要宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台跟随和远程交互。本项目围绕这一问题，实现了一套由 AI 子系统、IoT 子系统、电源子系统、Android APP 和喂食器实体组成的 AIoT 宠物服务系统。<br>AI 子系统以 Hi3516DV300 为核心，运行 Ubuntu，使用 YOLOv2 检测网和 ResNet18 分类网识别猫狗；模型经过 Caffe 转换、RuyiStudio 量化后，以 NNIE 可执行的 .wk 文件部署到板端。系统在识别结果基础上完成视觉感知、语音引导、目标跟随、夜间识别、RTSP 推流和本地拍照。IoT 子系统以 Hi3861V100 为核心，运行 LiteOS，负责称重投喂、二维云台、Zigbee 宠物按键、CoAP 控制和显示等任务。Hi3516 与 Hi3861 以 UART + HiSignalling 协议互联，APP 分别通过 RTSP 获取实时视频、通过 CoAP 下发控制命令。<br><br><br><br>项目项<br>内容<br><br><br><br>项目名称<br>基于 AIoT 的一体化宠物服务系统<br><br><br>项目角色<br>独立开发<br><br><br>AI 平台<br>Hi3516DV300 &#x2F; Ubuntu &#x2F; NNIE<br><br><br>IoT 平台<br>Hi3861V100 &#x2F; LiteOS<br><br><br>视觉模型<br>YOLOv2 检测 + ResNet18 分类<br><br><br>通信<br>RTSP、UART + HiSignalling、CoAP、Zigbee &#x2F; Z-Stack<br><br><br>项目代码<br>ORI2333&#x2F;PFS_BOEMV<br><br>
+                            本项目实现了一套基于Hi3516与Hi3861双核协同的AIoT宠物服务系统，集成YOLOv2&#x2F;ResNet18视觉识别、精准称重投喂、云台跟随及多协议远程交互功能。通过UART+HiSignalling互联与RTSP&#x2F;CoAP通信架构，解决了传统设备缺乏环境感知与智能反馈的问题，完成了从边缘AI推理到IoT控制的软硬一体化闭环。
                         
                     </p>
                 </div>

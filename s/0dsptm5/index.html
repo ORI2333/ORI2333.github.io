@@ -19,16 +19,16 @@
   
     <meta name="keywords" content="AIoT, Hi3516DV300, Hi3861, YOLOv2, Zigbee, 嵌入式视觉" />
   
-  <meta name="description" content="摘要宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台跟随和远程交互。本项目围绕这一问题，实现了一套由 AI 子系统、IoT 子系统、电源子系统、Android APP 和喂食器实体组成的 AIoT 宠物服务系统。 AI 子系统以 Hi3516DV300 为核心，运行 Ubuntu，使用 YOL">
+  <meta name="description" content="本项目实现了一套基于Hi3516与Hi3861双核协同的AIoT宠物服务系统，集成YOLOv2&#x2F;ResNet18视觉识别、精准称重投喂、云台跟随及多协议远程交互功能。通过UART+HiSignalling互联与RTSP&#x2F;CoAP通信架构，解决了传统设备缺乏环境感知与智能反馈的问题，完成了从边缘AI推理到IoT控制的软硬一体化闭环。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于 AIoT 的一体化宠物服务系统">
 <meta property="og:url" content="https://ori2333.github.io/s/0dsptm5/index.html">
 <meta property="og:site_name" content="ORI2333&#39;s Blog">
-<meta property="og:description" content="摘要宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台跟随和远程交互。本项目围绕这一问题，实现了一套由 AI 子系统、IoT 子系统、电源子系统、Android APP 和喂食器实体组成的 AIoT 宠物服务系统。 AI 子系统以 Hi3516DV300 为核心，运行 Ubuntu，使用 YOL">
+<meta property="og:description" content="本项目实现了一套基于Hi3516与Hi3861双核协同的AIoT宠物服务系统，集成YOLOv2&#x2F;ResNet18视觉识别、精准称重投喂、云台跟随及多协议远程交互功能。通过UART+HiSignalling互联与RTSP&#x2F;CoAP通信架构，解决了传统设备缺乏环境感知与智能反馈的问题，完成了从边缘AI推理到IoT控制的软硬一体化闭环。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://ori2333.github.io/images/theme/default-cover.webp">
+<meta property="og:image" content="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913182036911.png?imageSlim">
 <meta property="article:published_time" content="2021-12-01T16:51:51.000Z">
-<meta property="article:modified_time" content="2026-09-13T10:28:34.634Z">
+<meta property="article:modified_time" content="2026-09-13T10:35:38.598Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="AIoT">
 <meta property="article:tag" content="嵌入式视觉">
@@ -37,13 +37,13 @@
 <meta property="article:tag" content="YOLOv2">
 <meta property="article:tag" content="Zigbee">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ori2333.github.io/images/theme/default-cover.webp">
+<meta name="twitter:image" content="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913182036911.png?imageSlim">
   
   <!-- JSON-LD 结构化数据 -->
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 AIoT 的一体化宠物服务系统","description":"摘要宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台...","image":"https://ori2333.github.io/s/0dsptm5/images/theme/default-cover.webp","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2021-12-01T16:51:51.000Z","dateModified":"2026-09-13T10:28:34.634Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/s/0dsptm5/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 AIoT 的一体化宠物服务系统","description":"本项目实现了一套基于Hi3516与Hi3861双核协同的AIoT宠物服务系统，集成YOLOv2&#x2F;ResNet18视觉识别、精准称重投喂、云台跟随及多协议远程交互功能。通过UART+HiSignalling互联与RTSP&#x2F;CoAP通信架构，解决了传统设备缺乏环境感知与智...","image":"https://ori2333.github.io/s/0dsptm5/https:/obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913182036911.png?imageSlim","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2021-12-01T16:51:51.000Z","dateModified":"2026-09-13T10:35:38.598Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/s/0dsptm5/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -233,7 +233,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~13.51K
+                            ~13.69K
                         
                         字
                     </li>
@@ -251,7 +251,9 @@
                 </div>
             
             <hr />
-            <div itemprop="articleBody"><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台跟随和远程交互。本项目围绕这一问题，实现了一套由 AI 子系统、IoT 子系统、电源子系统、Android APP 和喂食器实体组成的 AIoT 宠物服务系统。</p>
+            <div itemprop="articleBody"><p>本项目实现了一套基于Hi3516与Hi3861双核协同的AIoT宠物服务系统，集成YOLOv2&#x2F;ResNet18视觉识别、精准称重投喂、云台跟随及多协议远程交互功能。通过UART+HiSignalling互联与RTSP&#x2F;CoAP通信架构，解决了传统设备缺乏环境感知与智能反馈的问题，完成了从边缘AI推理到IoT控制的软硬一体化闭环。</p>
+<span id="more"></span>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>宠物服务设备如果只有定时投喂，本质上只是一个带时钟的粮仓：它能按时落粮，却不知道有没有宠物靠近、来的是什么宠物，也无法把识别结果转化为可靠的称重投喂、云台跟随和远程交互。本项目围绕这一问题，实现了一套由 AI 子系统、IoT 子系统、电源子系统、Android APP 和喂食器实体组成的 AIoT 宠物服务系统。</p>
 <p>AI 子系统以 Hi3516DV300 为核心，运行 Ubuntu，使用 YOLOv2 检测网和 ResNet18 分类网识别猫狗；模型经过 Caffe 转换、RuyiStudio 量化后，以 NNIE 可执行的 <code>.wk</code> 文件部署到板端。系统在识别结果基础上完成视觉感知、语音引导、目标跟随、夜间识别、RTSP 推流和本地拍照。IoT 子系统以 Hi3861V100 为核心，运行 LiteOS，负责称重投喂、二维云台、Zigbee 宠物按键、CoAP 控制和显示等任务。Hi3516 与 Hi3861 以 UART + HiSignalling 协议互联，APP 分别通过 RTSP 获取实时视频、通过 CoAP 下发控制命令。</p>
 <table>
 <thead>
@@ -289,8 +291,6 @@
 <td><a target="_blank" rel="noopener" href="https://github.com/ORI2333/PFS_BOEMV">ORI2333&#x2F;PFS_BOEMV</a></td>
 </tr>
 </tbody></table>
-<span id="more"></span>
-
 <h2 id="1-绪论"><a href="#1-绪论" class="headerlink" title="1 绪论"></a>1 绪论</h2><h3 id="1-1-研究背景与意义"><a href="#1-1-研究背景与意义" class="headerlink" title="1.1 研究背景与意义"></a>1.1 研究背景与意义</h3><p>宠物逐渐从“看家护院的动物”变成家庭成员，陪伴和照护需求随之增加。但主人上班、加班或出差时，定时定量喂食只能解决最基础的供食问题：它无法确认宠物是否出现，无法区分猫狗，无法实时查看状态，也无法处理夜间活动、宠物自主触发等场景。</p>
 <p>传统智能喂食设备往往采用单一控制器加定时器的方式。它们能根据预设时间启动电机，却没有感知链路，也没有把“看见宠物”与“实际投喂多少克”连成闭环。要让设备从“定时开闸”变成“根据状态提供服务”，至少需要解决四类问题：</p>
 <ol>
@@ -425,88 +425,44 @@
 <li>将推理结果输出给 OSD、UART 消息与其它 AI 应用模块。</li>
 </ul>
 <p>仓库的 <code>Taurus/</code> 目录提供 HiOpenAIS 的补丁、AI Plugin 源码和部署模型文件。复现需要先搭建对应的 HiOpenAIS 环境，将补丁打入 SDK 后重新构建文件系统，再将 <code>.wk</code> 文件复制到插件目录。它是面向特定 SDK 的补丁式工程，而不是普通桌面端一键运行项目。</p>
-<!--
-配图 10
-论文对应：图 3-16 PLUG 接口、图 3-17 加载模型、图 3-18 卸载检测网模型
-建议文件名：10-ai-plugin-model-lifecycle.png
-用途：建议展示接口与加载/卸载关键代码；适合放在本节末，图片应裁掉无关 IDE 边框。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913174420416.png?imageSlim" alt="PLUG 接口"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913174434507.png?imageSlim" alt="加载模型"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913174447423.png?imageSlim" alt="卸载检测网模型"></p>
 <h3 id="3-4-NNIE-板端推理"><a href="#3-4-NNIE-板端推理" class="headerlink" title="3.4 NNIE 板端推理"></a>3.4 NNIE 板端推理</h3><p>NNIE 的典型推理过程包含：获取 <code>.wk</code> 文件大小、申请模型缓冲、加载模型、获取任务缓冲需求、申请任务内存、准备输入帧数据、执行 <code>Forward</code>、通过 <code>Query</code> 查询任务完成状态、读取输出、卸载模型并释放缓冲。</p>
 <p>这条生命周期保证了模型内存和任务内存在板端可控。视频帧循环中，检测网先给出候选框，分类网再对目标区域推理；模型和缓冲的管理不应散落在业务逻辑中，否则长时间运行时的内存泄漏和重复加载问题会比模型精度更早出现。</p>
-<!--
-配图 11
-论文对应：图 3-19 NNIE 引擎的板端推理逻辑图
-建议文件名：11-nnie-inference-lifecycle.png
-用途：展示模型加载、缓冲分配、Forward、Query、释放资源的板端推理生命周期。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913174507902.png?imageSlim" alt="NNIE 引擎的板端推理逻辑图"></p>
 <h2 id="4-AI-子系统应用设计与实现"><a href="#4-AI-子系统应用设计与实现" class="headerlink" title="4 AI 子系统应用设计与实现"></a>4 AI 子系统应用设计与实现</h2><h3 id="4-1-AI-应用框架"><a href="#4-1-AI-应用框架" class="headerlink" title="4.1 AI 应用框架"></a>4.1 AI 应用框架</h3><p>AI 子系统以 Camera、Hi3516DV300、光敏传感器、红外补光灯、扬声器和 LCD 为基础。模型推理结果驱动五项应用：视觉感知判断、语音、目标跟随、夜间识别和板端拍照。</p>
 <p>视觉感知是其余功能的起点：语音模块依据识别类别选择音频；跟随模块依据识别框位置控制云台；夜间模式确保低照度下还能获得可识别画面；拍照模块则让设备能够在本地保存当前画面。</p>
-<!--
-配图 12
-论文对应：图 4-1 AI 应用功能框架
-建议文件名：12-ai-subsystem-capability-map.png
-用途：展示 Camera、补光、扬声器、LCD 与五项 AI 应用之间的关系。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913174534217.png?imageSlim" alt="AI 应用功能框架"></p>
 <h3 id="4-2-Hi3516-与客户端-RTSP-推流"><a href="#4-2-Hi3516-与客户端-RTSP-推流" class="headerlink" title="4.2 Hi3516 与客户端 RTSP 推流"></a>4.2 Hi3516 与客户端 RTSP 推流</h3><p>RTSP 负责客户端对实时媒体流的会话控制。Hi3516 将 Camera 帧编码为 H.264 码流，RTSP 服务端提供描述、会话建立、播放、暂停和关闭等控制能力；APP 侧使用 FFmpeg 接收并解码码流，<code>MediaCodec</code> 与 <code>SurfaceView</code> 负责显示。</p>
 <p>工程链路可简化为：</p>
 <div class="math math-display" data-tex="%5Ctext%7BCamera%7D%20%5Crightarrow%20%5Ctext%7BH.264%20Encoder%7D%20%5Crightarrow%20%5Ctext%7BRTSP%20Server%7D%20%5Crightarrow%20%5Ctext%7BWi-Fi%2FTCP%7D%20%5Crightarrow%20%5Ctext%7BFFmpeg%20Decoder%7D%20%5Crightarrow%20%5Ctext%7BSurfaceView%7D">\text&#123;Camera&#125; \rightarrow \text&#123;H.264 Encoder&#125; \rightarrow \text&#123;RTSP Server&#125; \rightarrow \text&#123;Wi-Fi/TCP&#125; \rightarrow \text&#123;FFmpeg Decoder&#125; \rightarrow \text&#123;SurfaceView&#125;</div>
 
 <p>视频端设置缓存以缓冲网络抖动。使用 TCP 有利于传输可靠性，但可能增加延迟；该取舍适用于本项目的远程观察和控制场景。视频流不与 CoAP 控制消息共用一条业务链路，避免码流带宽影响投喂和云台指令。</p>
-<!--
-配图 13
-论文对应：图 4-2 RTSP 推流协议实现、图 4-3 RTSP 实现效果图
-建议文件名：13-rtsp-streaming-and-app-preview.png
-用途：以图 4-3 的 APP 实时预览效果为主图，图 4-2 作为协议流程小图。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913174606373.png?imageSlim" alt="RTSP 推流协议实现"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175412697.png?imageSlim" alt="RTSP 实现效果图"></p>
 <h3 id="4-3-应用功能实现"><a href="#4-3-应用功能实现" class="headerlink" title="4.3 应用功能实现"></a>4.3 应用功能实现</h3><h4 id="4-3-1-视觉感知判断"><a href="#4-3-1-视觉感知判断" class="headerlink" title="4.3.1 视觉感知判断"></a>4.3.1 视觉感知判断</h4><p>视觉感知的主流程是：Camera 启动后，NNIE 从视频流中取帧；检测网判断是否存在猫狗；存在目标时，框出脸部&#x2F;目标区域并送入分类网；分类网输出猫或狗，系统再将类别、置信度和坐标写入视频 OSD 与控制消息。</p>
 <p>未检测到目标时，该帧不触发投喂、语音或云台动作。检测到多个目标时，系统选择主要目标用于后续控制，避免每个框都生成一套彼此冲突的舵机命令。</p>
-<!--
-配图 14
-论文对应：图 4-4 视觉感知判断逻辑流程图、图 4-5 Camera
-建议文件名：14-visual-perception-flow-and-camera.png
-用途：流程图为主，Camera 硬件实物作为角标或右侧配图。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175444468.png?imageSlim" alt="视觉感知判断逻辑流程图"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175501123.png?imageSlim" alt="Camera"></p>
 <h4 id="4-3-2-语音功能"><a href="#4-3-2-语音功能" class="headerlink" title="4.3.2 语音功能"></a>4.3.2 语音功能</h4><p>语音功能播放预先录制的主人声音，引导宠物靠近食槽。程序不会在每一帧检测到宠物时都播放音频，而是检查帧计数、置信度阈值和类别变化：只有达到设定间隔、识别分数足够且当前类别发生有效变化时，才调用播放函数。</p>
 <p>这一限流逻辑避免了高帧率视频导致反复播放。论文实现中，狗和猫使用不同的类别编号与音频文件，扬声器根据最终分类结果选择对应声音。语音的作用是引导，不是对宠物行为做强制控制；投喂仍需满足时间、按键或 APP 等业务条件。</p>
-<!--
-配图 15
-论文对应：图 4-6 扬声器
-建议文件名：15-speaker-and-voice-guidance.png
-用途：放在语音功能之后；可加一张“猫/狗识别结果 → 对应音频”的自制流程小图。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175524043.png?imageSlim" alt="扬声器"></p>
 <h4 id="4-3-3-目标跟随"><a href="#4-3-3-目标跟随" class="headerlink" title="4.3.3 目标跟随"></a>4.3.3 目标跟随</h4><p>目标跟随使用检测框坐标控制二维云台。系统将目标框与画面预设边界比较：目标越过左、右、上、下边界时，Hi3516 经 UART 向 Hi3861 发送方向命令；Hi3861 再控制云台的水平或俯仰舵机。目标位于稳定区域时，不额外转动云台。</p>
 <p>这种控制策略的实现重点是减少抖动：选择最大候选框作为主要目标，对其它框只做显示；控制命令由目标相对画面边界的位置产生，不需要将视频传到 APP 再由手机下发云台决策。视觉结果直接进入串口控制链路，响应路径更短。</p>
-<!--
-配图 16
-论文对应：图 4-7 目标跟随功能流程图、图 4-8 云台实物图、图 4-9 坐标示意图
-建议文件名：16-target-tracking-flow-ptz-coordinate.png
-用途：建议三图拼接：左流程，中坐标边界，右二维云台实物。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175551842.png?imageSlim" alt="目标跟随功能流程图"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175609626.png?imageSlim" alt="云台实物图"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175623555.png?imageSlim" alt="坐标示意图"></p>
 <h4 id="4-3-4-夜间识别"><a href="#4-3-4-夜间识别" class="headerlink" title="4.3.4 夜间识别"></a>4.3.4 夜间识别</h4><p>夜间识别由光敏传感器和红外补光共同实现。系统读取环境亮度，并与设定阈值比较；环境较暗时开启红外补光，调整图像相关属性后继续执行同一套猫狗检测和分类；环境恢复明亮时关闭红外并切回正常模式。</p>
 <p>阈值附近的环境亮度可能波动，因此红外状态切换不应只靠单次采样。实现中使用连续计数阈值进行抖动消除，只有状态连续满足条件后才实际切换 IR-Cut 和相关图像属性，避免补光灯频繁开关。</p>
-<!--
-配图 17
-论文对应：图 4-10 夜间识别功能逻辑流程图、图 4-11 光敏传感器和红外补光灯、图 8-6 夜视效果
-建议文件名：17-night-vision-flow-hardware-result.png
-用途：三图组合，实际夜视识别结果放最大；流程和硬件图作为辅助。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175653162.png?imageSlim" alt="夜间识别功能逻辑流程图"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175706563.png?imageSlim" alt="光敏传感器和红外补光灯"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913175811291.png?imageSlim" alt="夜视效果"></p>
 <h4 id="4-3-5-板端拍照"><a href="#4-3-5-板端拍照" class="headerlink" title="4.3.5 板端拍照"></a>4.3.5 板端拍照</h4><p>板端拍照基于 HiGV 图形框架完成。用户可以在 LCD&#x2F;触摸屏上进入拍照界面、触发拍照、预览、保存、浏览图库和删除图片。视频帧通过 VPSS 处理后送往 LCD 显示；触发拍照时，当前帧交由 JPEG 编码器保存到 eMMC。</p>
 <p>它与 APP 端视频预览不同：APP 负责远程实时观看，板端拍照负责本地独立保存和管理图像。两者使用不同的交互入口，但共享 Camera 产生的视频帧。</p>
-<!--
-配图 18
-论文对应：图 4-12 板端拍照功能、图 4-13 板端拍照示意图、图 8-7 板端拍照效果
-建议文件名：18-on-device-photo-capture.png
-用途：以图 8-7 的实际效果为主图，图 4-12 的状态流程为小图。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180214447.png?imageSlim" alt="板端拍照功能"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180226511.png?imageSlim" alt="板端拍照示意图"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180248610.png?imageSlim" alt="板端拍照效果"></p>
 <h2 id="5-IoT-子系统应用设计与实现"><a href="#5-IoT-子系统应用设计与实现" class="headerlink" title="5 IoT 子系统应用设计与实现"></a>5 IoT 子系统应用设计与实现</h2><h3 id="5-1-多设备协同设计"><a href="#5-1-多设备协同设计" class="headerlink" title="5.1 多设备协同设计"></a>5.1 多设备协同设计</h3><p>IoT 子系统需要同时接收视觉命令、APP 参数和 Zigbee 按键事件，再控制舵机、称重、云台和显示。因此，通信链路按数据性质拆分：</p>
 <table>
 <thead>
@@ -543,13 +499,7 @@
 </tr>
 </tbody></table>
 <p>Taurus 与 Pegasus 分工明确：Taurus 负责视频理解，Pegasus 负责实际控制。即使 AI 模型更换，称重投喂和 Zigbee 链路的控制模型也无需跟着重写；即使视觉主机关闭，低功耗控制侧仍可以保持基本服务。</p>
-<!--
-配图 19
-论文对应：图 5-1 多设备通信设计方案
-建议文件名：19-multidevice-communication-topology.png
-用途：展示 UART、RTSP、CoAP 和 Zigbee 四条通信链路的分工。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180330936.png?imageSlim" alt="多设备通信设计方案"></p>
 <h3 id="5-2-多设备通信实现"><a href="#5-2-多设备通信实现" class="headerlink" title="5.2 多设备通信实现"></a>5.2 多设备通信实现</h3><h4 id="5-2-1-Hi3516-与-Hi3861-通信"><a href="#5-2-1-Hi3516-与-Hi3861-通信" class="headerlink" title="5.2.1 Hi3516 与 Hi3861 通信"></a>5.2.1 Hi3516 与 Hi3861 通信</h4><p>Taurus 和 Pegasus 通过 UART 连接，使用 HiSignalling 协议封装控制数据。发送端将业务数据写入帧体，添加 <code>0xAA 0x55</code> 帧头、<code>0xFF</code> 帧尾并计算 CRC32；接收端完成 CRC 校验后再将命令分发给云台、投喂或其它控制模块。</p>
 <p>这种协议封装比直接发送裸字节更适合长期运行。视觉侧可能输出不同类别、不同坐标和不同控制状态，帧头、长度、帧尾与 CRC 让接收侧能够从串口字节流中识别完整消息并拒绝损坏数据。</p>
 <h4 id="5-2-2-Hi3861-与-Zigbee-通信"><a href="#5-2-2-Hi3861-与-Zigbee-通信" class="headerlink" title="5.2.2 Hi3861 与 Zigbee 通信"></a>5.2.2 Hi3861 与 Zigbee 通信</h4><p>Hi3861 与 Zigbee 路由器通过 UART 双向通信。Hi3861 发送控制或配置数据给路由器；路由器接收终端上报的按键事件后，经 UART 交给 Hi3861。路由器侧使用 TI UART 库接收字节流，再将完整消息交给 Z-Stack 的处理函数。</p>
@@ -560,51 +510,24 @@
 <p>视频没有放在 CoAP 通道中，而是由 Hi3516 的 RTSP 服务承担。这样的职责划分保证了 Hi3861 不必处理高码率视频，也使 APP 的视频播放问题不会直接影响投喂与云台命令。</p>
 <h3 id="5-3-应用功能实现"><a href="#5-3-应用功能实现" class="headerlink" title="5.3 应用功能实现"></a>5.3 应用功能实现</h3><h4 id="5-3-1-称重闭环投喂"><a href="#5-3-1-称重闭环投喂" class="headerlink" title="5.3.1 称重闭环投喂"></a>5.3.1 称重闭环投喂</h4><p>投喂支持三类触发条件：设定时段内识别到宠物靠近、设定时段内触发无线按键、或 APP 手动启动。用户通过 APP 预设单次投喂克数和投喂间隔；触发条件满足后，Hi3861 打开对应食物仓的舵机闸门，食物落入食槽，HX711 持续采样重量；达到设定值后关闭闸门。</p>
 <p>投喂控制的核心不是“让舵机转动”，而是“让食物重量收敛到目标值”。不同粮食颗粒、仓内余量、闸机机械摩擦都会影响下料速度。若只按开闸时间估计粮量，误差会累积；用 HX711 作为反馈，系统可以按实际重量决定关闭时机。OLED 用于显示实时称重等状态。</p>
-<!--
-配图 20
-论文对应：图 5-3 投喂功能流程、图 5-4 SG90 舵机、图 5-5 HX711 传感器、图 8-1 识别投喂效果
-建议文件名：20-feeding-weight-feedback-result.png
-用途：以图 5-3 流程和图 8-1 成果为主，SG90/HX711 实物做辅助；说明从触发到称重关闸的完整闭环。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180423013.png?imageSlim" alt="投喂功能流程"></p>
 <h4 id="5-3-2-云台自转功能"><a href="#5-3-2-云台自转功能" class="headerlink" title="5.3.2 云台自转功能"></a>5.3.2 云台自转功能</h4><p>二维云台由两个舵机实现水平和俯仰转动。Hi3861 可以接收来自 Hi3516 的自动跟随命令，也可以接收 APP 的手动上、下、左、右和复位命令。二者应共享同一套云台状态和优先级规则，避免 APP 手动控制与自动跟随在同一时刻发送相反的方向命令。</p>
 <p>在文章对应的系统测试中，目标跟随与 APP 手动控制分别验证：前者验证视觉坐标到舵机动作的自动链路，后者验证用户通过 APP 到 CoAP 再到云台的远程链路。</p>
-<!--
-配图 21
-论文对应：图 5-6 云台、图 8-2 目标跟随功能、图 8-3 APP 查看实时视频和远程控制
-建议文件名：21-ptz-auto-and-manual-control.png
-用途：建议放成三图组合：云台实物、自动跟随、APP 手动控制。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180446419.png?imageSlim" alt="云台"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180505343.png?imageSlim" alt="目标跟随功能"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180518645.png?imageSlim" alt="APP 查看实时视频和远程控制"></p>
 <h4 id="5-3-3-宠物拓展按键功能"><a href="#5-3-3-宠物拓展按键功能" class="headerlink" title="5.3.3 宠物拓展按键功能"></a>5.3.3 宠物拓展按键功能</h4><p>宠物拓展按键由非接触式感应开关、Zigbee 终端、路由器和 Hi3861 组成。宠物触发感应开关后，终端设备生成事件并通过 Zigbee 上报；路由器转发至 Hi3861；控制侧再根据当前投喂间隔、按键开关状态和系统模式决定是否投喂或唤醒 AI 主机。</p>
 <p>从交互角度看，这让宠物获得了在规则约束下的自主触发能力；从功耗角度看，按键可以在视觉主机休眠时维持基础服务。它仍需通过投喂间隔和称重控制约束，不能把“宠物一碰就喂”当作安全策略。</p>
-<!--
-配图 22
-论文对应：图 5-2 Zigbee、图 5-7 宠物拓展按键示意图、图 5-8 非接触式感应开关、图 8-4 Zigbee 模块和宠物无线按键
-建议文件名：22-zigbee-pet-button-system.png
-用途：以图 8-4 的真实演示为主，搭配图 5-7 的连接示意图；其余硬件图可作为小图。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180542545.png?imageSlim" alt="宠物拓展按键示意图"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180609791.png?imageSlim" alt="Zigbee 模块和宠物无线按键"></p>
 <h2 id="6-电源子系统设计与实现"><a href="#6-电源子系统设计与实现" class="headerlink" title="6 电源子系统设计与实现"></a>6 电源子系统设计与实现</h2><h3 id="6-1-电源设计"><a href="#6-1-电源设计" class="headerlink" title="6.1 电源设计"></a>6.1 电源设计</h3><p>系统支持外部适配器与锂电池两路供电。外部电源一方面经降压模块为系统供电，另一方面用于电池充电；电池通过 LM2596 等降压模块为 Pegasus 及外设供电。三档开关用于选择外部或内部供电路径。</p>
 <p>功耗分配决定了供电结构：Taurus 的视频采集、编码和 NNIE 推理是主要功耗来源，论文记录系统最大功率约 18 W，其中 Taurus 部分最高约 15 W。因此，电源设计不能只考虑“能点亮”，还要保证视觉主机启动、云台转动和投喂舵机同时动作时的供电稳定。</p>
-<!--
-配图 23
-论文对应：图 6-1 电源子系统设计框架、图 6-2 12V 转 5V 降压板、图 6-3 LM2596 电源模块
-建议文件名：23-power-domain-converters.png
-用途：电源框图为主，两个降压模块实物图为辅。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180639441.png?imageSlim" alt="电源子系统设计框架"></p>
 <h3 id="6-2-低功耗模式"><a href="#6-2-低功耗模式" class="headerlink" title="6.2 低功耗模式"></a>6.2 低功耗模式</h3><p>低功耗模式的基本思路是让高功耗 AI 子系统按需启动，而让 Hi3861 和 Zigbee 节点保持低功耗常驻。夜间或不需要视觉服务时，可以通过继电器关闭 Taurus；宠物按键事件经 Zigbee → Hi3861 后，可执行基础投喂或触发 Taurus 上电。</p>
 <p>这不是把 AI 子系统完全移除，而是按业务需要调度。视觉识别、视频监控和自动跟随需要 Taurus；按键触发、状态保持和部分投喂逻辑可以由 IoT 子系统维持。电源策略建立在子系统职责拆分之上，没有这种拆分，低功耗模式只会变成“关机以后什么都不能做”。</p>
 <h2 id="7-客户端设计与开发"><a href="#7-客户端设计与开发" class="headerlink" title="7 客户端设计与开发"></a>7 客户端设计与开发</h2><h3 id="7-1-APP-概述"><a href="#7-1-APP-概述" class="headerlink" title="7.1 APP 概述"></a>7.1 APP 概述</h3><p>Android APP 名为 <code>Pet assistant</code>，是系统的用户控制中心。用户完成设备绑定后，可以在 APP 中查看实时视频、控制云台、手动投喂、设置投喂克数和投喂间隔，并配置无线宠物按键和自动跟随功能。</p>
 <p>APP 提供的不是单一遥控器界面，而是将设备接入、视频观察和参数控制组织到同一入口。设备侧的 RTSP 与 CoAP 服务分别承担视频与控制，因此 APP 可以一边显示 Camera 画面，一边下发不会被视频帧阻塞的控制请求。</p>
-<!--
-配图 24
-论文对应：图 7-1 Pet assistant
-建议文件名：24-pet-assistant-home.png
-用途：作为 APP 章节开头主图，展示软件的主界面和设备控制入口。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180658252.png?imageSlim" alt="Pet assistant"></p>
 <h3 id="7-2-操作流程与功能模块"><a href="#7-2-操作流程与功能模块" class="headerlink" title="7.2 操作流程与功能模块"></a>7.2 操作流程与功能模块</h3><p>APP 启动后先进入绑定设备流程，可通过扫描二维码或连接到同一 Wi-Fi 的方式绑定设备。绑定成功后进入设备管理页，主要功能包括：</p>
 <ul>
 <li>手动调节摄像头方向与复位；</li>
@@ -615,27 +538,20 @@
 <li>开关摄像头自动跟随。</li>
 </ul>
 <p>这些配置经 CoAP 传给 Hi3861，后者将参数写入相应控制逻辑。APP 不应直接假设所有操作都即时成功：网络断开、设备离线、当前处于投喂间隔或称重异常时，控制侧需要返回状态并阻止不安全动作。</p>
-<!--
-配图 25
-论文对应：图 7-2 操作模块图、图 7-3 投喂设置模块和云台控制模块
-建议文件名：25-app-control-flow-and-settings.png
-用途：操作模块图解释功能分区，图 7-3 展示实际投喂与云台控制界面。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180736067.png?imageSlim" alt="操作模块图"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180751011.png?imageSlim" alt="投喂设置模块和云台控制模块"></p>
 <h3 id="7-3-APP-界面"><a href="#7-3-APP-界面" class="headerlink" title="7.3 APP 界面"></a>7.3 APP 界面</h3><p>论文展示了连接设备页和设备管理页。连接页解决设备加入问题；设备管理页集中呈现云台、猫粮、狗粮、投喂间隔和自动跟随模块。系统测试中的视频预览与远程控制截图可与这些界面图组合，形成“绑定 → 管理 → 观察&#x2F;控制”的完整交互说明。</p>
-<!--
-配图 26
-论文对应：图 7-4 连接设备界面、图 7-5 设备管理界面、图 8-3 APP 查看实时视频和远程控制
-建议文件名：26-app-binding-management-video.png
-用途：建议做 2×2 拼图；连接、设备管理、实时视频与远程控制分别占一个格子。
--->
-
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180809242.png?imageSlim" alt="连接设备界面"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180822022.png?imageSlim" alt="设备管理界面"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180834904.png?imageSlim" alt="APP 查看实时视频和远程控制"></p>
 <h2 id="8-系统测试与展示"><a href="#8-系统测试与展示" class="headerlink" title="8 系统测试与展示"></a>8 系统测试与展示</h2><h3 id="8-1-识别投喂场景"><a href="#8-1-识别投喂场景" class="headerlink" title="8.1 识别投喂场景"></a>8.1 识别投喂场景</h3><p>识别投喂测试验证完整自动链路：Camera 采集视频；Hi3516 识别目标并得到猫狗类别；系统满足投喂时间与状态条件后将命令交给 Hi3861；Hi3861 打开对应闸机；HX711 读取重量，达到目标值后关闭闸机。测试应同时观察识别结果、实际粮量和闸机停止状态，而不是只看画面上有没有检测框。</p>
 <h3 id="8-2-APP-与设备交互场景"><a href="#8-2-APP-与设备交互场景" class="headerlink" title="8.2 APP 与设备交互场景"></a>8.2 APP 与设备交互场景</h3><p>APP 测试覆盖实时查看视频、手动控制云台、手动投喂和参数下发。视频应能够通过 RTSP 在 APP 中显示；方向控制应经 CoAP 到达 Hi3861 并驱动云台；投喂设置应能改变后续称重闭环的目标值。该场景验证视频通道和控制通道能并行工作。</p>
 <h3 id="8-3-无线宠物按键场景"><a href="#8-3-无线宠物按键场景" class="headerlink" title="8.3 无线宠物按键场景"></a>8.3 无线宠物按键场景</h3><p>无线按键测试验证感应开关、Zigbee 终端、路由器、Hi3861 和投喂逻辑的连续性。宠物或人工触发按键后，系统应接收事件，并在按键开关状态和投喂间隔允许时执行相应动作。这个测试尤其适合验证低功耗状态下 AI 主机不参与时，基础服务是否仍能工作。</p>
 <h3 id="8-4-APP-设置参数场景"><a href="#8-4-APP-设置参数场景" class="headerlink" title="8.4 APP 设置参数场景"></a>8.4 APP 设置参数场景</h3><p>参数测试覆盖单次投喂克数、投喂间隔、无线按键启用状态和自动跟随启用状态。配置不是只在 APP 界面显示成功，而是要在 Hi3861 侧实际影响闸机、按键事件和云台逻辑；例如设定较长间隔后，重复按键不应连续触发投喂。</p>
 <h3 id="8-5-夜间识别场景"><a href="#8-5-夜间识别场景" class="headerlink" title="8.5 夜间识别场景"></a>8.5 夜间识别场景</h3><p>夜间测试在低照度条件下验证光敏触发、红外补光和模型识别链路。应观察红外是否在连续低亮度后稳定开启，画面是否具备可识别性，以及亮度恢复后是否避免频繁切换。夜视效果图只能证明代表性样本可用，不替代不同环境下的长期识别性能评测。</p>
 <h3 id="8-6-板端拍照场景"><a href="#8-6-板端拍照场景" class="headerlink" title="8.6 板端拍照场景"></a>8.6 板端拍照场景</h3><p>板端拍照测试验证 LCD&#x2F;触摸屏交互、当前帧 JPEG 编码、eMMC 存储和图库浏览。它证明系统无需依赖 APP 也能在设备端完成拍照、预览和保存，适合作为本地调试与现场记录功能。</p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180904945.png?imageSlim" alt="识别投喂效果"></p>
+<p><img src="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913180914633.png?imageSlim" alt="目标跟随功能"></p>
 <!--
 配图 27
 论文对应：图 8-1 识别投喂效果、图 8-2 目标跟随功能、图 8-3 APP 查看实时视频和远程控制、图 8-4 Zigbee 模块和宠物无线按键、图 8-5 APP 设置参数界面、图 8-6 夜视效果、图 8-7 板端拍照效果
@@ -679,7 +595,7 @@
                     <a class="tag-none-link" href="/tags/AIoT/" rel="tag">AIoT</a>, <a class="tag-none-link" href="/tags/Hi3516DV300/" rel="tag">Hi3516DV300</a>, <a class="tag-none-link" href="/tags/Hi3861/" rel="tag">Hi3861</a>, <a class="tag-none-link" href="/tags/YOLOv2/" rel="tag">YOLOv2</a>, <a class="tag-none-link" href="/tags/Zigbee/" rel="tag">Zigbee</a>, <a class="tag-none-link" href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%A7%86%E8%A7%89/" rel="tag">嵌入式视觉</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-09-13T10:28:34.634Z" itemprop="dateModified">最后编辑：2026-09-13</time>
+                    <time datetime="2026-09-13T10:35:38.598Z" itemprop="dateModified">最后编辑：2026-09-13</time>
                 </div>
             </div>
         </footer>

@@ -19,16 +19,16 @@
   
     <meta name="keywords" content="CLAHE, FPGA, SAC, SystemVerilog, 图像增强, 强化学习" />
   
-  <meta name="description" content="摘要对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉和嵌入式成像。其核心参数 Clip Limit 决定局部细节增强与噪声抑制之间的平衡：阈值过大容易放大噪声、破坏自然场景统计；阈值过小则难以恢复暗部纹理。固定 Clip Limit 在经过人工调参的单一场景中可以表现良好，但面对低照度、雾霾、">
+  <meta name="description" content="本项目提出一种基于SAC双教师蒸馏的感知驱动自适应CLAHE方案，通过离线强化学习训练与量化感知蒸馏生成轻量化学生网络，解决了传统固定参数在复杂光照下适应性差的问题。硬件侧采用流式像素架构与算子优化在Xilinx Kintex-7 FPGA上实现低延迟部署，相关成果已发表于CCF B类期刊ACM TECS。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现">
 <meta property="og:url" content="https://ori2333.github.io/s/1utta7k/index.html">
 <meta property="og:site_name" content="ORI2333&#39;s Blog">
-<meta property="og:description" content="摘要对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉和嵌入式成像。其核心参数 Clip Limit 决定局部细节增强与噪声抑制之间的平衡：阈值过大容易放大噪声、破坏自然场景统计；阈值过小则难以恢复暗部纹理。固定 Clip Limit 在经过人工调参的单一场景中可以表现良好，但面对低照度、雾霾、">
+<meta property="og:description" content="本项目提出一种基于SAC双教师蒸馏的感知驱动自适应CLAHE方案，通过离线强化学习训练与量化感知蒸馏生成轻量化学生网络，解决了传统固定参数在复杂光照下适应性差的问题。硬件侧采用流式像素架构与算子优化在Xilinx Kintex-7 FPGA上实现低延迟部署，相关成果已发表于CCF B类期刊ACM TECS。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163917125.png?imageSlim">
 <meta property="article:published_time" content="2026-09-13T00:00:00.000Z">
-<meta property="article:modified_time" content="2026-09-13T10:28:34.635Z">
+<meta property="article:modified_time" content="2026-09-13T10:35:38.598Z">
 <meta property="article:author" content="ORI2333">
 <meta property="article:tag" content="FPGA">
 <meta property="article:tag" content="图像增强">
@@ -43,7 +43,7 @@
   
   
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现","description":"摘要对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉...","image":"https://ori2333.github.io/s/1utta7k/https:/obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163917125.png?imageSlim","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-09-13T00:00:00.000Z","dateModified":"2026-09-13T10:28:34.635Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/s/1utta7k/"}}
+    {"@context":"https://schema.org","@type":"BlogPosting","headline":"基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现","description":"本项目提出一种基于SAC双教师蒸馏的感知驱动自适应CLAHE方案，通过离线强化学习训练与量化感知蒸馏生成轻量化学生网络，解决了传统固定参数在复杂光照下适应性差的问题。硬件侧采用流式像素架构与算子优化在Xilinx Kintex-7 FPGA上实现低延迟部署，相关成果已发表于CCF B类期...","image":"https://ori2333.github.io/s/1utta7k/https:/obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260913163917125.png?imageSlim","author":{"@type":"Person","name":"ORI2333"},"publisher":{"@type":"Organization","name":"ORI2333's Blog","logo":{"@type":"ImageObject","url":"https://ori2333.github.io/images/theme/%E5%A4%B4%E5%83%8F.jpg"}},"datePublished":"2026-09-13T00:00:00.000Z","dateModified":"2026-09-13T10:35:38.598Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://ori2333.github.io/s/1utta7k/"}}
     </script>
   
   <!-- 关键 CSS 预加载 -->
@@ -233,7 +233,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~14.62K
+                            ~14.77K
                         
                         字
                     </li>
@@ -251,7 +251,9 @@
                 </div>
             
             <hr />
-            <div itemprop="articleBody"><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉和嵌入式成像。其核心参数 Clip Limit 决定局部细节增强与噪声抑制之间的平衡：阈值过大容易放大噪声、破坏自然场景统计；阈值过小则难以恢复暗部纹理。固定 Clip Limit 在经过人工调参的单一场景中可以表现良好，但面对低照度、雾霾、过曝和连续光照变化时，参数缺乏适应性。</p>
+            <div itemprop="articleBody"><p>本项目提出一种基于SAC双教师蒸馏的感知驱动自适应CLAHE方案，通过离线强化学习训练与量化感知蒸馏生成轻量化学生网络，解决了传统固定参数在复杂光照下适应性差的问题。硬件侧采用流式像素架构与算子优化在Xilinx Kintex-7 FPGA上实现低延迟部署，相关成果已发表于CCF B类期刊ACM TECS。</p>
+<span id="more"></span>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>对比度受限自适应直方图均衡化（Contrast-Limited Adaptive Histogram Equalization，CLAHE）常用于工业视觉和嵌入式成像。其核心参数 Clip Limit 决定局部细节增强与噪声抑制之间的平衡：阈值过大容易放大噪声、破坏自然场景统计；阈值过小则难以恢复暗部纹理。固定 Clip Limit 在经过人工调参的单一场景中可以表现良好，但面对低照度、雾霾、过曝和连续光照变化时，参数缺乏适应性。</p>
 <p>本项目实现了一套面向 FPGA 部署的感知驱动自适应 CLAHE 方案。离线侧将 Clip Limit 调节建模为有限时域马尔可夫决策过程，使用 Soft Actor-Critic（SAC）训练策略；全观测教师利用 BRISQUE、NIQE 等无参考图像质量评价（NR-IQA）作为特权信息，部分观测教师只使用硬件可获得的低维统计量。后验轨迹选择（Posterior Trajectory Selection，PTS）从两类教师生成的完整轨迹中筛选监督信号，再通过 Q4.12 量化感知蒸馏导出可直接初始化 FPGA ROM&#x2F;LUT 的学生网络。</p>
 <p>硬件侧采用单时钟域、流式像素架构。CLAHE 主路径与特征提取、学生网络推理、参数更新旁路解耦；主路径在活动视频区保持每周期一个有效像素，控制器仅在帧边界提交新的 Clip Limit。通过 ROM 常数倒数消除动态除法，并将二维双线性插值拆分为两级一维定点流水线，避免控制逻辑进入像素关键路径。完整设计在 Xilinx Kintex-7 XC7K325T 上完成 RTL 和实现验证。</p>
 <table>
@@ -294,8 +296,6 @@
 <td>CCF B类、SCI</td>
 </tr>
 </tbody></table>
-<span id="more"></span>
-
 <h2 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h2><p>CLAHE 将图像划分为若干 tile，在 tile 内构建直方图、裁剪超过阈值的计数、重新分配溢出部分并计算累积分布函数（CDF）。像素映射由所属 tile 及其相邻 tile 的映射表经双线性插值得到，从而降低块状伪影。</p>
 <p>在传统软件实现中，Clip Limit 通常由经验设定。工程上常见的做法是选一个在平均样本上表现尚可的常数，然后固定使用。这个选择并不错误：论文中的固定参数扫描显示，固定 CLAHE 在测试集上本身就是很强的基线。但其问题也很明确：不同场景对增强强度的需求不同，单个固定值无法同时覆盖平均质量、严重退化样本和动态光照场景。</p>
 <p>如果直接把深度图像质量评价模型放入 FPGA 数据通路，代价不可接受。BRISQUE、NIQE 一类 NR-IQA 指标适合离线训练、模型选择和结果分析，不适合在高速像素流中逐帧、逐像素计算。另一方面，即使控制网络足够小，也不能让它阻塞视频光栅流；像素主路径出现一个 bubble 或 backpressure，就会破坏 <code>II = 1</code> 的吞吐假设。</p>
@@ -802,7 +802,7 @@ I(i,j)&amp;=R&#95;1+\delta&#95;y(i)(R&#95;2-R&#95;1)
                     <a class="tag-none-link" href="/tags/CLAHE/" rel="tag">CLAHE</a>, <a class="tag-none-link" href="/tags/FPGA/" rel="tag">FPGA</a>, <a class="tag-none-link" href="/tags/SAC/" rel="tag">SAC</a>, <a class="tag-none-link" href="/tags/SystemVerilog/" rel="tag">SystemVerilog</a>, <a class="tag-none-link" href="/tags/%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/" rel="tag">图像增强</a>, <a class="tag-none-link" href="/tags/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/" rel="tag">强化学习</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2026-09-13T10:28:34.635Z" itemprop="dateModified">最后编辑：2026-09-13</time>
+                    <time datetime="2026-09-13T10:35:38.598Z" itemprop="dateModified">最后编辑：2026-09-13</time>
                 </div>
             </div>
         </footer>
