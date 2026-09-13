@@ -58,7 +58,7 @@ GitHub Actions 使用 `hk-deploy` 分支作为临时静态包：服务器通过 
 - 初始密码文件：`/var/lib/ori-blog-admin/initial-password.txt`
 - Nginx 访问日志：`/var/log/nginx/ori-blog-access.log`
 
-后台从 Nginx 访问日志统计入口页、文章页、访问 IP 和 IP 地理位置。它不改静态文件，也不需要给每篇文章注入脚本；新文章只要发布到 `/blog/yyyy/mm/dd/.../` 路径，就会自动出现在文章统计里。
+- 后台从 Nginx 访问日志统计入口页、文章页、访问 IP 和 IP 地理位置。它不改静态文件，也不需要给每篇文章注入脚本；新文章只要发布到 `/blog/s/<短ID>/` 路径，就会自动出现在文章统计里。
 
 迁移或重建服务器时，需要：
 
