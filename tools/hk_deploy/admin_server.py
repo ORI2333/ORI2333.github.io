@@ -27,8 +27,10 @@ DB_PATH = Path("/var/lib/ori-blog-admin/admin.sqlite3")
 INITIAL_PASSWORD_PATH = Path("/var/lib/ori-blog-admin/initial-password.txt")
 ACCESS_LOG_PATH = Path("/var/log/nginx/ori-blog-access.log")
 CN_CIDR_PATH = Path("/etc/nginx/geoip/cn.conf")
+ADMIN_ASSETS_DIR = Path(__file__).with_name("admin_assets")
 SESSION_COOKIE = "ori_blog_admin_session"
 SESSION_TTL_SECONDS = 60 * 60 * 8
+VISIT_RETENTION_SECONDS = 60 * 60 * 24 * 7
 PBKDF2_ROUNDS = 260_000
 STATIC_EXTENSIONS = {
     ".css",
@@ -111,6 +113,14 @@ class Handler(BaseHTTPRequestHandler):
             query = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
             article = query.get("path", [""])[0]
             self.send_html(article_page(article))
+            return
+        if path in {"/admin/assets/jsvectormap.min.js", "/admin/assets/jsvectormap.css", "/admin/assets/world.js"}:
+            if not self.require_login():
+                return
+            asset_name = path.rsplit("/", 1)[-1]
+            asset_path = ADMIN_ASSETS_DIR / asset_name
+            content_type = "text/css; charset=utf-8" if asset_path.suffix == ".css" else "application/javascript; charset=utf-8"
+            self.send_file(asset_path, content_type)
             return
         self.send_error(HTTPStatus.NOT_FOUND)
 
@@ -207,6 +217,19 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def send_file(self, path: Path, content_type: str) -> None:
+        try:
+            data = path.read_bytes()
+        except OSError:
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "private, max-age=3600")
+        self.end_headers()
+        self.wfile.write(data)
+
 
 def connect() -> sqlite3.Connection:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -224,8 +247,12 @@ def init_db() -> None:
             "create table if not exists sessions (token_hash text primary key, username text not null, expires_at integer not null)"
         )
         conn.execute(
-            "create table if not exists ip_cache (ip text primary key, address text not null, updated_at integer not null)"
+            "create table if not exists ip_cache (ip text primary key, address text not null, updated_at integer not null, country text not null default '', latitude real, longitude real)"
         )
+        columns = {row[1] for row in conn.execute("pragma table_info(ip_cache)")}
+        for name, definition in (("country", "text not null default ''"), ("latitude", "real"), ("longitude", "real")):
+            if name not in columns:
+                conn.execute(f"alter table ip_cache add column {name} {definition}")
         exists = conn.execute("select 1 from users where username = 'admin'").fetchone()
         if not exists:
             password = read_initial_password()
@@ -383,13 +410,16 @@ def cn_networks() -> list[ipaddress._BaseNetwork]:
 def parse_access_log(include_address: bool = True) -> list[dict[str, str]]:
     if not ACCESS_LOG_PATH.exists():
         return []
-    lines = tail_lines(ACCESS_LOG_PATH, 8000)
+    cutoff = int(time.time()) - VISIT_RETENTION_SECONDS
     rows: list[dict[str, str]] = []
-    for line in lines:
+    for line in tail_lines(ACCESS_LOG_PATH, 20000):
         match = LOG_RE.match(line)
         if not match:
             continue
         row = match.groupdict()
+        timestamp = parse_log_timestamp(row["time"])
+        if timestamp < cutoff:
+            continue
         try:
             parsed = urllib.parse.urlparse(row["target"])
         except ValueError:
@@ -397,9 +427,17 @@ def parse_access_log(include_address: bool = True) -> list[dict[str, str]]:
         row["path"] = urllib.parse.unquote(parsed.path or "/")
         if should_ignore_visit(row):
             continue
+        row["_timestamp"] = str(timestamp)
         row["address"] = address_for_ip(row["ip"]) if include_address else ""
         rows.append(row)
     return rows
+
+
+def parse_log_timestamp(value: str) -> int:
+    try:
+        return int(dt.datetime.strptime(value, "%d/%b/%Y:%H:%M:%S %z").timestamp())
+    except ValueError:
+        return 0
 
 
 def tail_lines(path: Path, max_lines: int) -> list[str]:
@@ -424,97 +462,191 @@ def should_ignore_visit(row: dict[str, str]) -> bool:
 def should_ignore_path(path: str) -> bool:
     if path.startswith("/admin") or path.startswith("/api/"):
         return True
+    if path.startswith(("/wp/", "/wp-", "/livewire/", "/index.php", "/xmlrpc.php")):
+        return True
     suffix = Path(path).suffix.lower()
     return suffix in STATIC_EXTENSIONS
 
 
 def is_article_path(path: str) -> bool:
-    return re.match(r"^/blog/\d{4}/\d{2}/\d{2}/[^/?#]+/?$", path) is not None
+    return (
+        re.match(r"^/(?:blog/)?s/[A-Za-z0-9_-]+/?$", path) is not None
+        or re.match(r"^/blog/\d{4}/\d{2}/\d{2}/[^/?#]+/?$", path) is not None
+    )
 
 
 def is_gateway_path(path: str) -> bool:
     return path in {"/", "/index.html"}
 
 
-def address_for_ip(ip: str) -> str:
+def location_for_ip(ip: str) -> dict[str, object]:
     try:
         parsed = ipaddress.ip_address(ip)
         if parsed.is_private or parsed.is_loopback:
-            return "本地/内网"
+            return {"address": "本地/内网", "country": "", "latitude": None, "longitude": None}
     except ValueError:
-        return "未知"
+        return {"address": "未知", "country": "", "latitude": None, "longitude": None}
     now = int(time.time())
     with connect() as conn:
-        row = conn.execute("select address, updated_at from ip_cache where ip = ?", (ip,)).fetchone()
-        if row and now - int(row["updated_at"]) < 60 * 60 * 24 * 14:
-            return row["address"]
-    address = lookup_ip_address(ip)
+        row = conn.execute(
+            "select address, country, latitude, longitude, updated_at from ip_cache where ip = ?", (ip,)
+        ).fetchone()
+    cache_is_complete = bool(row and row["country"] and row["latitude"] is not None and row["longitude"] is not None)
+    if row and cache_is_complete and now - int(row["updated_at"]) < 60 * 60 * 24 * 14:
+        return {
+            "address": row["address"],
+            "country": row["country"],
+            "latitude": row["latitude"],
+            "longitude": row["longitude"],
+        }
+    location = lookup_ip_location(ip)
     with connect() as conn:
         conn.execute(
-            "insert or replace into ip_cache (ip, address, updated_at) values (?, ?, ?)",
-            (ip, address, now),
+            "insert or replace into ip_cache (ip, address, country, latitude, longitude, updated_at) values (?, ?, ?, ?, ?, ?)",
+            (ip, location["address"], location["country"], location["latitude"], location["longitude"], now),
         )
-    return address
+    return location
 
 
-def lookup_ip_address(ip: str) -> str:
-    url = "http://ip-api.com/json/" + urllib.parse.quote(ip) + "?lang=zh-CN&fields=status,country,regionName,city,query"
+def address_for_ip(ip: str) -> str:
+    return str(location_for_ip(ip)["address"])
+
+
+def lookup_ip_location(ip: str) -> dict[str, object]:
+    url = "http://ip-api.com/json/" + urllib.parse.quote(ip) + "?lang=zh-CN&fields=status,country,countryCode,regionName,city,lat,lon,query"
     try:
         with urllib.request.urlopen(url, timeout=2) as response:
             data = json.loads(response.read().decode("utf-8", errors="replace"))
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
-        return "未知"
+        return {"address": "未知", "country": "", "latitude": None, "longitude": None}
     if data.get("status") != "success":
-        return "未知"
+        return {"address": "未知", "country": "", "latitude": None, "longitude": None}
     parts = [data.get("country"), data.get("regionName"), data.get("city")]
-    return " / ".join(str(part) for part in parts if part) or "未知"
+    return {
+        "address": " / ".join(str(part) for part in parts if part) or "未知",
+        "country": str(data.get("countryCode") or ""),
+        "latitude": data.get("lat"),
+        "longitude": data.get("lon"),
+    }
 
 
 def dashboard_page() -> str:
     rows = parse_access_log(include_address=False)
+    visitors = summarize_visitors(rows)
     total = len(rows)
-    unique_ips = len({row["ip"] for row in rows})
     gateway = [row for row in rows if is_gateway_path(row["path"])]
     articles = [row for row in rows if is_article_path(row["path"])]
     article_stats = summarize_articles(articles)
-    recent = list(reversed(rows[-120:]))
-    for row in recent:
-        row["address"] = address_for_ip(row["ip"])
-    return layout(
-        "访问统计",
-        f"""
+    daily = summarize_daily(rows)
+    trend_max = max((int(item["count"]) for item in daily), default=1)
+    country_counts: dict[str, int] = {}
+    markers: list[dict[str, object]] = []
+    for visitor in visitors:
+        country = str(visitor.get("country") or "").upper()
+        if country:
+            country_counts[country] = country_counts.get(country, 0) + int(visitor["count"])
+        latitude = visitor.get("latitude")
+        longitude = visitor.get("longitude")
+        if isinstance(latitude, (int, float)) and isinstance(longitude, (int, float)):
+            markers.append(
+                {
+                    "name": f'{visitor["address"]} · {visitor["count"]} 次',
+                    "coords": [float(latitude), float(longitude)],
+                }
+            )
+    map_data = {"countries": country_counts, "markers": markers}
+    body = f"""
+        <section class="dashboard-intro">
+          <div>
+            <p class="eyebrow">PRIVATE ANALYTICS</p>
+            <h1>最近 7 天访问概览</h1>
+            <p class="muted">统计窗口：最近 7×24 小时；同一 IP 的访问已合并为一个访客。</p>
+          </div>
+          <span class="retention-badge">仅保留最近 7 天</span>
+        </section>
         <section class="summary">
-          <div><strong>{total}</strong><span>总访问</span></div>
-          <div><strong>{unique_ips}</strong><span>独立 IP</span></div>
+          <div><strong>{total}</strong><span>页面访问</span></div>
+          <div><strong>{len(visitors)}</strong><span>独立 IP</span></div>
           <div><strong>{len(gateway)}</strong><span>入口页访问</span></div>
           <div><strong>{len(articles)}</strong><span>文章访问</span></div>
         </section>
+        <section class="dashboard-grid">
+          <section class="panel map-panel">
+            <div class="section-heading">
+              <div><h2>全球访问分布</h2><p class="muted">定位为 IP 数据库的城市级近似位置，不代表精确住址。</p></div>
+              <span class="panel-kpi">{len(markers)} 个定位点</span>
+            </div>
+            <div id="visitor-map" aria-label="全球访问分布地图"></div>
+            <p id="map-empty" class="empty" hidden>最近 7 天暂时没有可定位的访客。</p>
+            <p class="map-credit">地图组件：<a href="https://github.com/themustafaomar/jsvectormap" target="_blank" rel="noreferrer">jsVectorMap</a>（MIT）。</p>
+          </section>
+          <section class="panel trend-panel">
+            <div class="section-heading"><div><h2>访问趋势</h2><p class="muted">按服务器本地日期统计</p></div></div>
+            <div class="trend-list">{''.join(daily_row(item, trend_max) for item in daily)}</div>
+          </section>
+        </section>
         <section class="panel">
-          <h2>文章访问量</h2>
+          <div class="section-heading"><div><h2>文章访问量</h2><p class="muted">点击路径查看最近 7 天的合并访客</p></div></div>
           <table>
             <thead><tr><th>文章路径</th><th>访问</th><th>独立 IP</th><th>最近访问</th></tr></thead>
-            <tbody>{''.join(article_row(row) for row in article_stats)}</tbody>
+            <tbody>{''.join(article_row(row) for row in article_stats) or '<tr><td colspan="4" class="empty">暂无文章访问</td></tr>'}</tbody>
           </table>
         </section>
         <section class="panel">
-          <h2>最近访问</h2>
+          <div class="section-heading"><div><h2>最近访客</h2><p class="muted">同一 IP 仅显示一行，访问次数已汇总</p></div><span class="panel-kpi">{len(visitors)} 个 IP</span></div>
           <table>
-            <thead><tr><th>时间</th><th>IP</th><th>地址</th><th>路径</th><th>状态</th></tr></thead>
-            <tbody>{''.join(visit_row(row) for row in recent)}</tbody>
+            <thead><tr><th>最后访问</th><th>IP</th><th>位置</th><th>访问次数</th><th>最近页面</th></tr></thead>
+            <tbody>{''.join(visitor_row(visitor) for visitor in visitors) or '<tr><td colspan="5" class="empty">暂无访客</td></tr>'}</tbody>
           </table>
         </section>
-        """,
+        <script src="/admin/assets/jsvectormap.min.js"></script>
+        <script src="/admin/assets/world.js"></script>
+        <script>
+        (function () {{
+          const data = {json_for_script(map_data)};
+          const mapNode = document.getElementById('visitor-map');
+          const emptyNode = document.getElementById('map-empty');
+          if (!mapNode || (data.markers.length === 0 && Object.keys(data.countries).length === 0)) {{
+            if (mapNode) mapNode.hidden = true;
+            if (emptyNode) emptyNode.hidden = false;
+            return;
+          }}
+          if (typeof window.jsVectorMap !== 'function') {{
+            mapNode.hidden = true;
+            if (emptyNode) {{ emptyNode.hidden = false; emptyNode.textContent = '地图组件加载失败，仍可查看下方访客列表。'; }}
+            return;
+          }}
+          new window.jsVectorMap({{
+            selector: '#visitor-map',
+            map: 'world',
+            zoomButtons: true,
+            zoomOnScroll: false,
+            markers: data.markers,
+            markerStyle: {{ initial: {{ fill: '#f9736b', stroke: '#ffffff', strokeWidth: 1.5 }} }},
+            markerLabelStyle: {{ initial: {{ display: 'none' }} }},
+            visualizeData: {{ scale: ['#e5f4f2', '#176b66'], values: data.countries }},
+            regionStyle: {{ initial: {{ fill: '#d8e7e8', stroke: '#ffffff', strokeWidth: 0.45 }} }}
+          }});
+        }})();
+        </script>
+        """
+    head = (
+        '<link rel="stylesheet" href="/admin/assets/jsvectormap.css">'
     )
+    return layout("访问统计", body, head=head)
 
 
 def summarize_articles(rows: list[dict[str, str]]) -> list[dict[str, object]]:
     stats: dict[str, dict[str, object]] = {}
     for row in rows:
         path = normalize_article_path(row["path"])
-        item = stats.setdefault(path, {"path": path, "count": 0, "ips": set(), "last": ""})
+        item = stats.setdefault(path, {"path": path, "count": 0, "ips": set(), "last": "", "last_timestamp": -1})
         item["count"] = int(item["count"]) + 1
         item["ips"].add(row["ip"])  # type: ignore[union-attr]
-        item["last"] = row["time"]
+        timestamp = int(row.get("_timestamp", "0"))
+        if timestamp >= int(item["last_timestamp"]):
+            item["last_timestamp"] = timestamp
+            item["last"] = row["time"]
     result = []
     for item in stats.values():
         result.append(
@@ -528,6 +660,43 @@ def summarize_articles(rows: list[dict[str, str]]) -> list[dict[str, object]]:
     return sorted(result, key=lambda item: int(item["count"]), reverse=True)
 
 
+def summarize_visitors(rows: list[dict[str, str]]) -> list[dict[str, object]]:
+    stats: dict[str, dict[str, object]] = {}
+    for row in rows:
+        ip = row["ip"]
+        item = stats.setdefault(
+            ip,
+            {"ip": ip, "count": 0, "last": "", "last_path": "", "last_ua": "", "last_timestamp": -1},
+        )
+        item["count"] = int(item["count"]) + 1
+        timestamp = int(row.get("_timestamp", "0"))
+        if timestamp >= int(item["last_timestamp"]):
+            item["last_timestamp"] = timestamp
+            item["last"] = row["time"]
+            item["last_path"] = row["path"]
+            item["last_ua"] = row.get("ua", "")
+    result: list[dict[str, object]] = []
+    for item in stats.values():
+        location = location_for_ip(str(item["ip"]))
+        result.append({**item, **location})
+    return sorted(result, key=lambda item: int(item["last_timestamp"]), reverse=True)
+
+
+def summarize_daily(rows: list[dict[str, str]]) -> list[dict[str, object]]:
+    today = dt.datetime.now().date()
+    counts: dict[dt.date, int] = {}
+    for row in rows:
+        try:
+            day = dt.datetime.fromtimestamp(int(row.get("_timestamp", "0"))).date()
+        except (TypeError, ValueError, OSError):
+            continue
+        counts[day] = counts.get(day, 0) + 1
+    return [
+        {"label": (today - dt.timedelta(days=offset)).strftime("%m-%d"), "count": counts.get(today - dt.timedelta(days=offset), 0)}
+        for offset in range(6, -1, -1)
+    ]
+
+
 def normalize_article_path(path: str) -> str:
     return path if path.endswith("/") else path + "/"
 
@@ -538,18 +707,15 @@ def article_page(article: str) -> str:
         for row in parse_access_log(include_address=False)
         if normalize_article_path(row["path"]) == normalize_article_path(article)
     ]
-    recent = list(reversed(rows[-200:]))
-    for row in recent:
-        row["address"] = address_for_ip(row["ip"])
+    visitors = summarize_visitors(rows)
     return layout(
         "文章访问详情",
         f"""
-        <section class="panel">
-          <h2>{escape(article)}</h2>
-          <p class="muted">访问 {len(rows)} 次，独立 IP {len({row['ip'] for row in rows})} 个。</p>
+        <section class="panel article-detail">
+          <div class="section-heading"><div><h1>{escape(article)}</h1><p class="muted">最近 7 天访问 {len(rows)} 次，合并后独立 IP {len(visitors)} 个。</p></div><span class="retention-badge">同一 IP 已合并</span></div>
           <table>
-            <thead><tr><th>时间</th><th>IP</th><th>地址</th><th>状态</th><th>User-Agent</th></tr></thead>
-            <tbody>{''.join(article_visit_row(row) for row in recent)}</tbody>
+            <thead><tr><th>最后访问</th><th>IP</th><th>位置</th><th>访问次数</th><th>User-Agent（最后一次）</th></tr></thead>
+            <tbody>{''.join(article_visit_row(row) for row in visitors) or '<tr><td colspan="5" class="empty">暂无访问</td></tr>'}</tbody>
           </table>
         </section>
         """,
@@ -592,7 +758,7 @@ def password_page(message: str = "") -> str:
     )
 
 
-def layout(title: str, body: str) -> str:
+def layout(title: str, body: str, head: str = "") -> str:
     return base_page(
         title,
         f"""
@@ -606,16 +772,18 @@ def layout(title: str, body: str) -> str:
         </header>
         <main>{body}</main>
         """,
+        head=head,
     )
 
 
-def base_page(title: str, body: str) -> str:
+def base_page(title: str, body: str, head: str = "") -> str:
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{escape(title)} - ORI 博客统计后台</title>
+  {head}
   <style>
     * {{ box-sizing: border-box; }}
     body {{ margin: 0; font-family: "Microsoft YaHei UI", "Segoe UI", system-ui, sans-serif; background: #f3f6f8; color: #17212f; }}
@@ -624,19 +792,37 @@ def base_page(title: str, body: str) -> str:
     nav {{ display: flex; align-items: center; gap: 12px; }}
     nav a, button {{ border: 1px solid #c9d4df; border-radius: 6px; padding: 8px 12px; background: #fff; color: #17212f; text-decoration: none; cursor: pointer; font: inherit; }}
     nav form {{ margin: 0; }}
-    main {{ padding: 24px; max-width: 1180px; margin: 0 auto; }}
+    main {{ padding: 28px 24px 40px; max-width: 1320px; margin: 0 auto; }}
+    .dashboard-intro, .section-heading {{ display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }}
+    .dashboard-intro {{ margin-bottom: 18px; }}
+    .dashboard-intro h1 {{ margin: 0 0 8px; font-size: clamp(24px, 3vw, 34px); }}
+    .eyebrow {{ margin: 0 0 8px; color: #176b66; font-size: 11px; font-weight: 800; letter-spacing: .16em; }}
     .summary {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }}
-    .summary div, .panel, .login form {{ background: #fff; border: 1px solid #d8e0ea; border-radius: 8px; box-shadow: 0 12px 28px rgba(20, 31, 48, .08); }}
+    .summary div, .panel, .login form {{ background: #fff; border: 1px solid #d8e0ea; border-radius: 12px; box-shadow: 0 12px 28px rgba(20, 31, 48, .08); }}
     .summary div {{ padding: 18px; }}
     .summary strong {{ display: block; font-size: 28px; color: #176b66; }}
     .summary span, .muted {{ color: #647386; }}
-    .panel {{ padding: 18px; margin-bottom: 18px; overflow-x: auto; }}
+    .retention-badge, .panel-kpi {{ display: inline-flex; align-items: center; flex: none; border-radius: 999px; padding: 7px 11px; background: #e8f6f3; color: #176b66; font-size: 12px; font-weight: 700; white-space: nowrap; }}
+    .panel {{ padding: 20px; margin-bottom: 18px; overflow-x: auto; }}
     .panel.narrow {{ max-width: 560px; }}
-    h1, h2 {{ margin: 0 0 14px; letter-spacing: 0; }}
+    .dashboard-grid {{ display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(280px, .85fr); gap: 18px; align-items: stretch; }}
+    .map-panel, .trend-panel {{ min-width: 0; }}
+    #visitor-map {{ height: 420px; min-width: 560px; margin-top: 12px; border-radius: 10px; background: linear-gradient(145deg, #f7fbfb, #edf5f5); }}
+    .map-credit {{ margin: 8px 0 0; color: #8491a1; font-size: 11px; }}
+    .map-credit a {{ color: #176b66; }}
+    .trend-list {{ display: grid; gap: 13px; margin-top: 22px; }}
+    .trend-row {{ display: grid; grid-template-columns: 48px 1fr 38px; align-items: center; gap: 10px; font-size: 12px; }}
+    .trend-bar {{ height: 9px; overflow: hidden; border-radius: 99px; background: #e8eef1; }}
+    .trend-bar i {{ display: block; height: 100%; min-width: 2px; border-radius: inherit; background: linear-gradient(90deg, #48b8a8, #176b66); }}
+    .trend-count {{ color: #176b66; font-weight: 800; text-align: right; }}
+    h1, h2 {{ margin: 0 0 8px; letter-spacing: 0; }}
+    h2 {{ font-size: 18px; }}
     table {{ width: 100%; border-collapse: collapse; font-size: 13px; }}
-    th, td {{ padding: 10px 9px; border-bottom: 1px solid #e5ebf2; text-align: left; vertical-align: top; }}
+    th, td {{ padding: 11px 9px; border-bottom: 1px solid #e5ebf2; text-align: left; vertical-align: top; }}
     th {{ color: #516173; font-weight: 700; white-space: nowrap; }}
     td.path, td.ua {{ overflow-wrap: anywhere; }}
+    td.path a {{ color: #176b66; font-weight: 600; }}
+    .empty {{ padding: 24px 9px; color: #8491a1; text-align: center; }}
     .login {{ min-height: 100vh; display: grid; place-items: center; padding: 20px; }}
     .login form {{ width: min(420px, 100%); padding: 22px; }}
     label {{ display: grid; gap: 7px; margin: 0 0 14px; color: #516173; }}
@@ -644,11 +830,48 @@ def base_page(title: str, body: str) -> str:
     form button[type="submit"], .login button {{ background: #176b66; border-color: #176b66; color: white; font-weight: 700; }}
     .alert {{ padding: 10px 12px; border-radius: 6px; background: #fff5ec; color: #95430d; }}
     .alert.ok {{ background: #eefaf3; color: #176b66; }}
-    @media (max-width: 760px) {{ header, nav {{ align-items: flex-start; flex-direction: column; }} .summary {{ grid-template-columns: 1fr 1fr; }} }}
+    @media (max-width: 900px) {{ .dashboard-grid {{ grid-template-columns: 1fr; }} }}
+    @media (max-width: 760px) {{ header, nav, .dashboard-intro, .section-heading {{ align-items: flex-start; flex-direction: column; }} .summary {{ grid-template-columns: 1fr 1fr; }} main {{ padding: 20px 14px 32px; }} #visitor-map {{ min-width: 0; height: 320px; }} }}
   </style>
 </head>
 <body>{body}</body>
 </html>"""
+def json_for_script(value: object) -> str:
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+
+
+def daily_row(item: dict[str, object], maximum: int) -> str:
+    count = int(item["count"])
+    width = min(100, max(2, count * 100 // max(1, maximum)))
+    return f'<div class="trend-row"><span>{escape(item["label"])}</span><span class="trend-bar"><i style="width:{width}%"></i></span><b class="trend-count">{count}</b></div>'
+
+
+def visitor_row(row: dict[str, object]) -> str:
+    return (
+        "<tr>"
+        f"<td>{escape(row['last'])}</td>"
+        f"<td>{escape(row['ip'])}</td>"
+        f"<td>{escape(row['address'])}</td>"
+        f"<td><strong>{row['count']}</strong></td>"
+        f'<td class="path">{escape(row["last_path"])}</td>'
+        "</tr>"
+    )
+
+
+def article_visit_row(row: dict[str, object]) -> str:
+    return (
+        "<tr>"
+        f"<td>{escape(row['last'])}</td>"
+        f"<td>{escape(row['ip'])}</td>"
+        f"<td>{escape(row['address'])}</td>"
+        f"<td><strong>{row['count']}</strong></td>"
+        f'<td class="ua">{escape(row["last_ua"])}</td>'
+        "</tr>"
+    )
+
+
+def escape(value: object) -> str:
+    return html.escape(str(value), quote=True)
 
 
 def article_row(row: dict[str, object]) -> str:
@@ -664,33 +887,7 @@ def article_row(row: dict[str, object]) -> str:
     )
 
 
-def visit_row(row: dict[str, str]) -> str:
-    return (
-        "<tr>"
-        f"<td>{escape(row['time'])}</td>"
-        f"<td>{escape(row['ip'])}</td>"
-        f"<td>{escape(row['address'])}</td>"
-        f'<td class="path">{escape(row["path"])}</td>'
-        f"<td>{escape(row['status'])}</td>"
-        "</tr>"
-    )
-
-
-def article_visit_row(row: dict[str, str]) -> str:
-    return (
-        "<tr>"
-        f"<td>{escape(row['time'])}</td>"
-        f"<td>{escape(row['ip'])}</td>"
-        f"<td>{escape(row['address'])}</td>"
-        f"<td>{escape(row['status'])}</td>"
-        f'<td class="ua">{escape(row["ua"])}</td>'
-        "</tr>"
-    )
-
-
-def escape(value: object) -> str:
-    return html.escape(str(value), quote=True)
-
-
 if __name__ == "__main__":
     raise SystemExit(main())
+
+

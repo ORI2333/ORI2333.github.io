@@ -58,15 +58,17 @@ GitHub Actions 使用 `hk-deploy` 分支作为临时静态包：服务器通过 
 - 初始密码文件：`/var/lib/ori-blog-admin/initial-password.txt`
 - Nginx 访问日志：`/var/log/nginx/ori-blog-access.log`
 
-- 后台从 Nginx 访问日志统计入口页、文章页、访问 IP 和 IP 地理位置。它不改静态文件，也不需要给每篇文章注入脚本；新文章只要发布到 `/blog/s/<短ID>/` 路径，就会自动出现在文章统计里。
+- 后台从 Nginx 访问日志统计入口页、文章页、访问 IP 和 IP 地理位置。日志统计只读取最近 7×24 小时；后台列表和文章详情按 IP 合并显示，不保留更早访问记录。
+- 全球地图使用本地托管的 [jsVectorMap](https://github.com/themustafaomar/jsvectormap)（MIT），国家颜色表示访问量，圆点表示 IP 数据库返回的城市级近似位置。
 
 迁移或重建服务器时，需要：
 
 1. 上传 `admin_server.py` 到 `/opt/ori-blog-admin/admin_server.py`。
-2. 创建 `/var/lib/ori-blog-admin` 和 `/var/log/ori-blog-admin`。
-3. 创建 `ori-blog-admin.service`，执行 `/usr/bin/python3 /opt/ori-blog-admin/admin_server.py`。
-4. 在 Nginx http 配置中提前定义日志格式 `ori_blog_main`。
-5. 在博客 server block 中保留 `/admin/` 和 `/api/recommend` 代理。
+2. 同时上传 `admin_assets/`（包含 jsVectorMap 的 JS、CSS、world.js 与许可证）到 `/opt/ori-blog-admin/admin_assets/`。
+3. 创建 `/var/lib/ori-blog-admin` 和 `/var/log/ori-blog-admin`。
+4. 创建 `ori-blog-admin.service`，执行 `/usr/bin/python3 /opt/ori-blog-admin/admin_server.py`。
+5. 在 Nginx http 配置中提前定义日志格式 `ori_blog_main`。
+6. 在博客 server block 中保留 `/admin/` 和 `/api/recommend` 代理。
 
 脚本只同步到 `/var/www/ori2333-blog`，不会清理其他目录。Nginx 配置使用明确的 `server_name`，避免接管服务器已有默认站点。
 

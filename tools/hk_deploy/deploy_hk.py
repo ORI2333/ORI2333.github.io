@@ -43,6 +43,7 @@ def main() -> int:
             run([*ssh_base, remote, remote_prepare_script(cfg)])
             upload_archive(ssh_base, remote, archive, cfg)
             run([*ssh_base, remote, remote_extract_script(cfg)])
+    deploy_admin_service(ssh_base, remote)
 
     print(f"Deployed to {public_url(cfg)}")
     return 0
@@ -208,9 +209,13 @@ def public_url(cfg: dict) -> str:
     return f"{scheme}://{cfg['nginxServerName']}{suffix}/"
 
 
-def run(command: list[str]) -> None:
+def run(command: list[str], stdin_path: Path | None = None) -> None:
     print("$ " + " ".join(command))
-    subprocess.run(command, cwd=REPO_ROOT, check=True)
+    if stdin_path is None:
+        subprocess.run(command, cwd=REPO_ROOT, check=True)
+        return
+    with stdin_path.open("rb") as handle:
+        subprocess.run(command, cwd=REPO_ROOT, check=True, stdin=handle)
 
 
 
@@ -232,6 +237,22 @@ def npm_executable() -> str:
             return str(candidate)
 
     raise RuntimeError("找不到 npm。请确认 Node.js 已安装，或把 npm.cmd 加入 PATH。")
+
+def deploy_admin_service(ssh_base: list[str], remote: str) -> None:
+    admin_source = REPO_ROOT / "tools" / "hk_deploy"
+    remote_dir = "/opt/ori-blog-admin"
+    with tempfile.TemporaryDirectory() as tmp:
+        bundle = Path(tmp) / "admin_bundle"
+        bundle.mkdir()
+        shutil.copy2(admin_source / "admin_server.py", bundle / "admin_server.py")
+        shutil.copytree(admin_source / "admin_assets", bundle / "admin_assets")
+        archive = Path(tmp) / "ori-blog-admin.tar.gz"
+        with tarfile.open(archive, "w:gz") as handle:
+            handle.add(bundle / "admin_server.py", arcname="admin_server.py")
+            handle.add(bundle / "admin_assets", arcname="admin_assets")
+        remote_archive = "/tmp/ori-blog-admin.tar.gz"
+        run([*ssh_base, remote, f"mkdir -p {shell_quote(remote_dir)}; cat > {shell_quote(remote_archive)}"], stdin_path=archive)
+        run([*ssh_base, remote, f"set -e; rm -rf {shell_quote(remote_dir + '.next')}; mkdir -p {shell_quote(remote_dir + '.next')}; tar -xzf {shell_quote(remote_archive)} -C {shell_quote(remote_dir + '.next')}; cp {shell_quote(remote_dir + '.next/admin_server.py')} {shell_quote(remote_dir + '/admin_server.py')}; rm -rf {shell_quote(remote_dir + '/admin_assets')}; mv {shell_quote(remote_dir + '.next/admin_assets')} {shell_quote(remote_dir + '/admin_assets')}; rm -rf {shell_quote(remote_dir + '.next')}; chmod 644 {shell_quote(remote_dir + '/admin_server.py')} {shell_quote(remote_dir + '/admin_assets')}/*; python3 -m py_compile {shell_quote(remote_dir + '/admin_server.py')}; systemctl restart ori-blog-admin.service; rm -f {shell_quote(remote_archive)}"])
 
 
 def hexo_executable() -> str:
