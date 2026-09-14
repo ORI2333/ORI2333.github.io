@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "posts": {
+    "03xxd52": {
+      "path": "/s/03xxd52/",
+      "title": "Proteus仿真+STM32+云平台"
+    },
+    "07hu4oi": {
+      "path": "/s/07hu4oi/",
+      "title": "快速将 Word 中 LaTeX 公式批量转为 MathType 的脚本与方法（Python）"
+    },
+    "08z1fox": {
+      "path": "/s/08z1fox/",
+      "title": "基于 FPGA + RK3588 的水表指针动态质检系统：从 HDMI 视频链路到 YOLO11-pose 水量计算"
+    },
+    "0dsptm5": {
+      "path": "/s/0dsptm5/",
+      "title": "基于 AIoT 的一体化宠物服务系统"
+    },
+    "0ezlsdq": {
+      "path": "/s/0ezlsdq/",
+      "title": "FPGA DDR3 + AXI4 帧缓冲控制器实现指南"
+    },
+    "0f5yz33": {
+      "path": "/s/0f5yz33/",
+      "title": "ODDR原语说明"
+    },
+    "0pwbppe": {
+      "path": "/s/0pwbppe/",
+      "title": "HDMI Display设计手册"
+    },
+    "0qnft6m": {
+      "path": "/s/0qnft6m/",
+      "title": "【论文中稿！】中稿CCF-B"
+    },
+    "0r4mqzf": {
+      "path": "/s/0r4mqzf/",
+      "title": "博客1.2版本（多线路访问）"
+    },
+    "0yea71p": {
+      "path": "/s/0yea71p/",
+      "title": "全流程自动化智能网球陪练机器"
+    },
+    "119oeh2": {
+      "path": "/s/119oeh2/",
+      "title": "博客运维指南"
+    },
+    "12uyz0o": {
+      "path": "/s/12uyz0o/",
+      "title": "ISP之常用图像缩放算法"
+    },
+    "1p1iqjn": {
+      "path": "/s/1p1iqjn/",
+      "title": "塔石 4G + RS485 + 华为云 IoTDA 数据互联实践"
+    },
+    "1sa8z00": {
+      "path": "/s/1sa8z00/",
+      "title": "水产养殖物联网智能测控系统"
+    },
+    "1utta7k": {
+      "path": "/s/1utta7k/",
+      "title": "基于 SAC 双教师蒸馏的自适应 CLAHE 轻量化 FPGA 实现"
+    },
+    "1y7lhe2": {
+      "path": "/s/1y7lhe2/",
+      "title": "烟支外观缺陷实时检测"
+    }
+  }
+}
