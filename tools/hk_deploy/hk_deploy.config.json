@@ -1,5 +1,5 @@
 {
-  "host": "45.192.104.98",
+  "host": "45.192.104.25",
   "port": 22,
   "user": "root",
   "remoteRoot": "/var/www/ori2333-blog",

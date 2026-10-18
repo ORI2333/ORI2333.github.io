@@ -4,7 +4,7 @@
 
 默认配置：
 
-- 服务器：`45.192.104.98`
+- 服务器：`45.192.104.25`（2026-10-18 起；旧机 `45.192.104.98` 仍跑其他业务）
 - SSH 端口：`22`
 - 远程目录：`/var/www/ori2333-blog`
 - 域名：`blog.orixx.xyz`、`www.blog.orixx.xyz`
@@ -12,7 +12,7 @@
 
 首次使用：
 
-1. 把域名解析到 `45.192.104.98`。
+1. 把域名解析到 `45.192.104.25`。
 2. 修改 `tools/hk_deploy/hk_deploy.config.json`：
    - `nginxServerName`：你的真实域名，例如 `blog.orixx.xyz www.blog.orixx.xyz`
    - `publicUrl`：公开访问地址，例如 `https://blog.orixx.xyz/`
@@ -47,6 +47,8 @@ GitHub Actions 使用 `hk-deploy` 分支作为临时静态包：服务器通过 
 - HTTPS 使用 Let's Encrypt。证书有效期 90 天，服务器上需要保持 `certbot.timer` 或等效 cron 续签任务启用。
 - 香港部署会使用 `tools/hk_deploy/_config.hk.yml` 覆盖 Hexo 的 `url`，避免页面 canonical 仍指向 GitHub Pages。
 - 香港部署会自动根据 `/blog/s/<短ID>/index.html` 生成根目录的 `share-map.json`；短 ID 由构建脚本生成，不要手动维护短链映射。
+- 2026-10-18：香港静态托管整体迁移到新机 `45.192.104.25`（Debian 13，2 核 / 2G / 30G）。站点目录、`admin_server.py`、统计数据库 `admin.sqlite3`、访问日志格式、GeoIP 段表和 Let's Encrypt 证书（`blog.orixx.xyz`，到期 2027-01-15）按原样搬过去；`certbot.timer` 已在新机启用，域名解析切到新机后即可自动续签。
+- 新机与旧机唯一有意的差异：`blog.orixx.xyz.conf` 用 `listen 443 ssl;` + `http2 on;` 代替旧的 `listen 443 ssl http2;`（nginx 1.25.1 起后者已废弃），这样 443 上只有一个 listen 组，`00-default-deny-host.conf` 才能真正接管未知域名的 443 请求。
 
 访问统计后台：
 

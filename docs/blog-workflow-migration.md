@@ -210,7 +210,7 @@ The normal publish path pushes the `source` branch. GitHub Actions builds and de
 The Hong Kong deploy runs in GitHub Actions with these repository secrets:
 
 ```text
-HK_HOST=45.192.104.98
+HK_HOST=45.192.104.25
 HK_PORT=22
 HK_USER=root
 HK_REMOTE_ROOT=/var/www/ori2333-blog
