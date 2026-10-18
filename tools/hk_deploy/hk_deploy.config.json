@@ -14,7 +14,7 @@
       "content": "3d3ea2dca84de478dea1b309ec960efe05d7c2e0"
     }
   ],
-  "nginxServerName": "blog.orixx.xyz www.blog.orixx.xyz",
+  "nginxServerName": "blog.orixx.xyz",
   "nginxListen": 80,
   "enableHttps": true,
   "certbotEmail": "",

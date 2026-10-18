@@ -7,14 +7,14 @@
 - 服务器：`45.192.104.25`（2026-10-18 起；旧机 `45.192.104.98` 仍跑其他业务）
 - SSH 端口：`22`
 - 远程目录：`/var/www/ori2333-blog`
-- 域名：`blog.orixx.xyz`、`www.blog.orixx.xyz`
+- 域名：`blog.orixx.xyz`（不再使用 `www.blog.orixx.xyz`，证书也不含它）
 - 访问方式：真实域名，不使用临时端口
 
 首次使用：
 
 1. 把域名解析到 `45.192.104.25`。
 2. 修改 `tools/hk_deploy/hk_deploy.config.json`：
-   - `nginxServerName`：你的真实域名，例如 `blog.orixx.xyz www.blog.orixx.xyz`
+   - `nginxServerName`：你的真实域名，例如 `blog.orixx.xyz`
    - `publicUrl`：公开访问地址，例如 `https://blog.orixx.xyz/`
 3. 把部署公钥加入服务器的 `/root/.ssh/authorized_keys`：
 
@@ -49,6 +49,8 @@ GitHub Actions 使用 `hk-deploy` 分支作为临时静态包：服务器通过 
 - 香港部署会自动根据 `/blog/s/<短ID>/index.html` 生成根目录的 `share-map.json`；短 ID 由构建脚本生成，不要手动维护短链映射。
 - 2026-10-18：香港静态托管整体迁移到新机 `45.192.104.25`（Debian 13，2 核 / 2G / 30G）。站点目录、`admin_server.py`、统计数据库 `admin.sqlite3`、访问日志格式、GeoIP 段表和 Let's Encrypt 证书（`blog.orixx.xyz`，到期 2027-01-15）按原样搬过去；`certbot.timer` 已在新机启用，域名解析切到新机后即可自动续签。
 - 新机与旧机唯一有意的差异：`blog.orixx.xyz.conf` 用 `listen 443 ssl;` + `http2 on;` 代替旧的 `listen 443 ssl http2;`（nginx 1.25.1 起后者已废弃），这样 443 上只有一个 listen 组，`00-default-deny-host.conf` 才能真正接管未知域名的 443 请求。
+- 2026-10-18 之后：域名不再使用 `www.blog.orixx.xyz`（解析里已去掉），证书重新签发为只含 `blog.orixx.xyz`，到期 2027-01-16；`certbot renew --dry-run` 实测通过，`certbot.timer` 已启用。
+- 同一批补的服务器侧改动：软 404 变成真 404（`error_page 404 /blog/404.html`，用上主题已生成的 404 页）、明文 http 301 到 https、四个安全响应头、`/admin/login` 限速（zone 在 `00-ori-blog-http.conf`）、origin 对 CSS/JS/SVG/JSON 开 gzip。站点侧：修好站内搜索索引、补 `robots.txt` 与 `sitemap.xml`、浅色背景图换 548 KB WebP + 324 KB AVIF（`image-set` 渐进增强）、去掉 CSS preload 上的 `crossorigin`（否则同源 CSS 会被下载两遍）。
 
 访问统计后台：
 
