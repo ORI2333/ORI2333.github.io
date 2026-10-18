@@ -30,6 +30,7 @@ def main() -> int:
     write_share_map(public_dir, str(cfg.get("hkBlogPath", "/blog/")))
     write_gateway_page(cfg, public_dir)
     write_root_verification_files(cfg, public_dir)
+    write_robots_txt(public_dir)
 
     remote = remote_target(cfg)
     ssh_base = ssh_command(cfg)
@@ -284,6 +285,7 @@ def write_gateway_page(cfg: dict, public_dir: Path) -> None:
             hk_url=hk_blog_url,
             github_url=github_url,
             hk_blog_path=hk_blog_path,
+            canonical_url=public_url_value,
         ),
         encoding="utf-8",
     )
@@ -297,6 +299,18 @@ def write_root_verification_files(cfg: dict, public_dir: Path) -> None:
         if not name or "/" in name or "\\" in name:
             raise RuntimeError(f"Invalid root verification file name: {name!r}")
         (public_dir / name).write_text(content, encoding="utf-8")
+
+
+def write_robots_txt(public_dir: Path) -> None:
+    """把 source/robots.txt 放到打包根目录。
+
+    香港构建的输出目录是 public/blog，所以 source/robots.txt 只会落在
+    /blog/robots.txt；爬虫只读域名根上的 /robots.txt，这里再写一份到根。
+    """
+    source = REPO_ROOT / "source" / "robots.txt"
+    if not source.exists():
+        raise RuntimeError(f"Missing {source}")
+    (public_dir / "robots.txt").write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
 
 
 def normalized_path(value: str) -> str:
@@ -382,7 +396,7 @@ def title_from_path(path: str) -> str:
 
 
 
-def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str) -> str:
+def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str, canonical_url: str) -> str:
     avatar_path = f"{hk_blog_path}images/theme/头像.jpg"
     dark_bg_path = f"{hk_blog_path}images/theme/bg-dark.webp"
     light_bg_path = f"{hk_blog_path}images/theme/bg-light.webp"
@@ -438,6 +452,8 @@ def gateway_html(edge_url: str, hk_url: str, github_url: str, hk_blog_path: str)
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="ORI2333's Blog access gateway">
   <title>ORI2333's Blog - 选择访问站点</title>
+  <link rel="canonical" href="{html.escape(canonical_url, quote=True)}">
+  <meta name="robots" content="index,follow">
   <link rel="icon" href="{html.escape(avatar_path, quote=True)}">
   <style>
     :root {{

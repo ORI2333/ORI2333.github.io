@@ -37,6 +37,20 @@ CF_IPV6_RANGES = [
     "2c0f:f248::/32",
 ]
 
+# http 级设置。Debian/Ubuntu 自带的 nginx.conf 只开了 gzip on，gzip_types 是注释掉的，
+# 所以默认只压缩 text/html；/admin/login 的限速 zone 也必须定义在 http 上下文里。
+HTTP_LEVEL_CONF = """# 由 tools/hk_deploy/setup_hk_server.py 生成，别手改服务器上的副本。
+gzip_vary on;
+gzip_proxied any;
+gzip_comp_level 6;
+gzip_min_length 256;
+gzip_types text/plain text/css text/xml application/json application/javascript application/xml application/xml+rss application/rss+xml image/svg+xml;
+
+# /admin/login 限速：每个访客 IP 每分钟 6 次，允许多 5 次突发。用 $binary_remote_addr，
+# 配合上面的 Cloudflare real_ip，限的是访客而不是 Cloudflare 节点。
+limit_req_zone $binary_remote_addr zone=ori_blog_admin_login:10m rate=6r/m;
+limit_req_status 429;"""
+
 
 def main() -> int:
     cfg = json.loads(CONFIG_PATH.read_text(encoding="utf-8-sig"))
@@ -99,6 +113,9 @@ def remote_enable_nginx_script(cfg: dict) -> str:
         "real_ip_recursive on;\n"
         "log_format ori_blog_main '$remote_addr - $remote_user [$time_local] \"$request\" '\n"
         "                         '$status $body_bytes_sent \"$http_referer\" \"$http_user_agent\"';\n"
+        "EOF\n"
+        "cat > /etc/nginx/conf.d/00-ori-blog-http.conf <<'EOF'\n"
+        f"{HTTP_LEVEL_CONF}\n"
         "EOF\n"
         "if [ -d /etc/nginx/conf.d ]; then "
         f"mv /tmp/ori2333-blog.conf /etc/nginx/conf.d/{site_file}; "

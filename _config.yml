@@ -8,7 +8,7 @@ subtitle: ''
 description: 'A blog about programming, technology, and more.<br><span class="about-contact-icons"><a href="mailto:ori2333.zh@gmail.com" title="Email"><img src="/icons/default-sites/email.svg" alt="Email"></a><a href="https://github.com/ORI2333/" target="_blank" rel="nofollow" title="GitHub"><img src="/icons/default-sites/github.svg" alt="GitHub"></a><a href="https://space.bilibili.com/37400250" target="_blank" rel="nofollow" title="Bilibili"><img src="/icons/default-sites/bilibili.ico" alt="Bilibili"></a><a href="https://www.xiaohongshu.com/user/profile/611086e4000000000100a5bf" target="_blank" rel="nofollow" title="Xiaohongshu"><img src="/icons/default-sites/xiaohongshu.ico" alt="Xiaohongshu"></a></span>'
 keywords:
 author: ORI2333
-language: en
+language: zh-CN
 timezone: ''
 
 # URL
@@ -82,7 +82,7 @@ meta_generator: true
 date_format: YYYY-MM-DD
 time_format: HH:mm:ss
 ## updated_option supports 'mtime', 'date', 'empty'
-updated_option: 'mtime'
+updated_option: 'date'
 
 # Pagination
 ## Set per_page to 0 to disable pagination
